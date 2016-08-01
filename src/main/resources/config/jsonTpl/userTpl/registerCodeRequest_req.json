@@ -1,0 +1,15 @@
+{
+    "header": {
+        "action": "register"
+    },
+    "body": {
+        "type": 1,
+        "email": "dkw1225@sina.com",
+        "countrycode": 86,
+        "cellphone": "1381196123",
+        "verifycode": 332682,
+        "username": "Kevin Dong",
+        "pwd": "123456",
+        "deviceid": "14EF65"
+    }
+}

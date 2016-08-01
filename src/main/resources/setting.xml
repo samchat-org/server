@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE configuration   
+  PUBLIC "-//ibatis.apache.org//DTD Config 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-config.dtd">
+
+<configuration>
+	<settings>
+		<setting name="lazyLoadingEnabled" value="false" />
+		<setting name="aggressiveLazyLoading" value="true" />
+<!-- type-cache实现类，默认为PERPETUAL，可以使用自定义的cache实现类（别名或完整类名皆可）-->
+<!-- eviction-回收算法，默认为LRU，可选的算法有：-->
+<!--                  LRU– 最近最少使用的：移除最长时间不被使用的对象。-->
+<!--                 FIFO– 先进先出：按对象进入缓存的顺序来移除它们。-->
+<!--                 SOFT– 软引用：移除基于垃圾回收器状态和软引用规则的对象。-->
+<!--                 WEAK– 弱引用：更积极地移除基于垃圾收集器状态和弱引用规则的对象。-->
+<!-- flushInterval-刷新间隔，默认为1个小时，单位毫秒-->
+<!-- size-缓存大小，默认大小1024，单位为引用数-->
+<!-- readOnly-只读-->
+		<setting name="cacheEnabled" value="true"/>
+	</settings>
+</configuration>
