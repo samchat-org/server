@@ -5,7 +5,7 @@
 <generatorConfiguration>
 
 	<properties
-		url="file:/D:/work/git/sam_svr/src/main/resources/config/jdbc.properties" />
+		url="file:/D:/git/sam_svr/src/main/resources/config/jdbc.properties" />
 	<context id="application">
 
 		<commentGenerator>
@@ -21,9 +21,9 @@
 			<property name="forceBigDecimals" value="false" />
 		</javaTypeResolver>
 
-		<javaModelGenerator targetPackage="com.skyworld.beans.auto.entitybeans"
+		<javaModelGenerator targetPackage="com.skyworld.beans.auto.db.entitybeans"
 			targetProject="${generate.src.dir}">
-			<property name="rootClass" value="com.skyworld.beans.auto.BaseEntity" />
+			<property name="rootClass" value="com.skyworld.beans.auto.db.BaseEntity" />
 			<property name="enableSubPackages" value="true" />
 			<property name="trimStrings" value="true" />
 		</javaModelGenerator>
@@ -34,16 +34,20 @@
 		</sqlMapGenerator>
 
 		<javaClientGenerator type="XMLMAPPER"
-			targetPackage="com.skyworld.beans.auto.mapper"
+			targetPackage="com.skyworld.beans.auto.db.mapper"
 			targetProject="${generate.src.dir}">
 			<property name="enableSubPackages" value="true" />
 		</javaClientGenerator>
 		
-		<table tableName="tb_frm_dict_info" domainObjectName="TbFrmDictInfo">
+		<table tableName="t_user_users" domainObjectName="TUserUsers">
 			<property name="useActualColumnNames" value="true" />
-			<generatedKey column="dict_id" sqlStatement="MySql"	identity="true" />
+			<generatedKey column="user_id" sqlStatement="MySql"	identity="true" />
 		</table>
 		
+		<table tableName="t_user_pro_users" domainObjectName="TUserProUsers">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="pro_user_id" sqlStatement="MySql"	identity="true" />
+		</table>
 	</context>
 
 </generatorConfiguration>

@@ -35,7 +35,7 @@
 	
 	<!-- 通过扫描的模式，扫描在com.wuliu.beans.auto.mapper目录下的所有mapper -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="com.skyworld.beans.auto.mapper" />
+		<property name="basePackage" value="com.skyworld.beans.auto.db.mapper" />
 	</bean>
 
 	<!-- 配置iBatis的sqlMapClient，这里当然是交给了spring去处理,其中，将SqlMapConfig文件放到了WEB-INF的iBatis目录下，也是便于管理 -->
