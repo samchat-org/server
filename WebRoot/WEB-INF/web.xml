@@ -51,4 +51,9 @@
 		<servlet-name>springDispatcher</servlet-name>
 		<url-pattern>*.do</url-pattern>
 	</servlet-mapping>
+
+	<listener>
+		<listener-class>com.skyworld.common.listener.SysConfigRefreshListener</listener-class>
+	</listener>
+
 </web-app>

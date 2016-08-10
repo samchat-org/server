@@ -1,6 +1,7 @@
 package com.skyworld.service;
 
 import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.skyworld.common.Constant;
+import com.skyworld.utils.CacheUtil;
 
 public class BaseSrv<T>{
 	
@@ -176,4 +179,8 @@ public class BaseSrv<T>{
 		return 1;
 	}
 	
+	public Timestamp querySysdate() {
+		Object ts = executeSqlList("query_sysdate", null).get(0);
+		return (Timestamp)ts;
+	}
 }

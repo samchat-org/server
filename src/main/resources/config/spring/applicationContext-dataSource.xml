@@ -84,8 +84,8 @@
 	</tx:advice>
 	<aop:config>
 		<aop:pointcut id="allServiceMethod"
-			expression="execution(* com.skyworld.service..*.*(..))" />
+			expression="execution(* com.skyworld.service.*.*(..))" />
 		<aop:advisor pointcut-ref="allServiceMethod" advice-ref="myWebAdvice" />
 	</aop:config>
-
+	
 </beans>

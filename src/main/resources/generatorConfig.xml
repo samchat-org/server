@@ -48,6 +48,10 @@
 			<property name="useActualColumnNames" value="true" />
 			<generatedKey column="pro_user_id" sqlStatement="MySql"	identity="true" />
 		</table>
+		<table tableName="t_sys_configs" domainObjectName="TSysConfigs">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="param_id" sqlStatement="MySql"	identity="true" />
+		</table>
 	</context>
 
 </generatorConfiguration>

@@ -19,13 +19,13 @@ import com.skyworld.utils.StrUtils;
 import com.skyworld.utils.jsonUtils.jsonObjConvertUtil.entity.ArrayType;
 import com.skyworld.utils.jsonUtils.jsonObjConvertUtil.entity.Json2JavaElement;
 
+
 public class JsonObjUtil {
 
 	public static void main(String[] args) throws Exception {
 		if (args.length < 2) {
 			throw new RuntimeException("请依次输入json模板相对路径和目标java类相对路径");
-			//json:src/main/resources/config/jsonTpl/userTpl 
-			//java:src/main/java/com/skyworld/beans/auto/json
+			
 		}
 		String projectpath = new File("").getAbsolutePath();
 		String jsonpath = projectpath + File.separator + args[0];
@@ -427,10 +427,10 @@ public class JsonObjUtil {
 			} else {
 				// 如果不包含"."则为整数,先尝试解析成int,如果失败则视为long
 				try {
-					Integer.parseInt(num);
-					clazz = int.class;
-				} catch (NumberFormatException e) {
+					Long.parseLong(num);
 					clazz = long.class;
+				} catch (NumberFormatException e) {
+//					clazz = long.class;
 				}
 			}
 		} else if (jp.isBoolean()) {

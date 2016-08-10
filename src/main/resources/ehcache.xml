@@ -21,7 +21,7 @@
    	<defaultCache   
            maxElementsInMemory="300"
            timeToIdleSeconds="3600"   
- 			timeToLiveSeconds="7200" 
+ 		   timeToLiveSeconds="7200" 
            eternal="false"
            overflowToDisk="false" />
     

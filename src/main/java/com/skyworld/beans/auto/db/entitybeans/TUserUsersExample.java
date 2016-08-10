@@ -1001,6 +1001,146 @@ public class TUserUsersExample {
             addCriterionForJDBCDate("create_date not between", value1, value2, "create_date");
             return (Criteria) this;
         }
+
+        public Criteria andCur_device_idIsNull() {
+            addCriterion("cur_device_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_device_idIsNotNull() {
+            addCriterion("cur_device_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_device_idEqualTo(String value) {
+            addCriterion("cur_device_id =", value, "cur_device_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_device_idNotEqualTo(String value) {
+            addCriterion("cur_device_id <>", value, "cur_device_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_device_idGreaterThan(String value) {
+            addCriterion("cur_device_id >", value, "cur_device_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_device_idGreaterThanOrEqualTo(String value) {
+            addCriterion("cur_device_id >=", value, "cur_device_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_device_idLessThan(String value) {
+            addCriterion("cur_device_id <", value, "cur_device_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_device_idLessThanOrEqualTo(String value) {
+            addCriterion("cur_device_id <=", value, "cur_device_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_device_idLike(String value) {
+            addCriterion("cur_device_id like", value, "cur_device_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_device_idNotLike(String value) {
+            addCriterion("cur_device_id not like", value, "cur_device_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_device_idIn(List<String> values) {
+            addCriterion("cur_device_id in", values, "cur_device_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_device_idNotIn(List<String> values) {
+            addCriterion("cur_device_id not in", values, "cur_device_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_device_idBetween(String value1, String value2) {
+            addCriterion("cur_device_id between", value1, value2, "cur_device_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_device_idNotBetween(String value1, String value2) {
+            addCriterion("cur_device_id not between", value1, value2, "cur_device_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenIsNull() {
+            addCriterion("cur_token is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenIsNotNull() {
+            addCriterion("cur_token is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenEqualTo(String value) {
+            addCriterion("cur_token =", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenNotEqualTo(String value) {
+            addCriterion("cur_token <>", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenGreaterThan(String value) {
+            addCriterion("cur_token >", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenGreaterThanOrEqualTo(String value) {
+            addCriterion("cur_token >=", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenLessThan(String value) {
+            addCriterion("cur_token <", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenLessThanOrEqualTo(String value) {
+            addCriterion("cur_token <=", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenLike(String value) {
+            addCriterion("cur_token like", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenNotLike(String value) {
+            addCriterion("cur_token not like", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenIn(List<String> values) {
+            addCriterion("cur_token in", values, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenNotIn(List<String> values) {
+            addCriterion("cur_token not in", values, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenBetween(String value1, String value2) {
+            addCriterion("cur_token between", value1, value2, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenNotBetween(String value1, String value2) {
+            addCriterion("cur_token not between", value1, value2, "cur_token");
+            return (Criteria) this;
+        }
     }
 
     /**

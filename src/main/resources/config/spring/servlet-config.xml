@@ -14,14 +14,13 @@
         http://www.springframework.org/schema/tx/spring-tx-4.0.xsd"
 	default-lazy-init="true">
 
-	<context:component-scan base-package="com">
+	<context:component-scan base-package="com.skyworld.action">
 		<context:include-filter type="regex"
-			expression="skyworld\.action\.*" />
+			expression="\.*" />
 	</context:component-scan>
 
 	<bean id="servletHandlerAdapter" class="org.springframework.web.servlet.handler.SimpleServletHandlerAdapter" />
  	<bean name="/api_1.0_user_register.do" class="com.skyworld.action.UserAction" />
- 	<bean name="/api_1.0_user_register1.do" class="com.skyworld.action.UserAction" />
- 	<bean name="/api_1.0_userregister1.do" class="com.skyworld.action.UserAction" />
-
+ 	<bean name="/api_1.0_user_registerCodeRequest.do" class="com.skyworld.action.UserAction" />
+ 
 </beans>
