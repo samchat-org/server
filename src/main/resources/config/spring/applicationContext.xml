@@ -7,7 +7,7 @@
 	default-autowire="byType">
 
 	<!-- 使用annotation自动注入bean,并启动相关处理注解的进程 -->
-	<context:component-scan base-package="com.skyworld">
+	<context:component-scan base-package="com.samchat">
 		<context:include-filter type="regex" expression="action\.*\.*" />
 		<context:include-filter type="regex" expression="service.*.*" />
 	</context:component-scan>

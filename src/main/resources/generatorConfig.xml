@@ -21,9 +21,9 @@
 			<property name="forceBigDecimals" value="false" />
 		</javaTypeResolver>
 
-		<javaModelGenerator targetPackage="com.skyworld.beans.auto.db.entitybeans"
+		<javaModelGenerator targetPackage="com.samchat.common.beans.auto.db.entitybeans"
 			targetProject="${generate.src.dir}">
-			<property name="rootClass" value="com.skyworld.beans.auto.db.BaseEntity" />
+			<property name="rootClass" value="com.samchat.common.beans.auto.db.BaseEntity" />
 			<property name="enableSubPackages" value="true" />
 			<property name="trimStrings" value="true" />
 		</javaModelGenerator>
@@ -34,7 +34,7 @@
 		</sqlMapGenerator>
 
 		<javaClientGenerator type="XMLMAPPER"
-			targetPackage="com.skyworld.beans.auto.db.mapper"
+			targetPackage="com.samchat.common.beans.auto.db.mapper"
 			targetProject="${generate.src.dir}">
 			<property name="enableSubPackages" value="true" />
 		</javaClientGenerator>

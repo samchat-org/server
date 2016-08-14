@@ -53,7 +53,7 @@
 	</servlet-mapping>
 
 	<listener>
-		<listener-class>com.skyworld.common.listener.SysConfigRefreshListener</listener-class>
+		<listener-class>com.samchat.common.listeners.SysConfigRefreshListener</listener-class>
 	</listener>
 
 </web-app>
