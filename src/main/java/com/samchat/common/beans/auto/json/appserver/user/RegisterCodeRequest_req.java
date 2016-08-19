@@ -6,28 +6,28 @@ public class RegisterCodeRequest_req{
 	private Body body;
 
 	public static class Header {
-		private String action;
+		private String action = "";
 
 		public String getAction() {
 			return action;
 		}
 
 		public void setAction(String action) {
-			this.action = action;
+			this.action = (action == null? "" : action.trim());
 		}
 	}
 
 	public static class Body {
-		private String countrycode;
-		private String cellphone;
-		private String deviceid;
+		private String countrycode = "";
+		private String cellphone = "";
+		private String deviceid = "";
 
 		public String getCountrycode() {
 			return countrycode;
 		}
 
 		public void setCountrycode(String countrycode) {
-			this.countrycode = countrycode;
+			this.countrycode = (countrycode == null? "" : countrycode.trim());
 		}
 
 		public String getCellphone() {
@@ -35,7 +35,7 @@ public class RegisterCodeRequest_req{
 		}
 
 		public void setCellphone(String cellphone) {
-			this.cellphone = cellphone;
+			this.cellphone = (cellphone == null? "" : cellphone.trim());
 		}
 
 		public String getDeviceid() {
@@ -43,7 +43,7 @@ public class RegisterCodeRequest_req{
 		}
 
 		public void setDeviceid(String deviceid) {
-			this.deviceid = deviceid;
+			this.deviceid = (deviceid == null? "" : deviceid.trim());
 		}
 	}
 

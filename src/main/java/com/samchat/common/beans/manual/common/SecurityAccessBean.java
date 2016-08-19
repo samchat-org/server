@@ -1,4 +1,4 @@
-package com.samchat.common.beans;
+package com.samchat.common.beans.manual.common;
 
 public class SecurityAccessBean<T> {
 

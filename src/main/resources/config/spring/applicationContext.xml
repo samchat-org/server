@@ -10,6 +10,18 @@
 	<context:component-scan base-package="com.samchat">
 		<context:include-filter type="regex" expression="action\.*\.*" />
 		<context:include-filter type="regex" expression="service.*.*" />
-	</context:component-scan>
+		<context:include-filter type="regex" expression="dao.redis.*.*" />
+		<context:include-filter type="regex" expression="dao.db.*.*" />
+ 	</context:component-scan>
+	
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:config/jdbc.properties</value>
+				<value>classpath:config/redis.properties</value>
+			</list>
+		</property>
+	</bean>
 
 </beans>

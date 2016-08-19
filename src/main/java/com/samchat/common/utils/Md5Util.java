@@ -31,7 +31,7 @@ public class Md5Util {
 		String inmsg = original + key;
 		byte[] digest = md.digest(inmsg.getBytes(CHARSET));
 		String sign = new String(Hex.encodeHex(digest));
-		log.error("md5 str:" + inmsg + " key str:" + key + " sign:" + sign);
+		log.info("md5 str:" + inmsg + " key str:" + key + " sign:" + sign);
 		return sign;
 	}
 

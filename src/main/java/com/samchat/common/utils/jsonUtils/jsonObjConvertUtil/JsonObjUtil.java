@@ -191,8 +191,13 @@ public class JsonObjUtil {
 
 		// 申明变量
 		// private String name;
-		sb.append(StrUtils.formatSingleLine(1 + extraTabNum, "private "
-				+ getTypeName(j2j) + " " + j2j.getName() + ";"));
+		if("String".equals(getTypeName(j2j))){
+			sb.append(StrUtils.formatSingleLine(1 + extraTabNum, "private "
+					+ getTypeName(j2j) + " " + j2j.getName() + " = \"\";"));
+		}else{
+			sb.append(StrUtils.formatSingleLine(1 + extraTabNum, "private "
+					+ getTypeName(j2j) + " " + j2j.getName() + ";"));
+		}
 
 		// 生成变量对应的getter和setter方法
 		// public String getName() {
@@ -221,11 +226,17 @@ public class JsonObjUtil {
 								+ StrUtils.firstToUpperCase(j2j.getName())
 								+ "(" + getTypeName(j2j) + " " + j2j.getName()
 								+ ") {"));
-		sbGetterAndSetter.append(StrUtils.formatSingleLine(2 + extraTabNum,
-				"this." + j2j.getName() + " = " + j2j.getName() + ";"));
+		if("String".equals(getTypeName(j2j))){
+			sbGetterAndSetter.append(StrUtils.formatSingleLine(2 + extraTabNum,
+					"this." + j2j.getName() + " = (" + j2j.getName() + " == null? \"\" : " + j2j.getName() + ".trim());"));
+		}else{
+			sbGetterAndSetter.append(StrUtils.formatSingleLine(2 + extraTabNum,
+					"this." + j2j.getName() + " = " + j2j.getName() + ";"));
+		}
+		
 		sbGetterAndSetter.append(StrUtils.formatSingleLine(1 + extraTabNum,
 				"}"));
-	}
+ 	}
 
 	/**
 	 * 递归遍历整个json数据结构,保存至jsonBeans集合中

@@ -10,10 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.samchat.common.Constant;
-import com.samchat.common.utils.CacheUtil;
+import com.samchat.service.interfaces.IBaseSrv;
 
-public class BaseSrv<T>{
+public class BaseSrv<T> implements IBaseSrv{
 	
 	@Autowired
 	private SqlSessionTemplate sqlSessionTemplate;
@@ -95,89 +94,7 @@ public class BaseSrv<T>{
 		return getPageInfo(resList);
 	}
 
-	protected Class<T> clazz;
-	protected Object mapper;
-	
-	public BaseSrv(){
-	}
-	
-	public BaseSrv(Class<T> clazz){
-		this.clazz = clazz;
-	}
-	
-	private void setMapper(){
-		String beanName = clazz.getSimpleName()+"Mapper";
-		beanName = beanName.substring(0,1).toLowerCase() + beanName.substring(1);
-//		mapper = BaseUtil.getBean(beanName);
-	}
-	
-	protected <T1 extends Object> T1 getMapper(Class<T1> t){
-		if(mapper == null)
-			setMapper();
-		return (T1)mapper;
-	}
-	
-	public PageInfo<T> queryList(int currentPage, int pageSize)
-			throws Exception {
-		setPageConfig(currentPage,pageSize);
-		
-		if(mapper == null){
-			setMapper();
-		}
-		
-		String exampleBeanName = clazz.getName() +"Example";
-		Class<?> clz = Class.forName(exampleBeanName);
-		
-		Method m = mapper.getClass().getMethod("selectByExample",clz);
-		List<T> resList = (List<T>)m.invoke(mapper, clz.newInstance());
-		return getPageInfo(resList);
-	}
 
-	public T queryById(Integer pid) throws Exception {
-		if(mapper == null){
-			setMapper();
-		}
-		Method m = mapper.getClass().getMethod("selectByPrimaryKey",Integer.class);
-		return (T)m.invoke(mapper,pid);
-	}
-
-	public int update(T t) throws Exception {
-		if(mapper == null){
-			setMapper();
-		}
-		Method m = mapper.getClass().getMethod("updateByPrimaryKeySelective",clazz);
-		return (Integer)m.invoke(mapper, t);
-	}
-
-	public int save(T t) throws Exception {
-		if(mapper == null){
-			setMapper();
-		}
-		Method m = mapper.getClass().getMethod("insertSelective",clazz);
-		return (Integer)m.invoke(mapper, t);
-	}
-
-	public int delete(List pids) throws Exception {
-		if(mapper == null){
-			setMapper();
-		}
-
-	
-/*		String criteria  =  exampleBeanName+"$Criteria";
-		Class<?> clz = Class.forName(exampleBeanName); 
-		Class<?> criteriaClass = Class.forName(criteria);
-	    Method exampleMethod  = clz.getMethod("createCriteria");	createCriteria
-	    criteriaClass =  (Class<?>) exampleMethod.invoke(clz);
-	    Method  criteriaMethod =  criteriaClass.getMethod("andIdIn");
-	    criteriaMethod.invoke(criteriaClass, pids);
-	    Method mapperMethod = mapper.getClass().getMethod("deleteByExample");*/
-		Method m = null;
-		for(int i =0 ;i<pids.size() ;i++){
-		m = mapper.getClass().getMethod("deleteByPrimaryKey",Integer.class);
-	    m.invoke(mapper,Integer.valueOf(String.valueOf(pids.get(i))));
-		}
-		return 1;
-	}
 	
 	public Timestamp querySysdate() {
 		Object ts = executeSqlList("query_sysdate", null).get(0);

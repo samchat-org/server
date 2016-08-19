@@ -13,8 +13,8 @@ import org.apache.log4j.Logger;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.samchat.common.Constant;
-import com.samchat.common.beans.SecurityAccessBean;
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
+import com.samchat.common.beans.manual.common.SecurityAccessBean;
 import com.samchat.common.utils.CacheUtil;
 import com.samchat.service.interfaces.ICommonSrv;
 
@@ -67,8 +67,8 @@ public class SysConfigRefreshListener implements ServletContextListener {
 				Cache cache = CacheUtil.getCache(Constant.CACHE_NAME.SYS_CONFIG_CACHE);
 				try {
 					cfgCur.setState(Constant.SYS_LOCK);
-					log.error("update cfg value, sleep 5s");
-					Thread.sleep(5000L);
+					log.info("sleep 5s, old value:" + cfgCur.getValue() + "---" + "new value:" + paramValue );
+ 					Thread.sleep(5000L);
 					cache.acquireWriteLockOnKey(paramCode);
 					cfgCur.setValue(paramValue);
 				} catch (Exception e) {

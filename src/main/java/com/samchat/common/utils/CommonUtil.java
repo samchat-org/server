@@ -47,19 +47,6 @@ public class CommonUtil {
 	public static String getRandom() {
 		return String.valueOf(Math.random()).substring(2);
 	}
-
-	public static String getAddedToken(String phoneNo, long time, String deviceId, int timeToIdleSeconds, int timeToLiveSeconds) throws Exception {
-		log.debug("phoneNo:" + phoneNo + "----time:" + time + "----deviceId:" + deviceId);
-		
-		for (int i = 0;; i++) {
-			log.debug("get Token:" + i);
-			String token = Md5Util.getSign4String(phoneNo + "_" + time + "_" + deviceId + i, "");
-			Element element = CacheUtil.putIfAbsent(Constant.CACHE_NAME.TOKEN_CACHE, token, phoneNo + "_" + deviceId, timeToIdleSeconds, timeToLiveSeconds);
-			if (element == null) {
-				return token;
-			}
-		}
-	}
 	
 	public static String getRegisterCode(String countryCode, String phoneNo){
 		return CacheUtil.get(Constant.CACHE_NAME.REGISTER_CODE_CACHE, countryCode + "_" + phoneNo);
@@ -79,5 +66,14 @@ public class CommonUtil {
 	
 	public static int getSysConfigInt(String paramCode){
 		return Integer.parseInt(getSysConfigStr(paramCode));
+	}
+	
+	public static byte getSysConfigByte(String paramCode){
+		return Byte.parseByte(getSysConfigStr(paramCode));
+	}
+	
+	public static String getRadom(int len){
+		return (Math.random() + "").substring(2, len + 2);
+		
 	}
 }

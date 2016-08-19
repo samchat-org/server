@@ -2,12 +2,20 @@ package com.samchat.action;
 
 import javax.servlet.http.HttpServlet;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.samchat.common.Constant;
+import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.exceptions.AppException;
+import com.samchat.service.interfaces.IUsersSrv;
 
 public class ToolAction extends HttpServlet {
+	
+	@Autowired
+	protected IUsersSrv usersSrv;
 
 	protected String sysErrorRet(int errorCode) {
-		return "{ret:" + errorCode + "}";
+		return "{\"ret\":" + errorCode + "}";
 	}
 
 	protected Class classforName(String classpath, int innerCode) {
@@ -19,4 +27,13 @@ public class ToolAction extends HttpServlet {
 		}
 		return tplclazz;
 	}
+	
+	protected TokenRds tokenIdentify(String token){
+		TokenRds tokenObj = usersSrv.getTokenObj(token);
+		if(tokenObj == null){
+			throw new AppException(Constant.ERROR_TOKEN_ILLEGAL);
+		}
+		return tokenObj;
+	}
+	
 }

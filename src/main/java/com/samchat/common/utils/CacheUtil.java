@@ -11,8 +11,8 @@ import net.sf.ehcache.Element;
 import org.apache.log4j.Logger;
 
 import com.samchat.common.Constant;
-import com.samchat.common.beans.SecurityAccessBean;
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
+import com.samchat.common.beans.manual.common.SecurityAccessBean;
 
 /**
  * 
@@ -136,6 +136,18 @@ public class CacheUtil {
 
 	public static void removeAll(String cacheName) {
 		getCache(cacheName).removeAll();
+	}
+	
+	public static String getRegiserCodeCacheKey(String countryCode, String cellPhone){
+		return Constant.CACHE_NAME.REGISTER_CODE_CACHE + ":" + countryCode + "_" + cellPhone;
+	}
+	
+	public static String getTokenCacheKey(String token){
+ 		return Constant.CACHE_NAME.TOKEN_CACHE + ":" + token ;
+	}
+	
+	public static String getFindpasswordCacheKey(String countryCode, String cellPhone){
+		return Constant.CACHE_NAME.FIND_PASSWORD_CODE_CACHE + ":" + countryCode + "_" + cellPhone;
 	}
 
 }

@@ -19,9 +19,18 @@
 			expression="\.*" />
 	</context:component-scan>
 
-	<bean id="servletHandlerAdapter" class="org.springframework.web.servlet.handler.SimpleServletHandlerAdapter" />
- 	<bean name="/api_1.0_user_register.do" class="com.samchat.action.UserAction" />
- 	<bean name="/api_1.0_user_registerCodeRequest.do" class="com.samchat.action.UserAction" />
- 	<bean name="/api_1.0_user_signupCodeVerify.do" class="com.samchat.action.UserAction" />
-  
+	<bean id="servletHandlerAdapter"
+		class="org.springframework.web.servlet.handler.SimpleServletHandlerAdapter" />
+	<bean name="/api_1.0_profile_appkeyGet.do" class="com.samchat.action.ProfileAction" />
+	<bean name="/api_1.0_user_register.do" class="com.samchat.action.UserAction" />
+	<bean name="/api_1.0_user_registerCodeRequest.do" class="com.samchat.action.UserAction" />
+	<bean name="/api_1.0_user_signupCodeVerify.do" class="com.samchat.action.UserAction" />
+	<bean name="/api_1.0_user_login.do" class="com.samchat.action.UserAction" />
+	<bean name="/api_1.0_user_logout.do" class="com.samchat.action.UserAction" />
+	<bean name="/api_1.0_user_createSamPros.do" class="com.samchat.action.UserAction" />
+	<bean name="/api_1.0_user_findpwdCodeRequest.do" class="com.samchat.action.UserAction" />
+	<bean name="/api_1.0_user_findpwdCodeVerify.do" class="com.samchat.action.UserAction" />
+	<bean name="/api_1.0_user_findpwdUpdate.do" class="com.samchat.action.UserAction" />
+	<bean name="/api_1.0_user_pwdUpdate.do" class="com.samchat.action.UserAction" />
+
 </beans>

@@ -6,29 +6,29 @@ public class SignupCodeVerify_req{
 	private Body body;
 
 	public static class Header {
-		private String action;
+		private String action = "";
 
 		public String getAction() {
 			return action;
 		}
 
 		public void setAction(String action) {
-			this.action = action;
+			this.action = (action == null? "" : action.trim());
 		}
 	}
 
 	public static class Body {
-		private String countrycode;
-		private String cellphone;
-		private String verifycode;
-		private String deviceid;
+		private String countrycode = "";
+		private String cellphone = "";
+		private String verifycode = "";
+		private String deviceid = "";
 
 		public String getCountrycode() {
 			return countrycode;
 		}
 
 		public void setCountrycode(String countrycode) {
-			this.countrycode = countrycode;
+			this.countrycode = (countrycode == null? "" : countrycode.trim());
 		}
 
 		public String getCellphone() {
@@ -36,7 +36,7 @@ public class SignupCodeVerify_req{
 		}
 
 		public void setCellphone(String cellphone) {
-			this.cellphone = cellphone;
+			this.cellphone = (cellphone == null? "" : cellphone.trim());
 		}
 
 		public String getVerifycode() {
@@ -44,7 +44,7 @@ public class SignupCodeVerify_req{
 		}
 
 		public void setVerifycode(String verifycode) {
-			this.verifycode = verifycode;
+			this.verifycode = (verifycode == null? "" : verifycode.trim());
 		}
 
 		public String getDeviceid() {
@@ -52,7 +52,7 @@ public class SignupCodeVerify_req{
 		}
 
 		public void setDeviceid(String deviceid) {
-			this.deviceid = deviceid;
+			this.deviceid = (deviceid == null? "" : deviceid.trim());
 		}
 	}
 

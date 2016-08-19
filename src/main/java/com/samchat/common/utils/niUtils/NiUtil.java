@@ -28,8 +28,18 @@ public class NiUtil {
 		ObjectMapper om = new ObjectMapper();
 		Create_res res = om.readValue(body, Create_res.class);
  		if(!CODE_SUCCESS.equals(res.getCode())){
- 			throw new Exception("ni res code:" + res.getCode());
+ 			throw new Exception("createAction, ni res code:" + res.getCode());
  		}
- 		
+	}
+	
+	public static void updateTokenAction(Map<String, String> token, Timestamp cur) throws Exception {
+		log.info("update token param : " + token);
+		
+		String body = NiPostClient.post(UPDATE_ACTION, token, cur);
+		ObjectMapper om = new ObjectMapper();
+		Create_res res = om.readValue(body, Create_res.class);
+ 		if(!CODE_SUCCESS.equals(res.getCode())){
+ 			throw new Exception("updateTokenAction , ni res code:" + res.getCode());
+ 		}
 	}
 }

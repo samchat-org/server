@@ -27,10 +27,6 @@ public class NiPostClient {
 
 	private static Log log = LogFactory.getLog(NiPostClient.class);
 
-	private static final String appKey = "a95830f52659eec125b54bc1b88f05b2";
-
-	private static final String appSecret = "bd26b055314f";
-
 	public static String post(String actionUrl, Map<String, String> param, Timestamp cur) throws Exception {
 
 		if (param.size() == 0) {
@@ -39,7 +35,9 @@ public class NiPostClient {
 		
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(actionUrl);
-
+		
+		String appKey = CommonUtil.getSysConfigStr("ni_app_key");
+ 		String appSecret = CommonUtil.getSysConfigStr("ni_app_secret");
 		String nonce = CommonUtil.getRandom();
 		String curTime = String.valueOf(cur.getTime() / 1000L);
 		String checkSum = NiCheckSumBuilder.getCheckSum(appSecret, nonce, curTime);// 计算CheckSum的java代码
@@ -71,6 +69,7 @@ public class NiPostClient {
 			HttpEntity entity = response.getEntity();
 			if (entity != null) {
 				body = EntityUtils.toString(entity, Constant.CHARSET);
+				log.info("ni res body:" + body);
 			}
 			EntityUtils.consume(entity);
 

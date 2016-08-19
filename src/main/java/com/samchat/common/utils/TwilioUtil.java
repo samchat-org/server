@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.samchat.common.Constant;
 import com.twilio.sdk.TwilioRestClient;
 import com.twilio.sdk.TwilioRestException;
 import com.twilio.sdk.resource.factory.MessageFactory;
@@ -17,7 +18,11 @@ public class TwilioUtil {
 		
 		String account = CommonUtil.getSysConfigStr("twilio_account");
 		String authToken = CommonUtil.getSysConfigStr("twilio_auth_token");
-
+		byte enable = CommonUtil.getSysConfigByte("twilio_enable");
+		
+		if(enable != Constant.STATE_IN_USE){
+			return;
+		}
 		TwilioRestClient client = new TwilioRestClient(account, authToken);
 
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
