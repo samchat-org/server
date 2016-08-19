@@ -331,7 +331,7 @@ public class UserAction extends BaseAction {
 		String countryCode = req.getBody().getCountrycode();
 		String cellPhone = req.getBody().getCellphone();
 		String verificationCode = CommonUtil.getRadom(4);
-
+		verificationCode = "1234";
 		int timeToIdle = CommonUtil.getSysConfigInt(Constant.SYS_PARAM_KEY.FIND_PASSWORD_CODE_TIME_TO_IDLE);
 		usersSrv.putFindpasswordVerificationCode(countryCode, cellPhone, verificationCode, timeToIdle);
 

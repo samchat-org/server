@@ -170,8 +170,11 @@ public class UsersSrv extends BaseSrv implements IUsersSrv {
 		proUsers.setEmail(body.getEmail());
 
 		CreateSamPros_req.Location location = body.getLocation();
-		proUsers.setLongitude(location.getLocation_info().getLongitude());
-		proUsers.setLatitude(location.getLocation_info().getLatitude());
+		CreateSamPros_req.Location_info info = location.getLocation_info();
+		if(info != null){
+			proUsers.setLongitude(info.getLongitude());
+			proUsers.setLatitude(info.getLatitude());
+		}
 		proUsers.setPlace_id(location.getPlace_id());
 		proUsers.setAddress(location.getAddress());
 		proUsers.setState(Constant.STATE_IN_USE);
