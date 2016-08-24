@@ -12,29 +12,31 @@ import org.springframework.stereotype.Service;
 import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
-import com.samchat.common.beans.auto.db.entitybeans.TUserUsersExample;
 import com.samchat.common.beans.auto.json.appserver.user.CreateSamPros_req;
 import com.samchat.common.beans.auto.json.appserver.user.Register_req;
 import com.samchat.common.beans.auto.json.appserver.user.Register_res;
+import com.samchat.common.beans.manual.json.redis.LoginErrRds;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.utils.CacheUtil;
-import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.Md5Util;
 import com.samchat.common.utils.niUtils.NiUtil;
+import com.samchat.dao.db.interfaces.ICommonDbDao;
 import com.samchat.dao.db.interfaces.IUserDbDao;
 import com.samchat.dao.redis.interfaces.IUserRedisDao;
 import com.samchat.service.interfaces.IUsersSrv;
 
 @Service
-public class UsersSrv extends BaseSrv implements IUsersSrv {
+public class UsersSrv implements IUsersSrv {
 
 	private static Logger log = Logger.getLogger(UsersSrv.class);
 
 	@Autowired
 	private IUserRedisDao<String, Object> userRedisDao;
-
 	@Autowired
 	private IUserDbDao userDbDao;
+	@Autowired
+	private ICommonDbDao commonDbDao;
 
 	public TUserUsers queryUserInfoByPhone(String phoneNo, String countryCode) {
 		return userDbDao.queryUserInfoByPhone(phoneNo, countryCode);
@@ -50,9 +52,8 @@ public class UsersSrv extends BaseSrv implements IUsersSrv {
 
 	public Register_res saveRegisterUserInfo(Register_req req) throws Exception {
 
-		Timestamp sysdate = querySysdate();
+		Timestamp sysdate = commonDbDao.querySysdate();
 		long time = sysdate.getTime();
-
 		Register_req.Body body = req.getBody();
 		String cellPhone = body.getCellphone();
 		String countryCode = body.getCountrycode();
@@ -60,7 +61,7 @@ public class UsersSrv extends BaseSrv implements IUsersSrv {
 		String pwd = Md5Util.getSign4String(body.getPwd(), "");
 		String deviceId = body.getDeviceid();
 
-		String token = getAddedToken(countryCode, cellPhone, time, deviceId);
+		
 
 		TUserUsers uu = new TUserUsers();
 
@@ -72,24 +73,17 @@ public class UsersSrv extends BaseSrv implements IUsersSrv {
 		uu.setState(Constant.STATE_IN_USE);
 		uu.setState_date(sysdate);
 		uu.setCreate_date(sysdate);
-		uu.setCur_device_id(deviceId);
-		uu.setCur_token(token);
- 		userDbDao.insertUser(uu);
-
- 		TUserUsers u = userDbDao.queryUserInfoByPhone(cellPhone, countryCode);
-		if (u == null) {
-			throw new RuntimeException("select register info failed, phoneNo:" + cellPhone + "--countryCode:"
-					+ countryCode);
-		}
+		userDbDao.insertUser(uu);
 		
-		niRegister(u.getUser_id(), userName, token, deviceId, sysdate);
+		String token = getAddedToken(countryCode, cellPhone, time, deviceId, uu.getUser_id());
+		niRegister(uu.getUser_id(), userName, token, deviceId, sysdate);
 
 		Register_res res = new Register_res();
 		res.setRet(Constant.SUCCESS);
 
 		res.setToken(token);
 		Register_res.User user = new Register_res.User();
-		user.setId(u.getUser_id());
+		user.setId(uu.getUser_id());
 		user.setLastupdate(time);
 		res.setUser(user);
 		return res;
@@ -116,19 +110,33 @@ public class UsersSrv extends BaseSrv implements IUsersSrv {
 		userRedisDao.set(keystr, verificationCode, expireSec);
 	}
 
-	public String getAddedToken(String countryCode, String cellPhone, long time, String deviceId) throws Exception {
+	public String getAddedToken(String countryCode, String cellPhone, long time, String deviceId, long userId) throws Exception {
 
 		TokenRds tk = new TokenRds();
+		tk.setUserId(userId);
 		tk.setCountryCode(countryCode);
 		tk.setCellPhone(cellPhone);
 		tk.setDeviceId(deviceId);
-		long expireSec = CommonUtil.getSysConfigInt("token_failure_interval");
-		for (int i = 0;; i++) {
+ 		for (int i = 0;; i++) {
 			String token = Md5Util.getSign4String(countryCode + "_" + cellPhone + "_" + time + "_" + deviceId + i, "");
-			if (userRedisDao.setNX(CacheUtil.getTokenCacheKey(token + deviceId), tk, expireSec)) {
+			log.info("set token:" + token + deviceId);
+			if (userRedisDao.setNX(CacheUtil.getTokenCacheKey(token + deviceId), tk, 100000)) {
+				log.info(userRedisDao.getJsonObj(CacheUtil.getTokenCacheKey(token + deviceId)));
 				return token;
 			}
 		}
+	}
+
+	public void setUserInfoIntoRedis(String countryCode, String cellPhone, String token) {
+		UserInfoRds uif = new UserInfoRds();
+		uif.setToken(token);
+		String key = CacheUtil.getUserInfoCacheKey(countryCode, cellPhone);
+		userRedisDao.set(key, uif, 0);
+	}
+	
+	public UserInfoRds getUserInfoIntoRedis(String countryCode, String cellPhone) {
+		String key = CacheUtil.getUserInfoCacheKey(countryCode, cellPhone);
+		return (UserInfoRds)userRedisDao.getJsonObj(key);
 	}
 
 	public void niRegister(long userId, String userName, String token, String deviceId, Timestamp cur) throws Exception {
@@ -171,7 +179,7 @@ public class UsersSrv extends BaseSrv implements IUsersSrv {
 
 		CreateSamPros_req.Location location = body.getLocation();
 		CreateSamPros_req.Location_info info = location.getLocation_info();
-		if(info != null){
+		if (info != null) {
 			proUsers.setLongitude(info.getLongitude());
 			proUsers.setLatitude(info.getLatitude());
 		}
@@ -179,17 +187,17 @@ public class UsersSrv extends BaseSrv implements IUsersSrv {
 		proUsers.setAddress(location.getAddress());
 		proUsers.setState(Constant.STATE_IN_USE);
 
-		Timestamp cur = querySysdate();
+		Timestamp cur = commonDbDao.querySysdate();
 		proUsers.setState_date(cur);
 		proUsers.setCreate_date(cur);
- 		userDbDao.insertProUser(proUsers);
+		userDbDao.insertProUser(proUsers);
 
 		TUserUsers userCon = new TUserUsers();
 		userCon.setUser_id(user.getUser_id());
 		userCon.setUser_type(Constant.USER_TYPE_SERVICES);
 		userCon.setState_date(cur);
- 		userDbDao.updateUser(userCon);
- 
+		userDbDao.updateUser(userCon);
+
 		return proUsers;
 
 	}
@@ -198,7 +206,33 @@ public class UsersSrv extends BaseSrv implements IUsersSrv {
 		TUserUsers userCon = new TUserUsers();
 		userCon.setUser_id(userId);
 		userCon.setUser_pwd(password);
-		userCon.setState_date(querySysdate());
+
+		Timestamp sysdate = commonDbDao.querySysdate();
+		userCon.setState_date(sysdate);
 		userDbDao.updateUser(userCon);
+	}
+
+	public TUserProUsers queryProUser(long userId) {
+		return userDbDao.queryProUser(userId);
+	}
+
+	public void loginPwderrorCheck(String countryCode, String cellphone) {
+		LoginErrRds loginerr = this.userRedisDao.getJsonObj(Constant.CACHE_NAME.LOGIN_ERR + ":" + countryCode + "_"
+				+ cellphone);
+		Timestamp sysdate = commonDbDao.querySysdate();
+		if (loginerr == null) {
+			loginerr = new LoginErrRds();
+			loginerr.setFirst(sysdate.getTime());
+		}
+		loginerr.setTime(loginerr.getTime() + 1);
+
+ 	}
+	
+	public List<TUserUsers> queryUsers(){
+		return userDbDao.queryUsers();
+	}
+	
+	public TUserUsers queryUser(long userId){
+		return userDbDao.queryUser(userId);
 	}
 }

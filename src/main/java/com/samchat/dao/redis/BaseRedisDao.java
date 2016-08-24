@@ -51,6 +51,21 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 			}
 		});
 	}
+	
+	public void set(final String keyStr, final Object valueObj, final long expireSec) {
+		getRedisTemplate().execute(new RedisCallback<Boolean>() {
+			public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+ 				byte[] key = getStrRedisSerializer().serialize(keyStr);
+				byte[] value = getJackson2JsonRedisSerializer().serialize(valueObj);
+ 				if (expireSec == 0) {
+					connection.set(key, value);
+				} else {
+					connection.setEx(key, expireSec, value);
+				}
+				return true;
+			}
+		});
+	}
 
 	public Boolean setNX(final String keyStr, final String valueStr, final long expireSec) {
 		Boolean result = getRedisTemplate().execute(new RedisCallback<Boolean>() {
@@ -88,7 +103,6 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 			}
 		});
 		return result;
-
 	}
 
 	public String get(final String keyStr) {

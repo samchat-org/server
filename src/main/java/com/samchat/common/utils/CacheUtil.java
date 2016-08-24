@@ -139,15 +139,25 @@ public class CacheUtil {
 	}
 	
 	public static String getRegiserCodeCacheKey(String countryCode, String cellPhone){
-		return Constant.CACHE_NAME.REGISTER_CODE_CACHE + ":" + countryCode + "_" + cellPhone;
+		return Constant.CACHE_NAME.REGISTER_CODE + ":" + countryCode + "_" + cellPhone;
 	}
 	
 	public static String getTokenCacheKey(String token){
- 		return Constant.CACHE_NAME.TOKEN_CACHE + ":" + token ;
+ 		return Constant.CACHE_NAME.TOKEN + ":" + token ;
 	}
 	
 	public static String getFindpasswordCacheKey(String countryCode, String cellPhone){
-		return Constant.CACHE_NAME.FIND_PASSWORD_CODE_CACHE + ":" + countryCode + "_" + cellPhone;
+		return Constant.CACHE_NAME.FIND_PASSWORD_CODE + ":" + countryCode + "_" + cellPhone;
+	}
+	
+	public static String getUserInfoCacheKey(String countryCode, String cellPhone ){
+		return Constant.CACHE_NAME.USER_INFO + ":" + countryCode + "_" + cellPhone;
+		
+	}
+	
+	public static String getQuestSendCtlCacheKey(String countryCode, String cellPhone ){
+		return Constant.CACHE_NAME.QUESTION_SEND_CONTROL + ":" + countryCode + "_" + cellPhone;
+		
 	}
 
 }

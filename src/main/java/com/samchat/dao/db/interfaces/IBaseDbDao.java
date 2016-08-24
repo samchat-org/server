@@ -5,15 +5,21 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.pagehelper.PageInfo;
+import com.samchat.common.beans.manual.common.SeqQuery;
 
 public interface IBaseDbDao {
 	public int executeUpdateSql(String sqlName, Object param);
 
-	public List executeSqlList(String sqlName, Object param);
+	public List<Object> executeSqlList(String sqlName, Object param);
+
+	public Object executeSqlOne(String sqlName, Object param);
 
 	public <T1 extends Object> PageInfo<T1> getPageInfo(List<T1> resList);
 
-	public PageInfo executePageSql(String sqlName, Map paramMap, int currentPage, int pageSize);
-
+	public PageInfo<Object> executePageSql(String sqlName, Map paramMap, int currentPage, int pageSize);
+	
+	public Long querySeqId(String seqName);
+	
 	public Timestamp querySysdate();
+
 }

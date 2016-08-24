@@ -36,7 +36,7 @@
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="myDataSource" />
 		<property name="configLocation" value="classpath:setting.xml"></property>
-		<property name="mapperLocations" value="classpath*:config/sqlmap/**/*.xml" />
+		<property name="mapperLocations" value="classpath*:config/sqlmap/mysql/**/*.xml" />
 		<!-- 分页插件设置 -->
 		<property name="plugins">
 			<array>

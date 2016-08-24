@@ -1,0 +1,19 @@
+{
+    "header":{
+        "action":"question",
+        "token":"95189486473904140"
+    },
+    "body":{
+        "opt":0,
+        "question":"aaa",
+        "location":{
+            "location_info":{
+                "longitude":"",
+                "latitude":""
+            }
+            ,
+            "place_id":"",
+            "address":""
+        }
+    }
+}

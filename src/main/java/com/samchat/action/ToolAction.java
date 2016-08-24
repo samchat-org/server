@@ -11,6 +11,8 @@ import com.samchat.service.interfaces.IUsersSrv;
 
 public class ToolAction extends HttpServlet {
 	
+	
+	
 	@Autowired
 	protected IUsersSrv usersSrv;
 
@@ -31,9 +33,8 @@ public class ToolAction extends HttpServlet {
 	protected TokenRds tokenIdentify(String token){
 		TokenRds tokenObj = usersSrv.getTokenObj(token);
 		if(tokenObj == null){
-			throw new AppException(Constant.ERROR_TOKEN_ILLEGAL);
+			throw new AppException(Constant.ERROR.TOKEN_ILLEGAL);
 		}
 		return tokenObj;
 	}
-	
 }

@@ -32,5 +32,5 @@
 	<bean name="/api_1.0_user_findpwdCodeVerify.do" class="com.samchat.action.UserAction" />
 	<bean name="/api_1.0_user_findpwdUpdate.do" class="com.samchat.action.UserAction" />
 	<bean name="/api_1.0_user_pwdUpdate.do" class="com.samchat.action.UserAction" />
-
+ 	<bean name="/api_1.0_question_question.do" class="com.samchat.action.QuestionAction" />
 </beans>

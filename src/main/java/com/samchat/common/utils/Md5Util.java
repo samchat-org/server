@@ -35,6 +35,10 @@ public class Md5Util {
 		return sign;
 	}
 
+	public static String getSign4String(String original) throws Exception {
+		return getSign4String(original, "");
+	}
+
 	/**
 	 * 对文件进行MD5签名
 	 * 

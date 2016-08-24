@@ -30,10 +30,12 @@ import com.samchat.common.beans.auto.json.appserver.user.Register_res;
 import com.samchat.common.beans.auto.json.appserver.user.SignupCodeVerify_req;
 import com.samchat.common.beans.auto.json.appserver.user.SignupCodeVerify_res;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.Md5Util;
 import com.samchat.common.utils.TwilioUtil;
+import com.samchat.service.interfaces.ICommonSrv;
 import com.samchat.service.interfaces.IUsersSrv;
 
 public class UserAction extends BaseAction {
@@ -42,6 +44,9 @@ public class UserAction extends BaseAction {
 
 	@Autowired
 	private IUsersSrv usersSrv;
+
+	@Autowired
+	private ICommonSrv commonSrv;
 
 	/**
 	 * 注册验证码验证
@@ -68,18 +73,18 @@ public class UserAction extends BaseAction {
 		String cellphone = body.getCellphone();
 
 		if (!CommonUtil.phoneNoFormatValidate(cellphone)) {
-			throw new AppException(Constant.ERROR_PHONE_FORMAT_ILLEGAL);
+			throw new AppException(Constant.ERROR.PHONE_FORMAT_ILLEGAL);
 		}
 		TUserUsers userUsers = usersSrv.queryUserInfoByPhone(cellphone, countryCode);
 		if (userUsers != null) {
-			throw new AppException(Constant.ERROR_PHONEorUSERNAME_EXIST);
+			throw new AppException(Constant.ERROR.PHONEorUSERNAME_EXIST);
 		}
 		String registerCode = usersSrv.getRegisterCode(countryCode, cellphone);
 		if (registerCode == null) {
-			throw new AppException(Constant.ERROR_REGISTER_CODE_EXPIRED);
+			throw new AppException(Constant.ERROR.REGISTER_CODE_EXPIRED);
 		}
 		if (!registerCode.equals(body.getVerifycode())) {
-			throw new AppException(Constant.ERROR_VERIFICATION_CODE);
+			throw new AppException(Constant.ERROR.VERIFICATION_CODE);
 		}
 	}
 
@@ -129,14 +134,14 @@ public class UserAction extends BaseAction {
 		String cellphone = body.getCellphone();
 
 		if (!CommonUtil.phoneNoFormatValidate(body.getCellphone())) {
-			throw new AppException(Constant.ERROR_PHONE_FORMAT_ILLEGAL);
+			throw new AppException(Constant.ERROR.PHONE_FORMAT_ILLEGAL);
 		}
 		TUserUsers userUsers = usersSrv.queryUserInfoByPhone(cellphone, countryCode);
 		if (userUsers != null) {
-			throw new AppException(Constant.ERROR_PHONEorUSERNAME_EXIST);
+			throw new AppException(Constant.ERROR.PHONEorUSERNAME_EXIST);
 		}
 		if (usersSrv.getRegisterCode(countryCode, cellphone) != null) {
-			throw new AppException(Constant.ERROR_VERIFICATION_CODE_FREQUENT);
+			throw new AppException(Constant.ERROR.VERIFICATION_CODE_FREQUENT);
 		}
 	}
 
@@ -163,14 +168,14 @@ public class UserAction extends BaseAction {
 		Register_req.Body body = req.getBody();
 
 		if (!CommonUtil.phoneNoFormatValidate(body.getCellphone())) {
-			throw new AppException(Constant.ERROR_PHONE_FORMAT_ILLEGAL);
+			throw new AppException(Constant.ERROR.PHONE_FORMAT_ILLEGAL);
 		}
 		TUserUsers userUsers = usersSrv.queryUserInfoByPhone(body.getCellphone(), body.getCountrycode());
 		if (userUsers == null) {
 			userUsers = usersSrv.queryUserInfoByUserName(body.getUsername());
 		}
 		if (userUsers != null) {
-			throw new AppException(Constant.ERROR_PHONEorUSERNAME_EXIST);
+			throw new AppException(Constant.ERROR.PHONEorUSERNAME_EXIST);
 		}
 	}
 
@@ -188,14 +193,18 @@ public class UserAction extends BaseAction {
 		long userId = user.getUser_id();
 		String cellPhone = user.getPhone_no();
 		String cCode = user.getCountry_code();
-
+		UserInfoRds userfo = usersSrv.getUserInfoIntoRedis(cCode, cellPhone);
+		if(userfo != null){
+			usersSrv.deleteToken(userfo.getToken());
+		}
+		
 		Login_res res = new Login_res();
 		res.setRet(Constant.SUCCESS);
 
-		Timestamp cur = usersSrv.querySysdate();
-		String token = usersSrv.getAddedToken(cCode, cellPhone, cur.getTime(), deviceId);
+		Timestamp cur = commonSrv.querySysdate();
+		String token = usersSrv.getAddedToken(cCode, cellPhone, cur.getTime(), deviceId, userId);
+ 		usersSrv.setUserInfoIntoRedis(cCode, cellPhone, token);
 		usersSrv.niTokenUpdate(userId, token, deviceId, cur);
-
 		res.setToken(token);
 
 		Login_res.User userRes = new Login_res.User();
@@ -214,11 +223,21 @@ public class UserAction extends BaseAction {
 		avatar.setThumb(user.getAvatar_thumb());
 		userRes.setAvatar(avatar);
 
-		Sam_pros_info sam_pros_info = new Login_res.Sam_pros_info();
-		userRes.setSam_pros_info(sam_pros_info);
-
+		Sam_pros_info info = new Login_res.Sam_pros_info();
+		userRes.setSam_pros_info(info);
+		if(user.getUser_type() == Constant.USER_TYPE_SERVICES){
+			TUserProUsers proUser = usersSrv.queryProUser(userId);
+			if(proUser != null){
+				info.setCompany_name(proUser.getCompany_name()); 
+				info.setService_category(proUser.getService_category()); 
+				info.setService_description(proUser.getService_description()); 
+				info.setCountrycode(proUser.getCountry_code()); 
+				info.setPhone(proUser.getPhone_no()); 
+				info.setEmail(proUser.getEmail()); 
+				info.setAddress(proUser.getAddress()); 
+			}
+		}
 		res.setUser(userRes);
-
 		return res;
 	}
 
@@ -240,10 +259,10 @@ public class UserAction extends BaseAction {
 			user = usersSrv.queryUserInfoByUserName(account);
 		}
 		if (user == null) {
-			throw new AppException(Constant.ERROR_USER_NOT_EXIST);
+			throw new AppException(Constant.ERROR.USER_NOT_EXIST);
 		}
 		if (!user.getUser_pwd().equals(pwd)) {
-			throw new AppException(Constant.ERROR_USER_PWD);
+			throw new AppException(Constant.ERROR.USER_PWD);
 		}
 		return user;
 	}
@@ -256,7 +275,7 @@ public class UserAction extends BaseAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public Logout_res logout(Logout_req req) throws Exception {
+	public Logout_res logout(Logout_req req, TokenRds token) throws Exception {
 
 		usersSrv.deleteToken(req.getHeader().getToken());
 
@@ -274,9 +293,7 @@ public class UserAction extends BaseAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public void logoutValidate(Logout_req req) throws Exception {
-		String token = req.getHeader().getToken();
-		tokenIdentify(token);
+	public void logoutValidate(Logout_req req, TokenRds token) throws Exception {
 	}
 
 	/**
@@ -285,7 +302,7 @@ public class UserAction extends BaseAction {
 	 * @param req
 	 * @return
 	 */
-	public CreateSamPros_res createSamPros(CreateSamPros_req req, TUserUsers user) {
+	public CreateSamPros_res createSamPros(CreateSamPros_req req, TokenRds token, TUserUsers user) {
 
 		TUserProUsers proUsers = usersSrv.saveProsUserInfo(req, user);
 
@@ -312,20 +329,23 @@ public class UserAction extends BaseAction {
 		return res;
 	}
 
-	public TUserUsers createSamProsValidate(CreateSamPros_req req) {
-		String token = req.getHeader().getToken();
-		TokenRds tokenObj = tokenIdentify(token);
+	public TUserUsers createSamProsValidate(CreateSamPros_req req, TokenRds token) {
 
-		String countrycode = tokenObj.getCountryCode();
-		String cellphone = tokenObj.getCellPhone();
+		String countrycode = token.getCountryCode();
+		String cellphone = token.getCellPhone();
 
 		TUserUsers user = usersSrv.queryUserInfoByPhone(cellphone, countrycode);
 		if (Constant.USER_TYPE_SERVICES == user.getUser_type()) {
-			throw new AppException(Constant.ERROR_USER_PROS_EXIST);
+			throw new AppException(Constant.ERROR.USER_PROS_EXIST);
 		}
 		return user;
 	}
-
+	/**
+	 * 密码找回验证码申请
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	public FindpwdCodeRequest_res findpwdCodeRequest(FindpwdCodeRequest_req req) throws Exception {
 
 		String countryCode = req.getBody().getCountrycode();
@@ -354,18 +374,22 @@ public class UserAction extends BaseAction {
 		String cellPhone = req.getBody().getCellphone();
 
 		if (!CommonUtil.phoneNoFormatValidate(cellPhone)) {
-			throw new AppException(Constant.ERROR_PHONE_FORMAT_ILLEGAL);
+			throw new AppException(Constant.ERROR.PHONE_FORMAT_ILLEGAL);
 		}
 		TUserUsers user = usersSrv.queryUserInfoByPhone(cellPhone, countryCode);
 		if (user == null) {
-			throw new AppException(Constant.ERROR_PHONE_NOT_EXIST);
+			throw new AppException(Constant.ERROR.PHONE_NOT_EXIST);
 		}
 		String code = usersSrv.getFindpasswordVerificationCode(countryCode, cellPhone);
 		if (code != null) {
-			throw new AppException(Constant.ERROR_VERIFICATION_CODE_FREQUENT);
+			throw new AppException(Constant.ERROR.VERIFICATION_CODE_FREQUENT);
 		}
 	}
-
+	/**
+	 * 密码找回时，验证码验证
+	 * @param req
+	 * @return
+	 */
 	public FindpwdCodeVerify_res findpwdCodeVerify(FindpwdCodeVerify_req req) {
 		FindpwdCodeVerify_res res = new FindpwdCodeVerify_res();
 		res.setRet(Constant.SUCCESS);
@@ -378,18 +402,24 @@ public class UserAction extends BaseAction {
 		String cellPhone = req.getBody().getCellphone();
 
 		if (!CommonUtil.phoneNoFormatValidate(cellPhone)) {
-			throw new AppException(Constant.ERROR_PHONE_FORMAT_ILLEGAL);
+			throw new AppException(Constant.ERROR.PHONE_FORMAT_ILLEGAL);
 		}
 		TUserUsers user = usersSrv.queryUserInfoByPhone(cellPhone, countryCode);
 		if (user == null) {
-			throw new AppException(Constant.ERROR_PHONE_NOT_EXIST);
+			throw new AppException(Constant.ERROR.PHONE_NOT_EXIST);
 		}
 		String code = usersSrv.getFindpasswordVerificationCode(countryCode, cellPhone);
 		if (!req.getBody().getVerifycode().equals(code)) {
-			throw new AppException(Constant.ERROR_VERIFICATION_CODE);
+			throw new AppException(Constant.ERROR.VERIFICATION_CODE);
 		}
 	}
-
+	/**
+	 * 密码找回时 密码更新
+	 * @param req
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
 	public FindpwdUpdate_res findpwdUpdate(FindpwdUpdate_req req, TUserUsers user) throws Exception {
 		String password = Md5Util.getSign4String(req.getBody().getPwd(), "");
 		usersSrv.updatePassword(user.getUser_id(), password);
@@ -406,20 +436,28 @@ public class UserAction extends BaseAction {
 		String cellPhone = req.getBody().getCellphone();
 
 		if (!CommonUtil.phoneNoFormatValidate(cellPhone)) {
-			throw new AppException(Constant.ERROR_PHONE_FORMAT_ILLEGAL);
+			throw new AppException(Constant.ERROR.PHONE_FORMAT_ILLEGAL);
 		}
 		TUserUsers user = usersSrv.queryUserInfoByPhone(cellPhone, countryCode);
 		if (user == null) {
-			throw new AppException(Constant.ERROR_PHONE_NOT_EXIST);
+			throw new AppException(Constant.ERROR.PHONE_NOT_EXIST);
 		}
 		String code = usersSrv.getFindpasswordVerificationCode(countryCode, cellPhone);
 		if (!req.getBody().getVerifycode().equals(code)) {
-			throw new AppException(Constant.ERROR_VERIFICATION_CODE);
+			throw new AppException(Constant.ERROR.VERIFICATION_CODE);
 		}
 		return user;
 	}
-
-	public PwdUpdate_res pwdUpdate(PwdUpdate_req req, TUserUsers user) throws Exception {
+	
+	/**
+	 * 登录状态下密码更新
+	 * @param req
+	 * @param token
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
+	public PwdUpdate_res pwdUpdate(PwdUpdate_req req, TokenRds token, TUserUsers user) throws Exception {
 		String newPwd = Md5Util.getSign4String(req.getBody().getNew_pwd(), "");
 		usersSrv.updatePassword(user.getUser_id(), newPwd);
 
@@ -429,19 +467,15 @@ public class UserAction extends BaseAction {
 		return res;
 	}
 
-	public TUserUsers pwdUpdateValidate(PwdUpdate_req req) {
+	public TUserUsers pwdUpdateValidate(PwdUpdate_req req, TokenRds token) {
 
-		String token = req.getHeader().getToken();
-		TokenRds tokenObj = tokenIdentify(token);
-
-		String countrycode = tokenObj.getCountryCode();
-		String cellphone = tokenObj.getCellPhone();
+		String countrycode = token.getCountryCode();
+		String cellphone = token.getCellPhone();
 
 		TUserUsers user = usersSrv.queryUserInfoByPhone(cellphone, countrycode);
 		if (req.getBody().getOld_pwd().equals(user.getUser_pwd())) {
-			throw new AppException(Constant.ERROR_USER_OLD_PWD);
+			throw new AppException(Constant.ERROR.USER_OLD_PWD);
 		}
-
 		return user;
 	}
 }

@@ -1,8 +1,7 @@
 package com.samchat.common.utils;
 
 import java.lang.reflect.Method;
-
-import net.sf.ehcache.Element;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -26,18 +25,37 @@ public class CommonUtil {
 		return Constant.PHONE_PATTERN.matcher(phoneNo).matches();
 	}
 
-	public static Object methodInvoke(Object obj, Class clazz, String methodStr) throws Exception {
-		return methodInvoke(obj, clazz, methodStr, new Class[] {}, new Object[] {});
+	public static Object methodInvoke(Object obj, String methodStr) throws Exception {
+		return methodInvoke(obj, obj.getClass(), methodStr, new Object[] {});
 	}
 
-	public static Object methodInvoke(Object obj, Class clazz, String methodStr, Class[] typezz, Object[] type)
-			throws Exception {
-		Object objret = null;
-		Method method = clazz.getDeclaredMethod(methodStr, typezz);
- 		log.debug("method invoke : class[" + clazz.getSimpleName() + "], method:[" + methodStr + "]");
-		objret = method.invoke(obj, type);
+	public static Object methodInvoke(Object obj, Class clazz, String methodStr, Object[] paramObjArr) throws Exception {
 
-		return objret;
+		int length = paramObjArr.length;
+		Class[] paramTypeArr = new Class[length];
+
+		for (int i = 0; i < length; i++) {
+			paramTypeArr[i] = paramObjArr[i].getClass();
+		}
+		log.info("method invoke : class[" + clazz.getSimpleName() + "], method:[" + methodStr + "]");
+		Method method = clazz.getDeclaredMethod(methodStr, paramTypeArr);
+		return method.invoke(obj, paramObjArr);
+
+	}
+
+	public static Object methodInvoke(Object obj, String methodStr, List<Object> paramObjlist) throws Exception {
+
+		Object[] paramObjArr = paramObjlist.toArray();
+		int length = paramObjArr.length;
+
+		Class[] paramTypeArr = new Class[paramObjArr.length];
+		for (int i = 0; i < length; i++) {
+			paramTypeArr[i] = paramObjArr[i].getClass();
+		}
+		log.info("method invoke : class[" + obj.getClass().getSimpleName() + "], method:[" + methodStr + "]");
+		Method method = obj.getClass().getDeclaredMethod(methodStr, paramTypeArr);
+
+		return method.invoke(obj, paramObjArr);
 	}
 
 	public static String encryptStr3Des(String originalPwd) {
@@ -47,33 +65,35 @@ public class CommonUtil {
 	public static String getRandom() {
 		return String.valueOf(Math.random()).substring(2);
 	}
-	
-	public static String getRegisterCode(String countryCode, String phoneNo){
-		return CacheUtil.get(Constant.CACHE_NAME.REGISTER_CODE_CACHE, countryCode + "_" + phoneNo);
+
+	public static String getRegisterCode(String countryCode, String phoneNo) {
+		return CacheUtil.get(Constant.CACHE_NAME.REGISTER_CODE, countryCode + "_" + phoneNo);
 	}
-	
-	public static void putRegisterCode(String countryCode, String phoneNo, String registerCode, int timeToIdleSeconds, int timeToLiveSeconds){
-		CacheUtil.put(Constant.CACHE_NAME.REGISTER_CODE_CACHE, countryCode + "_" + phoneNo, registerCode, timeToIdleSeconds, timeToLiveSeconds);
+
+	public static void putRegisterCode(String countryCode, String phoneNo, String registerCode, int timeToIdleSeconds,
+			int timeToLiveSeconds) {
+		CacheUtil.put(Constant.CACHE_NAME.REGISTER_CODE, countryCode + "_" + phoneNo, registerCode, timeToIdleSeconds,
+				timeToLiveSeconds);
 	}
-	
-	public static String getE164PhoneNo(String countryCode, String phoneNo){
+
+	public static String getE164PhoneNo(String countryCode, String phoneNo) {
 		return "+" + countryCode + phoneNo;
 	}
-	
+
 	public static String getSysConfigStr(String paramCode) {
-		return (String) CacheUtil.getSysconfigOnKey(Constant.CACHE_NAME.SYS_CONFIG_CACHE, paramCode);
+		return (String) CacheUtil.getSysconfigOnKey(Constant.CACHE_NAME.SYS_CONFIG, paramCode);
 	}
-	
-	public static int getSysConfigInt(String paramCode){
+
+	public static int getSysConfigInt(String paramCode) {
 		return Integer.parseInt(getSysConfigStr(paramCode));
 	}
-	
-	public static byte getSysConfigByte(String paramCode){
+
+	public static byte getSysConfigByte(String paramCode) {
 		return Byte.parseByte(getSysConfigStr(paramCode));
 	}
-	
-	public static String getRadom(int len){
+
+	public static String getRadom(int len) {
 		return (Math.random() + "").substring(2, len + 2);
-		
+
 	}
 }

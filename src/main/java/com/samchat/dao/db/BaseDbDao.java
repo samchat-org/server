@@ -6,78 +6,53 @@ import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.samchat.common.beans.manual.common.SeqQuery;
 import com.samchat.dao.db.interfaces.IBaseDbDao;
 
-public class BaseDbDao implements IBaseDbDao{
-	
+public abstract class BaseDbDao implements IBaseDbDao {
+
 	@Autowired
 	private SqlSessionTemplate sqlSessionTemplate;
 
-	/**
-	 * 根据条件更新对应记录信息
-	 * 
-	 * @param sqlName
-	 *            待更新SQL语句
-	 * @param param
-	 *            需持久化参数信息
-	 * @return result 受影响行数(1执行成功,0执行失败)
-	 */
 	public int executeUpdateSql(String sqlName, Object param) {
-		long startTime = System.currentTimeMillis();
-		int retId =  (param == null) ? sqlSessionTemplate.update(sqlName)
-				: sqlSessionTemplate.update(sqlName, param);
- 		return retId;
+		return sqlSessionTemplate.update(getNamespace() + "." + sqlName, param);
 	}
 
-	/**
-	 * 根据条件Object查询语句查询
-	 * 
-	 * @param sqlName
-	 *            待查询SQL语句
-	 * @param param
-	 *            查询参数信息
-	 * @return List<T> 对应的查询结果
-	 */
+	public int executeUpdateSql(String sqlName) {
+		return sqlSessionTemplate.update(getNamespace() + "." + sqlName);
+	}
 
 	@SuppressWarnings("rawtypes")
 	public List executeSqlList(String sqlName, Object param) {
-         List resList = ((param == null) ? sqlSessionTemplate.selectList(sqlName)
-				: sqlSessionTemplate.selectList(sqlName, param));
- 		return resList;
+		return sqlSessionTemplate.selectList(getNamespace() + "." + sqlName, param);
 	}
 
-	/**
-	 * 设置分页属性
-	 * @param currentPage >= 1
-	 * @param pageSize
-	 */
-	public void setPageConfig(int currentPage,int pageSize){
-		PageHelper.startPage(currentPage,pageSize, true);
+	@SuppressWarnings("rawtypes")
+	public List executeSqlList(String sqlName) {
+		return sqlSessionTemplate.selectList(getNamespace() + "." + sqlName);
 	}
-	
-	/**
-	 * 获取分页信息
-	 * @param resList
-	 * @return
-	 */
-	public <T1 extends Object> PageInfo<T1> getPageInfo(List<T1> resList){
+
+	public Object executeSqlOne(String sqlName, Object param) {
+		return sqlSessionTemplate.selectOne(getNamespace() + "." + sqlName, param);
+	}
+
+	public Object executeSqlOne(String sqlName) {
+		return sqlSessionTemplate.selectOne(getNamespace() + "." + sqlName);
+	}
+
+	public void setPageConfig(int currentPage, int pageSize) {
+		PageHelper.startPage(currentPage, pageSize, true);
+	}
+
+	public <T1 extends Object> PageInfo<T1> getPageInfo(List<T1> resList) {
 		PageInfo<T1> pageInfo = new PageInfo<T1>(resList);
 		return pageInfo;
 	}
-	
-	/**
-	 * 返回翻页数据对象
-	 * @param sqlName 自定义的sql名称 需要填命名空间
-	 * @param paramMap
-	 * @param currentPage 当前页数
-	 * @param pageSize 页显示条数
-	 * @return
-	 */
-	public PageInfo executePageSql(String sqlName, Map paramMap,int currentPage, int pageSize) {
+
+	public PageInfo executePageSql(String sqlName, Map paramMap, int currentPage, int pageSize) {
 		if (sqlName == null) {
 			return new PageInfo();
 		}
@@ -86,17 +61,32 @@ public class BaseDbDao implements IBaseDbDao{
 			currentPage = 1;
 		if (pageSize == 0)
 			pageSize = 10;
-		
-		//设置分页参数
-		setPageConfig(currentPage,pageSize);
-		
-		List resList = executeSqlList(sqlName,paramMap);
+
+		// 设置分页参数
+		setPageConfig(currentPage, pageSize);
+		List resList = executeSqlList(getNamespace() + "." + sqlName, paramMap);
 		return getPageInfo(resList);
 	}
 
-	public Timestamp querySysdate() {
-		Object ts = executeSqlList("query_sysdate", null).get(0);
-		return (Timestamp)ts;
+	public void insert(String sqlName, Object param) {
+		sqlSessionTemplate.insert(getNamespace() + "." + sqlName, param);
 	}
 
+	public void insert(String sqlName) {
+		sqlName = this.getNamespace() + "." + sqlName;
+		sqlSessionTemplate.insert(getNamespace() + "." + sqlName);
+	}
+
+	public Long querySeqId(String seqName) {
+		SeqQuery sq = new SeqQuery();
+		sq.setSeq_name(seqName);
+		sqlSessionTemplate.insert("commonSqlMapper.query_seqId", sq);
+		return sq.getSeq_id();
+	}
+
+	public Timestamp querySysdate() {
+		return (Timestamp) sqlSessionTemplate.selectOne("commonSqlMapper.query_sysdate");
+	}
+
+	protected abstract String getNamespace();
 }

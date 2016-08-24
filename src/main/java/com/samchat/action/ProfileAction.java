@@ -6,9 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.json.appserver.profile.AppkeyGet_req;
 import com.samchat.common.beans.auto.json.appserver.profile.AppkeyGet_res;
-import com.samchat.common.beans.auto.json.appserver.user.SignupCodeVerify_res;
-import com.samchat.common.beans.manual.json.redis.TokenRds;
-import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.service.interfaces.IUsersSrv;
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
+import com.samchat.common.beans.auto.db.entitybeans.TUserProUsersExample;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsersExample;
 import com.samchat.common.beans.auto.db.mapper.TUserProUsersMapper;
@@ -14,12 +15,16 @@ import com.samchat.common.beans.auto.db.mapper.TUserUsersMapper;
 import com.samchat.dao.db.interfaces.IUserDbDao;
 
 @Repository
-public class UserDbDao extends BaseDbDao implements IUserDbDao{
-	
+public class UserDbDao extends BaseDbDao implements IUserDbDao {
+
 	@Autowired
 	private TUserUsersMapper userUsersMapper;
 	@Autowired
 	private TUserProUsersMapper userProUsersMapper;
+
+	protected String getNamespace() {
+		return "userSqlMapper";
+	}
 
 	public TUserUsers queryUserInfoByPhone(String phoneNo, String countryCode) {
 		TUserUsersExample uue = new TUserUsersExample();
@@ -51,20 +56,32 @@ public class UserDbDao extends BaseDbDao implements IUserDbDao{
 		}
 		return null;
 	}
-	
-	public void insertUser(TUserUsers user){
+
+	public void insertUser(TUserUsers user) {
 		userUsersMapper.insert(user);
 	}
-	
-	public void insertProUser(TUserProUsers proUser){
+
+	public void insertProUser(TUserProUsers proUser) {
 		userProUsersMapper.insert(proUser);
 	}
-	
-	public void updateUser(TUserUsers user){
-		userUsersMapper.updateByPrimaryKeySelective(user);	
+
+	public void updateUser(TUserUsers user) {
+		userUsersMapper.updateByPrimaryKeySelective(user);
+	}
+
+	public void updateProUser(TUserProUsers user) {
+		userProUsersMapper.updateByPrimaryKeySelective(user);
+	}
+
+	public TUserProUsers queryProUser(long userId) {
+		return userProUsersMapper.selectByPrimaryKey(userId);
 	}
 	
-	public void updateProUser(TUserProUsers user){
-		userProUsersMapper.updateByPrimaryKeySelective(user);	
+	public TUserUsers queryUser(long userId) {
+		return userUsersMapper.selectByPrimaryKey(userId);
+	}
+
+	public List<TUserUsers> queryUsers() {
+ 		return userUsersMapper.selectByExample(new TUserUsersExample());
 	}
 }

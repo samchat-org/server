@@ -2,7 +2,10 @@ package com.samchat.action;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,20 +14,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.samchat.common.Constant;
+import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.StrUtils;
-import com.samchat.service.interfaces.IUsersSrv;
 
 public abstract class BaseAction extends ToolAction {
 
 	private static Logger log = Logger.getLogger(BaseAction.class);
 
 	private static final String JSON_CLASS_BASE_PATH = "com.samchat.common.beans.auto.json.appserver";
-	
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		doProcess(req, resp);
@@ -73,14 +75,14 @@ public abstract class BaseAction extends ToolAction {
 				classpath = tplClassPrefix + "req";
 				tplclazzReq = Class.forName(classpath);
 			} catch (ClassNotFoundException e1) {
-				throw new AppException(Constant.ERROR_ACTION_NONSUPPORT, "reqClass is not found:" + classpath);
+				throw new AppException(Constant.ERROR.ACTION_NONSUPPORT, "reqClass is not found:" + classpath);
 			}
 
 			try {
 				classpath = tplClassPrefix + "res";
 				tplclazzRes = Class.forName(classpath);
 			} catch (ClassNotFoundException e1) {
-				throw new AppException(Constant.ERROR_ACTION_NONSUPPORT, "resClass is not found:" + classpath);
+				throw new AppException(Constant.ERROR.ACTION_NONSUPPORT, "resClass is not found:" + classpath);
 			}
 
 			// json转化成object
@@ -89,45 +91,43 @@ public abstract class BaseAction extends ToolAction {
 				dataObj = om.readValue(data, tplclazzReq);
 			} catch (Exception e) {
 				log.error("read error (json object), data:" + data);
-				throw new AppException(Constant.ERROR_PARAM_NONSUPPORT, e);
+				throw new AppException(Constant.ERROR.PARAM_NONSUPPORT, e);
 			}
 			// 获取action
+			Object head = null;
 			String action = null;
 			try {
-				Object head = CommonUtil.methodInvoke(dataObj, tplclazzReq, "getHeader");
-				action = CommonUtil.methodInvoke(head, head.getClass(), "getAction") + "";
+				head = CommonUtil.methodInvoke(dataObj, "getHeader");
+				action = CommonUtil.methodInvoke(head, "getAction") + "";
 			} catch (Exception e) {
-				throw new AppException(Constant.ERROR_PARAM_NONSUPPORT);
+				throw new AppException(Constant.ERROR.PARAM_NONSUPPORT);
 			}
-
 			action = StrUtils.firstToUpperCase(action, "-");
-			int dev = CommonUtil.getSysConfigInt("dev_" + action); // 1 开发模式
 
+			int dev = CommonUtil.getSysConfigInt("dev_" + action); // 1 开发模式
 			if (dev == Constant.DEV_MODE) {
 				String tplDataRes = CommonUtil.getSysConfigStr("json_dev_position") + "/" + parts[2] + "/" + parts[3]
 						+ "_res.json";
 				retJson = FileUtils.readFileToString(new File(tplDataRes), Constant.CHARSET);
+
 			} else {
 				try {
-					Object vaildRetObj = CommonUtil.methodInvoke(this, this.getClass(), action + "Validate",
-							new Class[] { dataObj.getClass() }, new Object[] { dataObj });
+					List<Object> objlist = new ArrayList<Object>();
+					objlist.add(dataObj);
 
-					Class[] actionParamType = null;
-					Object[] actionParamValue = null;
-
-					if (vaildRetObj == null) {
-						actionParamType = new Class[] { dataObj.getClass() };
-						actionParamValue = new Object[] { dataObj };
-
-					} else {
-						actionParamType = new Class[] { dataObj.getClass(), vaildRetObj.getClass() };
-						actionParamValue = new Object[] { dataObj, vaildRetObj };
-
+					TokenRds tokenrds = identifyToken(head);
+					if (tokenrds != null) {
+						objlist.add(tokenrds);
 					}
-					retObj = CommonUtil.methodInvoke(this, this.getClass(), action, actionParamType, actionParamValue);
+
+					Object vaildRetObj = CommonUtil.methodInvoke(this, action + "Validate", objlist);
+					if (vaildRetObj != null) {
+						objlist.add(vaildRetObj);
+					}
+					retObj = CommonUtil.methodInvoke(this, action, objlist);
 
 				} catch (NoSuchMethodException e) {
-					throw new AppException(Constant.ERROR_ACTION_NONSUPPORT);
+					throw new AppException(Constant.ERROR.ACTION_NONSUPPORT);
 				}
 
 				try {
@@ -143,18 +143,18 @@ public abstract class BaseAction extends ToolAction {
 			retJson = sysErrorRet(a.getErrorCode());
 
 		} catch (InvocationTargetException e) {
-
 			Throwable cause = e.getCause();
-			log.error(cause.getMessage(), e);
 			if (cause instanceof AppException) {
+				log.error(cause);
 				retJson = sysErrorRet(((AppException) cause).getErrorCode());
 			} else {
-				retJson = sysErrorRet(Constant.ERROR_INNER);
+				log.error(cause.getMessage(), cause);
+				retJson = sysErrorRet(Constant.ERROR.INNER);
 			}
 
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			retJson = sysErrorRet(Constant.ERROR_INNER);
+			retJson = sysErrorRet(Constant.ERROR.INNER);
 
 		} finally {
 			try {
@@ -164,11 +164,27 @@ public abstract class BaseAction extends ToolAction {
 				resp.getWriter().write(retJson);
 				resp.flushBuffer();
 				log.info("ret successful");
-				
+
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
 			log.info("\r\n");
 		}
+	}
+
+	protected TokenRds identifyToken(Object head) throws Exception {
+		Field[] fields = head.getClass().getDeclaredFields();
+		TokenRds tokenObj = null;
+		for (Field field : fields) {
+			if ("token".equals(field.getName())) {
+				String token = CommonUtil.methodInvoke(head, "getToken") + "";
+				log.info("get token:" + token);
+				tokenObj = usersSrv.getTokenObj(token);
+				if (tokenObj == null) {
+					throw new AppException(Constant.ERROR.TOKEN_ILLEGAL);
+				}
+			}
+		}
+		return tokenObj;
 	}
 }

@@ -1,8 +1,7 @@
 package com.samchat;
 
-import com.samchat.common.utils.StrUtils;
-
-import redis.clients.jedis.Jedis;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Jtest {
 
@@ -16,8 +15,19 @@ public class Jtest {
 
     static int port = 6379;
 
-    public static void main(String[] args) {
-    	System.out.print(Jtest.class.getClassLoader().getResource("config/spring").getPath());
+    public static void main(String[] args) throws Exception{
+////    	Method[] m = CreateSamPros_req.Header.class.getDeclaredMethods();
+////    	for(Method ns : m){
+////    		System.out.println(ns.getName());
+////    	}
+////    	Class[] clazz = new Class[8];
+////    	clazz[0] = String.class;
+////    	Method method = CreateSamPros_req.Header.class.getDeclaredMethod("setToken", clazz);
+// 		List<Object> list = new ArrayList<Object>();
+// 		list.add("abc");
+// 		list.add(123);
+// 		Object[] obj = list.toArray();
+ 		System.out.print((String)null);
     }
 
 }
