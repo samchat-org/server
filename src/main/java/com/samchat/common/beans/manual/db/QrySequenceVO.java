@@ -1,6 +1,6 @@
-package com.samchat.common.beans.manual.common;
+package com.samchat.common.beans.manual.db;
 
-public class SeqQuery {
+public class QrySequenceVO{
 	
 	private Long seq_id;
 	

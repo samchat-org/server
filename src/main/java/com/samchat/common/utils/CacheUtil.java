@@ -96,6 +96,7 @@ public class CacheUtil {
 		return getCache(cacheName).putIfAbsent(new Element(key, value, timeToIdleSeconds, timeToLiveSeconds));
 	}
 
+	@SuppressWarnings("unchecked")
 	public static String getSysconfigOnKey(String cacheName, String key) {
 
 		Cache cache = getCache(cacheName);
@@ -105,7 +106,7 @@ public class CacheUtil {
 			throw new RuntimeException("getSysconfigOnKey, value is null , cacheName:" + cacheName + "--key:" + key);
 		}
 		
-		byte state = ((SecurityAccessBean) el.getObjectValue()).getState();
+		byte state = ((SecurityAccessBean<String>) el.getObjectValue()).getState();
 		log.debug("getSysconfigOnKey, key:" + key + "---state :" + state);
 		
 		if (state == Constant.SYS_LOCK) {
@@ -138,20 +139,28 @@ public class CacheUtil {
 		getCache(cacheName).removeAll();
 	}
 	
+	public static String getSystemId(){
+		int systemId = CommonUtil.getSysConfigInt("system_id");
+		if(systemId == 0){
+			return "";
+		}
+		return systemId + ":";
+	}
+	
 	public static String getRegiserCodeCacheKey(String countryCode, String cellPhone){
-		return Constant.CACHE_NAME.REGISTER_CODE + ":" + countryCode + "_" + cellPhone;
+		return  getSystemId() + Constant.CACHE_NAME.REGISTER_CODE + ":" + countryCode + "_" + cellPhone;
 	}
 	
 	public static String getTokenCacheKey(String token){
- 		return Constant.CACHE_NAME.TOKEN + ":" + token ;
+ 		return  getSystemId() + Constant.CACHE_NAME.TOKEN + ":" + token ;
 	}
 	
 	public static String getFindpasswordCacheKey(String countryCode, String cellPhone){
-		return Constant.CACHE_NAME.FIND_PASSWORD_CODE + ":" + countryCode + "_" + cellPhone;
+		return  getSystemId() + Constant.CACHE_NAME.FIND_PASSWORD_CODE + ":" + countryCode + "_" + cellPhone;
 	}
 	
 	public static String getUserInfoCacheKey(String countryCode, String cellPhone ){
-		return Constant.CACHE_NAME.USER_INFO + ":" + countryCode + "_" + cellPhone;
+		return  getSystemId() + Constant.CACHE_NAME.USER_INFO + ":" + countryCode + "_" + cellPhone;
 		
 	}
 	

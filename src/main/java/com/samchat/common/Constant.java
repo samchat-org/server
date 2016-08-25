@@ -20,6 +20,37 @@ public interface Constant {
 	public String REQ_FIELD_TOKEN = "token";
 
 	public byte QST_OPT_SEND = 0;
+
+	public static byte QUESTION_SEND_BLOCK = 1;
+	public static byte QUESTION_SEND_UNBLOCK = 0;
+	
+	
+	public byte OA_FAVOURITE = 1; 
+	public byte OA_UNFAVOURITE = 0; 
+	
+	public byte OA_BLOCK = 1;
+	public byte OA_UNBLOCK = 0;
+	
+	public byte OA_FOLLOW = 1;
+	public byte OA_UNFOLLOW = 0;
+	
+	public byte ADS_UNBLOCK = 0;
+	public byte ADS_BLOCK = 1;
+
+	public byte SYS_LOCK = 2;
+	public byte SYS_UNLOCK = 1;
+
+	public byte USER_TYPE_CUSTOMER = 0;
+	public byte USER_TYPE_SERVICES = 1;
+
+	public Pattern EMAIL_PATTERN = Pattern.compile("^([\\.a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\\.[a-zA-Z0-9_-]{2,3}){1,2})$");
+	public Pattern PHONE_PATTERN = Pattern.compile("^\\d+$");
+
+	public byte STATE_IN_USE = 1;
+	public byte STATE_NOT_IN_USE = 0;
+
+	public int REGISTER_TYPE_PHONE = 0;
+	public int REGISTER_TYPE_EMAIL = 1;
 	
 	interface SEQUENCE {
 		String S_QUESTION = "s_question";
@@ -66,26 +97,9 @@ public interface Constant {
 
 		public int USER_PROS_EXIST = -501;
 		public int USER_OLD_PWD = -502;
+		public int USER_PROS_NOT_EXIST  = -503;
+		public int OFFICIAL_ACCOUNT_UNFOLLOWED = -507;
 		public int SEND_QUESTION_FREQUENT = -509;
-	}
-
-	
-	public static byte QUESTION_SEND_BLOCK = 1;
-	public static byte QUESTION_SEND_UNBLOCK = 0;
-
-	public byte SYS_LOCK = 2;
-	public byte SYS_UNLOCK = 1;
-
-	public byte USER_TYPE_CUSTOMER = 0;
-	public byte USER_TYPE_SERVICES = 1;
-
-	public Pattern EMAIL_PATTERN = Pattern.compile("^([\\.a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\\.[a-zA-Z0-9_-]{2,3}){1,2})$");
-	public Pattern PHONE_PATTERN = Pattern.compile("^\\d+$");
-
-	public byte STATE_IN_USE = 1;
-	public byte STATE_NOT_IN_USE = 0;
-
-	public int REGISTER_TYPE_PHONE = 0;
-	public int REGISTER_TYPE_EMAIL = 1;
+ 	}
 
 }

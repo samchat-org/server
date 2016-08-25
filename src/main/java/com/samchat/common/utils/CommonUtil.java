@@ -26,21 +26,15 @@ public class CommonUtil {
 	}
 
 	public static Object methodInvoke(Object obj, String methodStr) throws Exception {
-		return methodInvoke(obj, obj.getClass(), methodStr, new Object[] {});
+		return methodInvoke(obj, methodStr, new Object[] {}, new Class[] {});
 	}
 
-	public static Object methodInvoke(Object obj, Class clazz, String methodStr, Object[] paramObjArr) throws Exception {
-
-		int length = paramObjArr.length;
-		Class[] paramTypeArr = new Class[length];
-
-		for (int i = 0; i < length; i++) {
-			paramTypeArr[i] = paramObjArr[i].getClass();
-		}
+	public static Object methodInvoke(Object obj, String methodStr, Object[] paramObjArr, Class[] paramTypeArr)
+			throws Exception {
+		Class clazz = obj.getClass();
 		log.info("method invoke : class[" + clazz.getSimpleName() + "], method:[" + methodStr + "]");
 		Method method = clazz.getDeclaredMethod(methodStr, paramTypeArr);
 		return method.invoke(obj, paramObjArr);
-
 	}
 
 	public static Object methodInvoke(Object obj, String methodStr, List<Object> paramObjlist) throws Exception {

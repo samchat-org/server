@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="oaSqlMapper">
+	<select id="queryFollowList" parameterType="map"
+		resultType="com.samchat.common.beans.manual.db.QryFollowVO">
+SELECT
+	oo.user_id_pro user_id,
+	uu.user_name user_name,
+	uu.avatar_origin origin,
+	uu.avatar_thumb thumb,
+	upu.company_name,
+	upu.service_category,
+	upu.service_description,
+	oo.favourite_tag,
+	oo.block_tag
+FROM
+	t_oa_follow oo,
+	t_user_pro_users upu,
+	t_user_users uu
+WHERE
+	oo.user_id = #{user_id}
+AND oo.user_id_pro = upu.user_id
+AND oo.user_id_pro = uu.user_id
+AND upu.state = 1
+AND uu.state = 1
+	</select>
+</mapper>

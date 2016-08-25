@@ -111,6 +111,7 @@ public abstract class BaseAction extends ToolAction {
 				retJson = FileUtils.readFileToString(new File(tplDataRes), Constant.CHARSET);
 
 			} else {
+				
 				try {
 					List<Object> objlist = new ArrayList<Object>();
 					objlist.add(dataObj);
@@ -119,12 +120,12 @@ public abstract class BaseAction extends ToolAction {
 					if (tokenrds != null) {
 						objlist.add(tokenrds);
 					}
-
 					Object vaildRetObj = CommonUtil.methodInvoke(this, action + "Validate", objlist);
 					if (vaildRetObj != null) {
 						objlist.add(vaildRetObj);
 					}
 					retObj = CommonUtil.methodInvoke(this, action, objlist);
+					CommonUtil.methodInvoke(retObj, "setRet", new Object[]{new Long(Constant.SUCCESS)}, new Class[]{long.class});
 
 				} catch (NoSuchMethodException e) {
 					throw new AppException(Constant.ERROR.ACTION_NONSUPPORT);

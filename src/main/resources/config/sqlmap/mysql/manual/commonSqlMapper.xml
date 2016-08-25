@@ -5,7 +5,7 @@
 		select now()
 	</select>
 
-	<insert id="query_seqId" parameterType="com.samchat.common.beans.manual.common.SeqQuery">
+	<insert id="query_seqId" parameterType="com.samchat.common.beans.manual.db.QrySequenceVO">
 		replace into ${seq_name} (stub) values('a')
 		<selectKey keyProperty="seq_id" order="AFTER" resultType="java.lang.Long">
 			SELECT LAST_INSERT_ID()

@@ -10,7 +10,7 @@ import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigsExample;
 import com.samchat.common.beans.auto.db.mapper.TSysConfigsMapper;
-import com.samchat.common.beans.manual.common.SeqQuery;
+import com.samchat.common.beans.manual.db.QrySequenceVO;
 import com.samchat.dao.db.interfaces.ICommonDbDao;
 
 @Repository

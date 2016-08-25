@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.samchat.common.beans.manual.common.SeqQuery;
+import com.samchat.common.beans.manual.db.QrySequenceVO;
 import com.samchat.dao.db.interfaces.IBaseDbDao;
 
 public abstract class BaseDbDao implements IBaseDbDao {
@@ -78,7 +78,7 @@ public abstract class BaseDbDao implements IBaseDbDao {
 	}
 
 	public Long querySeqId(String seqName) {
-		SeqQuery sq = new SeqQuery();
+		QrySequenceVO sq = new QrySequenceVO();
 		sq.setSeq_name(seqName);
 		sqlSessionTemplate.insert("commonSqlMapper.query_seqId", sq);
 		return sq.getSeq_id();

@@ -55,9 +55,7 @@ public class UserAction extends BaseAction {
 	 * @return
 	 */
 	public SignupCodeVerify_res signupCodeVerify(SignupCodeVerify_req req) {
-		SignupCodeVerify_res res = new SignupCodeVerify_res();
-		res.setRet(Constant.SUCCESS);
-		return res;
+		return new SignupCodeVerify_res();
 	}
 
 	/**
@@ -113,11 +111,7 @@ public class UserAction extends BaseAction {
 
 		String twilloPhoneNo = CommonUtil.getSysConfigStr(Constant.SYS_PARAM_KEY.TWILIO_PHONE_NO);
 		TwilioUtil.sendSms(CommonUtil.getE164PhoneNo(countrycode, cellphone), twilloPhoneNo, smsContent);
-
-		RegisterCodeRequest_res res = new RegisterCodeRequest_res();
-		res.setRet(Constant.SUCCESS);
-
-		return res;
+		return new RegisterCodeRequest_res();
 	}
 
 	/**
@@ -199,7 +193,7 @@ public class UserAction extends BaseAction {
 		}
 		
 		Login_res res = new Login_res();
-		res.setRet(Constant.SUCCESS);
+		
 
 		Timestamp cur = commonSrv.querySysdate();
 		String token = usersSrv.getAddedToken(cCode, cellPhone, cur.getTime(), deviceId, userId);
@@ -279,10 +273,7 @@ public class UserAction extends BaseAction {
 
 		usersSrv.deleteToken(req.getHeader().getToken());
 
-		Logout_res res = new Logout_res();
-		res.setRet(Constant.SUCCESS);
-
-		return res;
+		return new Logout_res();
 	}
 
 	/**
@@ -307,7 +298,7 @@ public class UserAction extends BaseAction {
 		TUserProUsers proUsers = usersSrv.saveProsUserInfo(req, user);
 
 		CreateSamPros_res res = new CreateSamPros_res();
-		res.setRet(Constant.SUCCESS);
+		
 		CreateSamPros_res.User userRet = new CreateSamPros_res.User();
 		userRet.setId(user.getUser_id());
 		userRet.setUsername(user.getUser_name());
@@ -330,11 +321,8 @@ public class UserAction extends BaseAction {
 	}
 
 	public TUserUsers createSamProsValidate(CreateSamPros_req req, TokenRds token) {
-
-		String countrycode = token.getCountryCode();
-		String cellphone = token.getCellPhone();
-
-		TUserUsers user = usersSrv.queryUserInfoByPhone(cellphone, countrycode);
+		
+		TUserUsers user = usersSrv.queryUser(token.getUserId());
 		if (Constant.USER_TYPE_SERVICES == user.getUser_type()) {
 			throw new AppException(Constant.ERROR.USER_PROS_EXIST);
 		}
@@ -362,10 +350,7 @@ public class UserAction extends BaseAction {
 		String twilloPhoneNo = CommonUtil.getSysConfigStr(Constant.SYS_PARAM_KEY.TWILIO_PHONE_NO);
 		TwilioUtil.sendSms(CommonUtil.getE164PhoneNo(countryCode, cellPhone), twilloPhoneNo, smsContent);
 
-		FindpwdCodeRequest_res res = new FindpwdCodeRequest_res();
-		res.setRet(Constant.SUCCESS);
-
-		return res;
+		return new FindpwdCodeRequest_res();
 	}
 
 	public void findpwdCodeRequestValidate(FindpwdCodeRequest_req req) {
@@ -391,9 +376,7 @@ public class UserAction extends BaseAction {
 	 * @return
 	 */
 	public FindpwdCodeVerify_res findpwdCodeVerify(FindpwdCodeVerify_req req) {
-		FindpwdCodeVerify_res res = new FindpwdCodeVerify_res();
-		res.setRet(Constant.SUCCESS);
-		return res;
+		return new FindpwdCodeVerify_res();
 	}
 
 	public void findpwdCodeVerifyValidate(FindpwdCodeVerify_req req) {
@@ -423,10 +406,7 @@ public class UserAction extends BaseAction {
 	public FindpwdUpdate_res findpwdUpdate(FindpwdUpdate_req req, TUserUsers user) throws Exception {
 		String password = Md5Util.getSign4String(req.getBody().getPwd(), "");
 		usersSrv.updatePassword(user.getUser_id(), password);
-
-		FindpwdUpdate_res res = new FindpwdUpdate_res();
-		res.setRet(Constant.SUCCESS);
-		return res;
+		return new FindpwdUpdate_res();
 
 	}
 
@@ -460,19 +440,12 @@ public class UserAction extends BaseAction {
 	public PwdUpdate_res pwdUpdate(PwdUpdate_req req, TokenRds token, TUserUsers user) throws Exception {
 		String newPwd = Md5Util.getSign4String(req.getBody().getNew_pwd(), "");
 		usersSrv.updatePassword(user.getUser_id(), newPwd);
-
-		PwdUpdate_res res = new PwdUpdate_res();
-		res.setRet(Constant.SUCCESS);
-
-		return res;
+		return new PwdUpdate_res();
 	}
 
 	public TUserUsers pwdUpdateValidate(PwdUpdate_req req, TokenRds token) {
-
-		String countrycode = token.getCountryCode();
-		String cellphone = token.getCellPhone();
-
-		TUserUsers user = usersSrv.queryUserInfoByPhone(cellphone, countrycode);
+		
+		TUserUsers user = usersSrv.queryUser(token.getUserId());
 		if (req.getBody().getOld_pwd().equals(user.getUser_pwd())) {
 			throw new AppException(Constant.ERROR.USER_OLD_PWD);
 		}

@@ -14,5 +14,5 @@
 		clearOnFlush：内存数量最大时是否清除。 -->
 
 	<defaultCache maxElementsInMemory="300" timeToIdleSeconds="3600000"
-		timeToLiveSeconds="7200000" eternal="false" overflowToDisk="false" />
+		timeToLiveSeconds="7200000" eternal="true" overflowToDisk="false" />
 </ehcache>  

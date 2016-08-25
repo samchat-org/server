@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.pagehelper.PageInfo;
-import com.samchat.common.beans.manual.common.SeqQuery;
+import com.samchat.common.beans.manual.db.QrySequenceVO;
 
 public interface IBaseDbDao {
 	public int executeUpdateSql(String sqlName, Object param);

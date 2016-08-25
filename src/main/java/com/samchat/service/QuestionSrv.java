@@ -75,6 +75,8 @@ public class QuestionSrv implements IQuestionSrv {
 				sqs.setLongitude(info.getLongitude());
 			}
 		}
+		int blocktime = CommonUtil.getSysConfigInt("question_send_block_time");
+		
 		SqsUtil.pushQuestionMessage(sqs);
 
 		return sqs;
