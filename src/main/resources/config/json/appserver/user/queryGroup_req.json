@@ -1,0 +1,19 @@
+{
+    "header":{
+        "action":"query-group",
+        "token":"token"
+     },
+    "body":{
+        "opt":3,
+        "param":{
+            "unique_id":[
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ]
+        }
+    }
+}

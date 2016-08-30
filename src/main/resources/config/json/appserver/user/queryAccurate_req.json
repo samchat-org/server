@@ -1,0 +1,15 @@
+{
+    "header":{
+        "action":"query-accurate",
+        "token":"token"
+    },
+    "body":{
+        "opt":2,
+        "param":{
+            "type":0,
+            "cellphone":"",
+            "unique_id ":"",
+            "username":""
+        }
+    }
+}

@@ -1,7 +1,6 @@
 package com.samchat.common.beans.auto.json.appserver.officialAccount;
 
 import java.util.ArrayList;
-
 public class FollowListQuery_res{
 
 	private long ret;
@@ -9,16 +8,7 @@ public class FollowListQuery_res{
 	private ArrayList<Users> users;
 
 	public static class Avatar {
-		private String origin = "";
 		private String thumb = "";
-
-		public String getOrigin() {
-			return origin;
-		}
-
-		public void setOrigin(String origin) {
-			this.origin = (origin == null? "" : origin.trim());
-		}
 
 		public String getThumb() {
 			return thumb;
@@ -30,17 +20,7 @@ public class FollowListQuery_res{
 	}
 
 	public static class Sam_pros_info {
-		private String company_name = "";
 		private String service_category = "";
-		private String service_description = "";
-
-		public String getCompany_name() {
-			return company_name;
-		}
-
-		public void setCompany_name(String company_name) {
-			this.company_name = (company_name == null? "" : company_name.trim());
-		}
 
 		public String getService_category() {
 			return service_category;
@@ -48,14 +28,6 @@ public class FollowListQuery_res{
 
 		public void setService_category(String service_category) {
 			this.service_category = (service_category == null? "" : service_category.trim());
-		}
-
-		public String getService_description() {
-			return service_description;
-		}
-
-		public void setService_description(String service_description) {
-			this.service_description = (service_description == null? "" : service_description.trim());
 		}
 	}
 

@@ -152,7 +152,7 @@ public class CacheUtil {
 	}
 	
 	public static String getTokenCacheKey(String token){
- 		return  getSystemId() + Constant.CACHE_NAME.TOKEN + ":" + token ;
+ 		return  getSystemId() + Constant.CACHE_NAME.TOKEN + ":" + token;
 	}
 	
 	public static String getFindpasswordCacheKey(String countryCode, String cellPhone){
@@ -168,5 +168,9 @@ public class CacheUtil {
 		return Constant.CACHE_NAME.QUESTION_SEND_CONTROL + ":" + countryCode + "_" + cellPhone;
 		
 	}
-
+	
+	public static String getRealToken(String retToken, String deviceId){
+		return retToken + deviceId;
+	}
+  
 }

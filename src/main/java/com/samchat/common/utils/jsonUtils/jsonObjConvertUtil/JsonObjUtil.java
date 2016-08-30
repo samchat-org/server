@@ -39,6 +39,8 @@ public class JsonObjUtil {
 			String json = FileUtils.readFileToString(file, "UTF-8");
 			String objpath = objbasepath + File.separator + file.getParentFile().getName();
  			String packagepath = objpath.substring(objpath.indexOf("\\com\\") + 1).replaceAll("\\\\", ".");
+ 			
+ 			System.out.println("start parse :" + dstfilename);
  			parseJson2Java(json, objpath, packagepath, dstfilename);
 		}
 	}
@@ -91,9 +93,11 @@ public class JsonObjUtil {
 	 * @return 生成的javabean类字符串
 	 */
 	public static String createJavaBean(List<Json2JavaElement> jsonBeanTree,  String packagePath, String className) {
+		StringBuilder init = new StringBuilder();
+		init.append("package ").append(packagePath).append(";\n\n");
+		
 		StringBuilder sb = new StringBuilder();
 		StringBuilder sbGetterAndSetter = new StringBuilder();
-		sb.append("package ").append(packagePath).append(";\n\n");
 		sb.append("public class ").append(className).append("{\n\n");
 		// 是否包含自定义子类
 		boolean hasCustomeClass = false;
@@ -159,7 +163,13 @@ public class JsonObjUtil {
 
 		sb.append(sbGetterAndSetter.toString());
 		sb.append("\n}");
-		return sb.toString();
+		
+		if(sb.indexOf("ArrayList") > 0){
+			init.append("import java.util.ArrayList;\r\n");
+		}
+		
+		
+		return init.append(sb).toString();
 	}
 
 	/**
@@ -482,6 +492,9 @@ public class JsonObjUtil {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < j2j.getArrayDeep(); i++) {
 			sb.append("ArrayList<");
+			if("long".equals(name)){
+				name = "Long";
+			}
 		}
 		sb.append(name);
 		for (int i = 0; i < j2j.getArrayDeep(); i++) {

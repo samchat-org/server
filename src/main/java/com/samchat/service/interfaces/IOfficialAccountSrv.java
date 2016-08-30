@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
 import com.samchat.common.beans.manual.db.QryFollowVO;
+import com.samchat.common.beans.manual.db.QryPublicQueryVO;
 
 public interface IOfficialAccountSrv {
 
@@ -18,4 +19,6 @@ public interface IOfficialAccountSrv {
 	public void updateFavourite(long userId, long userIdPros, byte favourite);
 	
 	public List<QryFollowVO> queryFollowList(long userId);
+	
+	public List<QryPublicQueryVO> queryPublicList(String key);
 }

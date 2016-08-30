@@ -1,6 +1,8 @@
 package com.samchat.action;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +25,21 @@ import com.samchat.common.beans.auto.json.appserver.user.Logout_req;
 import com.samchat.common.beans.auto.json.appserver.user.Logout_res;
 import com.samchat.common.beans.auto.json.appserver.user.PwdUpdate_req;
 import com.samchat.common.beans.auto.json.appserver.user.PwdUpdate_res;
+import com.samchat.common.beans.auto.json.appserver.user.QueryAccurate_req;
+import com.samchat.common.beans.auto.json.appserver.user.QueryAccurate_res;
+import com.samchat.common.beans.auto.json.appserver.user.QueryFuzzy_req;
+import com.samchat.common.beans.auto.json.appserver.user.QueryFuzzy_res;
+import com.samchat.common.beans.auto.json.appserver.user.QueryGroup_req;
+import com.samchat.common.beans.auto.json.appserver.user.QueryGroup_res;
+import com.samchat.common.beans.auto.json.appserver.user.QueryWithoutToken_req;
+import com.samchat.common.beans.auto.json.appserver.user.QueryWithoutToken_res;
 import com.samchat.common.beans.auto.json.appserver.user.RegisterCodeRequest_req;
 import com.samchat.common.beans.auto.json.appserver.user.RegisterCodeRequest_res;
 import com.samchat.common.beans.auto.json.appserver.user.Register_req;
 import com.samchat.common.beans.auto.json.appserver.user.Register_res;
 import com.samchat.common.beans.auto.json.appserver.user.SignupCodeVerify_req;
 import com.samchat.common.beans.auto.json.appserver.user.SignupCodeVerify_res;
+import com.samchat.common.beans.manual.db.QryUserInfoVO;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.exceptions.AppException;
@@ -188,18 +199,21 @@ public class UserAction extends BaseAction {
 		String cellPhone = user.getPhone_no();
 		String cCode = user.getCountry_code();
 		UserInfoRds userfo = usersSrv.getUserInfoIntoRedis(cCode, cellPhone);
-		if(userfo != null){
+		if (userfo != null) {
 			usersSrv.deleteToken(userfo.getToken());
 		}
-		
+
 		Login_res res = new Login_res();
-		
 
 		Timestamp cur = commonSrv.querySysdate();
-		String token = usersSrv.getAddedToken(cCode, cellPhone, cur.getTime(), deviceId, userId);
- 		usersSrv.setUserInfoIntoRedis(cCode, cellPhone, token);
-		usersSrv.niTokenUpdate(userId, token, deviceId, cur);
-		res.setToken(token);
+		String[] token = usersSrv.getAddedToken(cCode, cellPhone, cur.getTime(), deviceId, userId);
+
+		String retToken = token[0];
+		String realToken = token[1];
+
+		usersSrv.setUserInfoIntoRedis(cCode, cellPhone, realToken);
+		usersSrv.niTokenUpdate(userId, realToken, cur);
+		res.setToken(retToken);
 
 		Login_res.User userRes = new Login_res.User();
 
@@ -219,16 +233,16 @@ public class UserAction extends BaseAction {
 
 		Sam_pros_info info = new Login_res.Sam_pros_info();
 		userRes.setSam_pros_info(info);
-		if(user.getUser_type() == Constant.USER_TYPE_SERVICES){
+		if (user.getUser_type() == Constant.USER_TYPE_SERVICES) {
 			TUserProUsers proUser = usersSrv.queryProUser(userId);
-			if(proUser != null){
-				info.setCompany_name(proUser.getCompany_name()); 
-				info.setService_category(proUser.getService_category()); 
-				info.setService_description(proUser.getService_description()); 
-				info.setCountrycode(proUser.getCountry_code()); 
-				info.setPhone(proUser.getPhone_no()); 
-				info.setEmail(proUser.getEmail()); 
-				info.setAddress(proUser.getAddress()); 
+			if (proUser != null) {
+				info.setCompany_name(proUser.getCompany_name());
+				info.setService_category(proUser.getService_category());
+				info.setService_description(proUser.getService_description());
+				info.setCountrycode(proUser.getCountry_code());
+				info.setPhone(proUser.getPhone_no());
+				info.setEmail(proUser.getEmail());
+				info.setAddress(proUser.getAddress());
 			}
 		}
 		res.setUser(userRes);
@@ -298,7 +312,7 @@ public class UserAction extends BaseAction {
 		TUserProUsers proUsers = usersSrv.saveProsUserInfo(req, user);
 
 		CreateSamPros_res res = new CreateSamPros_res();
-		
+
 		CreateSamPros_res.User userRet = new CreateSamPros_res.User();
 		userRet.setId(user.getUser_id());
 		userRet.setUsername(user.getUser_name());
@@ -321,15 +335,17 @@ public class UserAction extends BaseAction {
 	}
 
 	public TUserUsers createSamProsValidate(CreateSamPros_req req, TokenRds token) {
-		
+
 		TUserUsers user = usersSrv.queryUser(token.getUserId());
 		if (Constant.USER_TYPE_SERVICES == user.getUser_type()) {
 			throw new AppException(Constant.ERROR.USER_PROS_EXIST);
 		}
 		return user;
 	}
+
 	/**
 	 * 密码找回验证码申请
+	 * 
 	 * @param req
 	 * @return
 	 * @throws Exception
@@ -370,8 +386,10 @@ public class UserAction extends BaseAction {
 			throw new AppException(Constant.ERROR.VERIFICATION_CODE_FREQUENT);
 		}
 	}
+
 	/**
 	 * 密码找回时，验证码验证
+	 * 
 	 * @param req
 	 * @return
 	 */
@@ -396,8 +414,10 @@ public class UserAction extends BaseAction {
 			throw new AppException(Constant.ERROR.VERIFICATION_CODE);
 		}
 	}
+
 	/**
 	 * 密码找回时 密码更新
+	 * 
 	 * @param req
 	 * @param user
 	 * @return
@@ -428,9 +448,10 @@ public class UserAction extends BaseAction {
 		}
 		return user;
 	}
-	
+
 	/**
 	 * 登录状态下密码更新
+	 * 
 	 * @param req
 	 * @param token
 	 * @param user
@@ -444,11 +465,180 @@ public class UserAction extends BaseAction {
 	}
 
 	public TUserUsers pwdUpdateValidate(PwdUpdate_req req, TokenRds token) {
-		
+
 		TUserUsers user = usersSrv.queryUser(token.getUserId());
 		if (req.getBody().getOld_pwd().equals(user.getUser_pwd())) {
 			throw new AppException(Constant.ERROR.USER_OLD_PWD);
 		}
 		return user;
 	}
+
+	public QueryFuzzy_res queryFuzzy(QueryFuzzy_req req, TokenRds token) {
+		QueryFuzzy_req.Param p = req.getBody().getParam();
+		String key = p.getSearch_key();
+		List<QryUserInfoVO> userlist = usersSrv.queryUsersFuzzy(key);
+
+		ArrayList<QueryFuzzy_res.Users> users = new ArrayList<QueryFuzzy_res.Users>();
+
+		for (QryUserInfoVO pq : userlist) {
+
+			QueryFuzzy_res.Users user = new QueryFuzzy_res.Users();
+			user.setId(pq.getUser_id());
+			user.setUsername(pq.getUser_name());
+			user.setCountrycode(pq.getCountrycode());
+			user.setCellphone(pq.getCellphone());
+			user.setEmail(pq.getEmail());
+			user.setAddress(pq.getAddress());
+			user.setType(pq.getType());
+
+			QueryFuzzy_res.Avatar avatar = new QueryFuzzy_res.Avatar();
+			user.setAvatar(avatar);
+			avatar.setOrigin(pq.getOrigin());
+			avatar.setThumb(pq.getThumb());
+
+			user.setLastupdate(pq.getLastupdate().getTime());
+
+			QueryFuzzy_res.Sam_pros_info pros = new QueryFuzzy_res.Sam_pros_info();
+			user.setSam_pros_info(pros);
+			pros.setCompany_name(pq.getCompany_name());
+			pros.setService_category(pq.getService_category());
+			pros.setService_description(pq.getService_description());
+			pros.setCountrycode(pq.getCountrycode_pro());
+			pros.setPhone(pq.getPhone_pro());
+			pros.setEmail(pq.getEmail_pro());
+			pros.setAddress(pq.getAddress_pro());
+
+			users.add(user);
+
+		}
+
+		QueryFuzzy_res res = new QueryFuzzy_res();
+		res.setCount(users.size());
+		res.setUsers(users);
+
+		return res;
+	}
+
+	public void queryFuzzyValidate(QueryFuzzy_req req, TokenRds token) {
+	}
+
+	public QueryAccurate_res queryAccurate(QueryAccurate_req req, TokenRds token) {
+
+		QueryAccurate_req.Param p = req.getBody().getParam();
+		String cellphone = p.getCellphone();
+		String username = p.getUsername();
+		String id = p.getUnique_id();
+		Long type = p.getType();
+		List<QryUserInfoVO> userlist = usersSrv.queryUserAccurate(type, cellphone, username, id);
+		ArrayList<QueryAccurate_res.Users> users = new ArrayList<QueryAccurate_res.Users>();
+
+		for (QryUserInfoVO pq : userlist) {
+
+			QueryAccurate_res.Users user = new QueryAccurate_res.Users();
+			user.setId(pq.getUser_id());
+			user.setUsername(pq.getUser_name());
+			user.setCountrycode(pq.getCountrycode());
+			user.setCellphone(pq.getCellphone());
+			user.setEmail(pq.getEmail());
+			user.setAddress(pq.getAddress());
+			user.setType(pq.getType());
+
+			QueryAccurate_res.Avatar avatar = new QueryAccurate_res.Avatar();
+			user.setAvatar(avatar);
+			avatar.setOrigin(pq.getOrigin());
+			avatar.setThumb(pq.getThumb());
+
+			user.setLastupdate(pq.getLastupdate().getTime());
+
+			QueryAccurate_res.Sam_pros_info pros = new QueryAccurate_res.Sam_pros_info();
+			user.setSam_pros_info(pros);
+			pros.setCompany_name(pq.getCompany_name());
+			pros.setService_category(pq.getService_category());
+			pros.setService_description(pq.getService_description());
+			pros.setCountrycode(pq.getCountrycode_pro());
+			pros.setPhone(pq.getPhone_pro());
+			pros.setEmail(pq.getEmail_pro());
+			pros.setAddress(pq.getAddress_pro());
+
+			users.add(user);
+
+		}
+
+		QueryAccurate_res res = new QueryAccurate_res();
+		res.setCount(users.size());
+		res.setUsers(users);
+
+		return res;
+	}
+
+	public void queryAccurateValidate(QueryAccurate_req req, TokenRds token) {
+
+	}
+
+	public QueryGroup_res queryGroup(QueryGroup_req req, TokenRds token) {
+		QueryGroup_req.Param param = req.getBody().getParam();
+		ArrayList<Long> userIds = param.getUnique_id();
+		List<QryUserInfoVO> userlist = usersSrv.queryUsersGroup(userIds);
+
+		ArrayList<QueryGroup_res.Users> users = new ArrayList<QueryGroup_res.Users>();
+
+		for (QryUserInfoVO pq : userlist) {
+
+			QueryGroup_res.Users user = new QueryGroup_res.Users();
+			user.setId(pq.getUser_id());
+			user.setUsername(pq.getUser_name());
+			user.setCountrycode(pq.getCountrycode());
+			user.setCellphone(pq.getCellphone());
+			user.setEmail(pq.getEmail());
+			user.setAddress(pq.getAddress());
+			user.setType(pq.getType());
+
+			QueryGroup_res.Avatar avatar = new QueryGroup_res.Avatar();
+			user.setAvatar(avatar);
+			avatar.setOrigin(pq.getOrigin());
+			avatar.setThumb(pq.getThumb());
+
+			user.setLastupdate(pq.getLastupdate().getTime());
+
+			QueryGroup_res.Sam_pros_info pros = new QueryGroup_res.Sam_pros_info();
+			user.setSam_pros_info(pros);
+			pros.setCompany_name(pq.getCompany_name());
+			pros.setService_category(pq.getService_category());
+			pros.setService_description(pq.getService_description());
+			pros.setCountrycode(pq.getCountrycode_pro());
+			pros.setPhone(pq.getPhone_pro());
+			pros.setEmail(pq.getEmail_pro());
+			pros.setAddress(pq.getAddress_pro());
+
+			users.add(user);
+		}
+
+		QueryGroup_res res = new QueryGroup_res();
+		res.setCount(users.size());
+		res.setUsers(users);
+
+		return res;
+	}
+
+	public void queryGroupValidate(QueryGroup_req req, TokenRds token) {
+ 	}
+
+	public QueryWithoutToken_res queryWithoutToken(QueryWithoutToken_req req) {
+		QueryWithoutToken_req.Param param = req.getBody().getParam();
+		String cellphone = param.getCellphone();
+		String countrycode = param.getCountrycode();
+		String userName = param.getUsername();
+		long type = param.getType();
+		
+		List<TUserUsers> users = usersSrv.queryUserWithoutToken(type, countrycode, cellphone, userName);
+		
+		QueryWithoutToken_res res = new QueryWithoutToken_res();
+		res.setCount(users.size());
+		
+		return res;
+	}
+
+	public void queryWithoutTokenValidate(QueryWithoutToken_req req) {
+	}
+
 }

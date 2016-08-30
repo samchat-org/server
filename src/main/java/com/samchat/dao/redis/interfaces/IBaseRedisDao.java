@@ -19,4 +19,5 @@ public interface IBaseRedisDao<K, V> {
 	public void delete(K keyStr);
 
 	public void delete(List<K> keyStr);
-}
+	
+ }

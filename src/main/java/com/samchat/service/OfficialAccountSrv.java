@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
 import com.samchat.common.beans.manual.db.QryFollowVO;
+import com.samchat.common.beans.manual.db.QryPublicQueryVO;
 import com.samchat.dao.db.interfaces.IOfficialAccountDbDao;
 import com.samchat.service.interfaces.IOfficialAccountSrv;
 
@@ -46,5 +47,9 @@ public class OfficialAccountSrv implements IOfficialAccountSrv {
 	
 	public List<QryFollowVO> queryFollowList(long userId){
 		return officialAccountDbDao.queryFollowList(userId);
+	}
+	
+	public List<QryPublicQueryVO> queryPublicList(String key){
+		return officialAccountDbDao.queryPublicList(key);
 	}
 }

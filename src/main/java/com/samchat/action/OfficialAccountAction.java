@@ -19,7 +19,10 @@ import com.samchat.common.beans.auto.json.appserver.officialAccount.FollowListQu
 import com.samchat.common.beans.auto.json.appserver.officialAccount.FollowListQuery_res.Users;
 import com.samchat.common.beans.auto.json.appserver.officialAccount.Follow_req;
 import com.samchat.common.beans.auto.json.appserver.officialAccount.Follow_res;
+import com.samchat.common.beans.auto.json.appserver.officialAccount.PublicQuery_req;
+import com.samchat.common.beans.auto.json.appserver.officialAccount.PublicQuery_res;
 import com.samchat.common.beans.manual.db.QryFollowVO;
+import com.samchat.common.beans.manual.db.QryPublicQueryVO;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.service.interfaces.IOfficialAccountSrv;
@@ -188,19 +191,81 @@ public class OfficialAccountAction extends BaseAction {
 			userPro.setFavourite_tag(fo.getFavourite_tag());
 			userPro.setAvatar(avatar);
 			userPro.setSam_pros_info(prosInfo);
-
-			avatar.setOrigin(fo.getOrigin());
+  			
 			avatar.setThumb(fo.getThumb());
-
-			prosInfo.setCompany_name(fo.getCompany_name());
-			prosInfo.setService_category(fo.getService_category());
-			prosInfo.setService_description(fo.getService_description());
-			
+  			prosInfo.setService_category(fo.getService_category());
+ 			
 			users.add(userPro);
 		}
 		return res;
 	}
 
 	public void followListQueryValidate(FollowListQuery_req req, TokenRds token) {
+	}
+	
+	public PublicQuery_res publicQuery(PublicQuery_req req, TokenRds token){
+		PublicQuery_req.Body body = req.getBody();
+		String key = body.getKey();
+		String address = "";
+		String placeId = "";
+		String longitude = "";
+		String latitude = "";
+		
+		PublicQuery_req.Location location = body.getLocation();
+		
+		if(location != null){
+			address = location.getAddress();
+			placeId = location.getPlace_id();
+			
+			PublicQuery_req.Location_info info = location.getLocation_info();
+			if(info != null){
+				
+			}
+		}
+
+		List<QryPublicQueryVO>  oalist = officialAccountSrv.queryPublicList(key);
+		PublicQuery_res res = new PublicQuery_res();
+		res.setCount(oalist.size());
+		
+		ArrayList<PublicQuery_res.Users> users = new ArrayList<PublicQuery_res.Users>(); 
+		res.setUsers(users);
+		
+ 		for(QryPublicQueryVO pq : oalist){
+			
+			PublicQuery_res.Users user = new PublicQuery_res.Users();
+			user.setId(pq.getUser_id());
+			user.setUsername(pq.getUser_name());
+			user.setCountrycode(pq.getCountrycode());
+			user.setCellphone(pq.getCellphone());
+			user.setEmail(pq.getEmail());
+			user.setAddress(pq.getAddress());
+			user.setType(pq.getType());
+			
+			PublicQuery_res.Avatar avatar = new PublicQuery_res.Avatar();
+			user.setAvatar(avatar);
+			avatar.setOrigin(pq.getOrigin());
+			avatar.setThumb(pq.getThumb());
+			
+			user.setLastupdate(pq.getLastupdate().getTime());
+			
+			PublicQuery_res.Sam_pros_info pros = new PublicQuery_res.Sam_pros_info();
+			user.setSam_pros_info(pros);
+			pros.setCompany_name(pq.getCompany_name());
+ 			pros.setService_category(pq.getService_category());
+			pros.setService_description(pq.getService_description());
+			pros.setCountrycode(pq.getCountrycode_pro());
+			pros.setPhone(pq.getPhone_pro());
+			pros.setEmail(pq.getEmail_pro());
+			pros.setAddress(pq.getAddress_pro());
+			
+			users.add(user);
+
+		}
+  		
+		return res;
+	}
+	
+	public void publicQueryValidate(PublicQuery_req req, TokenRds token){
+		
 	}
 }

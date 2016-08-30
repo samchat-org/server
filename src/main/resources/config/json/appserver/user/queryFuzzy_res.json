@@ -1,0 +1,29 @@
+{
+    "ret":0,
+    "count":2,
+    "users":[
+        {
+            "id":1,
+            "username":"Kevin Dong",
+            "countrycode":"",
+            "cellphone":"",
+            "email":"",
+            "address":"",
+            "type":1,
+            "avatar":{
+                "origin":"http://121.42.207.185/avatar/2016/1/18/origin_1453123489091.png",
+                "thumb":"http://121.42.207.185/avatar/2016/1/18/thumb_1453123489091.png"
+            },
+            "lastupdate":1454076248624,
+            "sam_pros_info":{
+                "company_name":"KFC",
+                "service_category":"fast food",
+                "service_description":"deliver all kinds of fast food",
+                "countrycode":"",
+                "phone":"",
+                "email":"",
+                "address":""
+            }
+        }
+    ]
+}

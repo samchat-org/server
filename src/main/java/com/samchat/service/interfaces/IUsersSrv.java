@@ -1,6 +1,7 @@
 package com.samchat.service.interfaces;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
@@ -8,6 +9,7 @@ import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.user.CreateSamPros_req;
 import com.samchat.common.beans.auto.json.appserver.user.Register_req;
 import com.samchat.common.beans.auto.json.appserver.user.Register_res;
+import com.samchat.common.beans.manual.db.QryUserInfoVO;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 
@@ -25,11 +27,11 @@ public interface IUsersSrv {
 
 	public String getRegisterCode(String countryCode, String cellPhone);
 
-	public String getAddedToken(String countryCode, String cellPhone, long time, String deviceId, long userId) throws Exception;
+	public String[] getAddedToken(String countryCode, String cellPhone, long time, String deviceId, long userId) throws Exception;
 
-	public void niRegister(long userId, String userName, String token, String deviceId, Timestamp cur) throws Exception;
+	public void niRegister(long userId, String userName, String token, Timestamp cur) throws Exception;
 
-	public void niTokenUpdate(long userId, String token, String deviceId, Timestamp cur) throws Exception;
+	public void niTokenUpdate(long userId, String token, Timestamp cur) throws Exception;
 
 	public TokenRds getTokenObj(String token);
 
@@ -53,5 +55,12 @@ public interface IUsersSrv {
 	public List<TUserUsers> queryUsers();
 	
 	public TUserUsers queryUser(long userId);
-
+	
+	public List<QryUserInfoVO> queryUsersFuzzy(String key);
+	
+	public List<QryUserInfoVO> queryUsersGroup(List<Long> userIds);
+	
+	public List<QryUserInfoVO> queryUserAccurate(Long type,String cellphone, String userName, String userId);
+	
+	public List<TUserUsers> queryUserWithoutToken(long type, String countrycode, String cellphone, String userName);
 }

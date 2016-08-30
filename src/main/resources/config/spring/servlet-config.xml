@@ -32,11 +32,17 @@
 	<bean name="/api_1.0_user_findpwdCodeVerify.do" class="com.samchat.action.UserAction" />
 	<bean name="/api_1.0_user_findpwdUpdate.do" class="com.samchat.action.UserAction" />
 	<bean name="/api_1.0_user_pwdUpdate.do" class="com.samchat.action.UserAction" />
+	<bean name="/api_1.0_user_queryFuzzy.do" class="com.samchat.action.UserAction" />
+	<bean name="/api_1.0_user_queryAccurate.do" class="com.samchat.action.UserAction" />
+	<bean name="/api_1.0_user_queryGroup.do" class="com.samchat.action.UserAction" />
+	<bean name="/api_1.0_user_queryWithoutToken.do" class="com.samchat.action.UserAction" />
  	<bean name="/api_1.0_question_question.do" class="com.samchat.action.QuestionAction" />
  	
+ 	<bean name="/api_1.0_officialAccount_publicQuery.do" class="com.samchat.action.OfficialAccountAction" />
  	<bean name="/api_1.0_officialAccount_follow.do" class="com.samchat.action.OfficialAccountAction" />
  	<bean name="/api_1.0_officialAccount_block.do" class="com.samchat.action.OfficialAccountAction" />
  	<bean name="/api_1.0_officialAccount_favourite.do" class="com.samchat.action.OfficialAccountAction" />
  	<bean name="/api_1.0_officialAccount_followListQuery.do" class="com.samchat.action.OfficialAccountAction" />
+
 
 </beans>

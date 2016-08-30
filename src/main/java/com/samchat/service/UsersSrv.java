@@ -15,6 +15,7 @@ import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.user.CreateSamPros_req;
 import com.samchat.common.beans.auto.json.appserver.user.Register_req;
 import com.samchat.common.beans.auto.json.appserver.user.Register_res;
+import com.samchat.common.beans.manual.db.QryUserInfoVO;
 import com.samchat.common.beans.manual.json.redis.LoginErrRds;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
@@ -61,8 +62,6 @@ public class UsersSrv implements IUsersSrv {
 		String pwd = Md5Util.getSign4String(body.getPwd(), "");
 		String deviceId = body.getDeviceid();
 
-		
-
 		TUserUsers uu = new TUserUsers();
 
 		uu.setUser_type(Constant.USER_TYPE_CUSTOMER);
@@ -74,14 +73,16 @@ public class UsersSrv implements IUsersSrv {
 		uu.setState_date(sysdate);
 		uu.setCreate_date(sysdate);
 		userDbDao.insertUser(uu);
-		
-		String token = getAddedToken(countryCode, cellPhone, time, deviceId, uu.getUser_id());
-		niRegister(uu.getUser_id(), userName, token, deviceId, sysdate);
+
+		String[] token = getAddedToken(countryCode, cellPhone, time, deviceId, uu.getUser_id());
+		String retToken = token[0];
+		String realToken = token[1];
+		niRegister(uu.getUser_id(), userName, realToken, sysdate);
 
 		Register_res res = new Register_res();
 		res.setRet(Constant.SUCCESS);
 
-		res.setToken(token);
+		res.setToken(retToken);
 		Register_res.User user = new Register_res.User();
 		user.setId(uu.getUser_id());
 		user.setLastupdate(time);
@@ -110,19 +111,22 @@ public class UsersSrv implements IUsersSrv {
 		userRedisDao.set(keystr, verificationCode, expireSec);
 	}
 
-	public String getAddedToken(String countryCode, String cellPhone, long time, String deviceId, long userId) throws Exception {
+	public String[] getAddedToken(String countryCode, String cellPhone, long time, String deviceId, long userId)
+			throws Exception {
 
 		TokenRds tk = new TokenRds();
 		tk.setUserId(userId);
 		tk.setCountryCode(countryCode);
 		tk.setCellPhone(cellPhone);
 		tk.setDeviceId(deviceId);
- 		for (int i = 0;; i++) {
-			String token = Md5Util.getSign4String(countryCode + "_" + cellPhone + "_" + time + "_" + deviceId + i, "");
-			log.info("set token:" + token + deviceId);
-			if (userRedisDao.setNX(CacheUtil.getTokenCacheKey(token + deviceId), tk, 100000)) {
-				log.info(userRedisDao.getJsonObj(CacheUtil.getTokenCacheKey(token + deviceId)));
-				return token;
+		for (int i = 0;; i++) {
+			String retToken = Md5Util.getSign4String(countryCode + "_" + cellPhone + "_" + time + "_" + deviceId + i);
+ 			String realToken = CacheUtil.getRealToken(retToken, deviceId);
+			if (userRedisDao.setNX(CacheUtil.getTokenCacheKey(realToken), tk, 0)) {
+ 				String[] ret = new String[2];
+				ret[0] = retToken;
+				ret[1] = realToken;
+				return ret;
 			}
 		}
 	}
@@ -133,24 +137,24 @@ public class UsersSrv implements IUsersSrv {
 		String key = CacheUtil.getUserInfoCacheKey(countryCode, cellPhone);
 		userRedisDao.set(key, uif, 0);
 	}
-	
+
 	public UserInfoRds getUserInfoIntoRedis(String countryCode, String cellPhone) {
 		String key = CacheUtil.getUserInfoCacheKey(countryCode, cellPhone);
-		return (UserInfoRds)userRedisDao.getJsonObj(key);
+		return (UserInfoRds) userRedisDao.getJsonObj(key);
 	}
 
-	public void niRegister(long userId, String userName, String token, String deviceId, Timestamp cur) throws Exception {
+	public void niRegister(long userId, String userName, String token, Timestamp cur) throws Exception {
 		Map<String, String> register = new HashMap<String, String>();
 		register.put("accid", String.valueOf(userId));
 		register.put("name", userName);
-		register.put("token", token + deviceId);
+		register.put("token", token );
 		NiUtil.createAction(register, cur);
 	}
 
-	public void niTokenUpdate(long userId, String token, String deviceId, Timestamp cur) throws Exception {
+	public void niTokenUpdate(long userId, String token, Timestamp cur) throws Exception {
 		Map<String, String> update = new HashMap<String, String>();
 		update.put("accid", String.valueOf(userId));
-		update.put("token", token + deviceId);
+		update.put("token", token);
 		NiUtil.updateTokenAction(update, cur);
 	}
 
@@ -226,13 +230,39 @@ public class UsersSrv implements IUsersSrv {
 		}
 		loginerr.setTime(loginerr.getTime() + 1);
 
- 	}
-	
-	public List<TUserUsers> queryUsers(){
+	}
+
+	public List<TUserUsers> queryUsers() {
 		return userDbDao.queryUsers();
 	}
-	
-	public TUserUsers queryUser(long userId){
+
+	public TUserUsers queryUser(long userId) {
 		return userDbDao.queryUser(userId);
 	}
+	
+	public List<QryUserInfoVO> queryUsersFuzzy(String key) {
+		return userDbDao.queryUsersFuzzy(key);
+	}
+	
+	public List<QryUserInfoVO> queryUserAccurate(Long type,String cellphone, String userName, String userId){
+		
+ 		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("cellphone", cellphone);
+		param.put("user_id", userId);
+		param.put("user_name", userName);
+		param.put("type", type);
+ 		return  userDbDao.queryUserAccurate(param);
+ 	}
+	
+	public List<QryUserInfoVO> queryUsersGroup(List<Long> userIds){
+		return userDbDao.queryUsersGroup(userIds);
+	}
+	
+	public List<TUserUsers> queryUserWithoutToken(long type, String countrycode, String cellphone, String userName){
+		return userDbDao.queryUserWithoutToken(type, countrycode, cellphone, userName);
+	}
+	
+	
+
+
 }

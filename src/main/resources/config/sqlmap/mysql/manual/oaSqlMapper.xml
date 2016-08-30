@@ -24,4 +24,39 @@ AND oo.user_id_pro = uu.user_id
 AND upu.state = 1
 AND uu.state = 1
 	</select>
+
+	<select id="queryPublicList" parameterType="map"
+		resultType="com.samchat.common.beans.manual.db.QryPublicQueryVO">	
+SELECT
+	uu.user_id,
+	uu.user_name,
+	uu.country_code countrycode,
+	uu.phone_no cellphone,
+	uu.email,
+	uu.address,
+	uu.user_type type,
+	uu.avatar_origin origin,
+	uu.avatar_thumb thumb,
+	uu.state_date lastupdate,
+	upu.company_name,
+	upu.service_category,
+	upu.service_description,
+	upu.country_code countrycode_pro,
+	upu.phone_no phone_pro,
+	upu.email email_pro,
+	upu.address address_pro
+FROM
+	t_user_pro_users upu,
+	t_user_users uu
+WHERE
+	upu.state = 1
+AND uu.state = 1
+AND uu.user_id = upu.user_id
+AND (
+	INSTR(upu.company_name,#{key}) > 0
+	OR INSTR(upu.service_category,#{key}) > 0
+	OR INSTR(upu.service_description,#{key})> 0
+)
+	</select>	
+	
 </mapper>

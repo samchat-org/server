@@ -1,0 +1,14 @@
+{
+    "header":{
+        "action":"query-without-token"
+    },
+    "body":{
+        "opt":4,
+        "param":{
+            "type":0,
+            "username":"",
+            "countrycode":"",
+            "cellphone ":""
+        }
+    }
+}

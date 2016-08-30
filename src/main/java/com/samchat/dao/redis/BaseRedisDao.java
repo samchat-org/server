@@ -51,13 +51,13 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 			}
 		});
 	}
-	
+
 	public void set(final String keyStr, final Object valueObj, final long expireSec) {
 		getRedisTemplate().execute(new RedisCallback<Boolean>() {
 			public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
- 				byte[] key = getStrRedisSerializer().serialize(keyStr);
+				byte[] key = getStrRedisSerializer().serialize(keyStr);
 				byte[] value = getJackson2JsonRedisSerializer().serialize(valueObj);
- 				if (expireSec == 0) {
+				if (expireSec == 0) {
 					connection.set(key, value);
 				} else {
 					connection.setEx(key, expireSec, value);
@@ -74,7 +74,7 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 				byte[] key = serializer.serialize(keyStr);
 				byte[] value = serializer.serialize(valueStr);
 				log.info("keystr:" + keyStr + "--valueStr:" + valueStr + "--expireSec:" + expireSec);
- 				Boolean dos = connection.setNX(key, value);
+				Boolean dos = connection.setNX(key, value);
 				log.info("dos:" + dos);
 				if (dos == null || dos) {
 					connection.expire(key, expireSec);
@@ -96,7 +96,9 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 				Boolean dos = connection.setNX(key, value);
 				log.info("dos:" + dos);
 				if (dos == null || dos) {
-					connection.expire(key, expireSec);
+					if (expireSec != 0) {
+						connection.expire(key, expireSec);
+					}
 					return true;
 				}
 				return false;
@@ -128,7 +130,7 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 				if (value == null) {
 					return null;
 				}
-				return (T)getJackson2JsonRedisSerializer().deserialize(value);
+				return (T) getJackson2JsonRedisSerializer().deserialize(value);
 			}
 		});
 		return result;
@@ -142,5 +144,5 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 	public void delete(List<K> keyStr) {
 		getRedisTemplate().delete(keyStr);
 	}
-
+	
 }

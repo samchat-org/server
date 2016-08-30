@@ -9,5 +9,6 @@
 
 	<bean id="dispatcher" class="com.samchat.processor.QuestionDispatch.Dispatcher" />
 	<bean id="sysConfigRefreshThread" class="com.samchat.common.thread.SysConfigRefreshThread" />
+	<bean id="jedisTest" class="com.samchat.JedisTest" />
 	
 </beans>

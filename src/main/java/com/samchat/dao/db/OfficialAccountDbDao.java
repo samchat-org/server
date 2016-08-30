@@ -12,6 +12,7 @@ import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
 import com.samchat.common.beans.auto.db.entitybeans.TOaFollowExample;
 import com.samchat.common.beans.auto.db.mapper.TOaFollowMapper;
 import com.samchat.common.beans.manual.db.QryFollowVO;
+import com.samchat.common.beans.manual.db.QryPublicQueryVO;
 import com.samchat.dao.db.interfaces.IOfficialAccountDbDao;
 
 @Repository
@@ -78,5 +79,13 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 		Map param = new HashMap();
 		param.put("user_id", new Long(userId));
 		return executeSqlList("queryFollowList", param);
+	}
+	
+	public List<QryPublicQueryVO> queryPublicList(String key){
+		
+		Map param = new HashMap();
+		param.put("key", key);
+		
+		return executeSqlList("queryPublicList", param);
 	}
 }

@@ -1,9 +1,11 @@
 package com.samchat.dao.db.interfaces;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
+import com.samchat.common.beans.manual.db.QryUserInfoVO;
 
 public interface IUserDbDao extends IBaseDbDao{
 	
@@ -26,5 +28,13 @@ public interface IUserDbDao extends IBaseDbDao{
 	public List<TUserUsers> queryUsers();
 	
 	public TUserUsers queryUser(long userId);
+	
+	public List<QryUserInfoVO> queryUsersFuzzy(String key);
+	
+	public List<QryUserInfoVO> queryUsersGroup(List<Long> userIds);
+	
+	public List<QryUserInfoVO> queryUserAccurate(HashMap<String, Object> param);
+	
+	public List<TUserUsers> queryUserWithoutToken(long type, String countrycode, String cellphone, String userName);
 	
 }
