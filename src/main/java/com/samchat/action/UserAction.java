@@ -115,13 +115,13 @@ public class UserAction extends BaseAction {
 		int timeToIdle = CommonUtil.getSysConfigInt(Constant.SYS_PARAM_KEY.REGISTER_CODE_TIME_TO_IDLE);
 
 		registerCode = "1234";// dev_m
-		usersSrv.putRegisterCode(countrycode, cellphone, registerCode, timeToIdle);
 		String smstpl = CommonUtil
 				.getSysConfigStr(Constant.SYS_PARAM_KEY.TWILIO_VERIFICATION_REGISTER_CODE_SMS_TEMPLETE);
 		String smsContent = smstpl.replaceAll(Constant.TWILLO_VERIFICATION_CODE, registerCode);
 
 		String twilloPhoneNo = CommonUtil.getSysConfigStr(Constant.SYS_PARAM_KEY.TWILIO_PHONE_NO);
 		TwilioUtil.sendSms(CommonUtil.getE164PhoneNo(countrycode, cellphone), twilloPhoneNo, smsContent);
+		usersSrv.putRegisterCode(countrycode, cellphone, registerCode, timeToIdle);
 		return new RegisterCodeRequest_res();
 	}
 
