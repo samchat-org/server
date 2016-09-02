@@ -104,7 +104,7 @@ public abstract class BaseAction extends ToolAction {
 			}
 			action = StrUtils.firstToUpperCase(action, "-");
 
-			int dev = CommonUtil.getSysConfigInt("dev_" + action); // 1 开发模式
+			int dev = 0;//CommonUtil.getSysConfigInt("dev_" + action); // 1 开发模式
 			if (dev == Constant.DEV_MODE) {
 				String tplDataRes = CommonUtil.getSysConfigStr("json_dev_position") + "/" + parts[2] + "/" + parts[3]
 						+ "_res.json";

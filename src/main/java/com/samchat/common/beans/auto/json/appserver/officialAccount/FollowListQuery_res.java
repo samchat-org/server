@@ -8,32 +8,33 @@ public class FollowListQuery_res{
 	private ArrayList<Users> users;
 
 	public static class Avatar {
-		private String thumb = "";
+		private String thumb;
 
 		public String getThumb() {
 			return thumb;
 		}
 
 		public void setThumb(String thumb) {
-			this.thumb = (thumb == null? "" : thumb.trim());
+			this.thumb = (thumb == null? null : thumb.trim());
 		}
 	}
 
 	public static class Sam_pros_info {
-		private String service_category = "";
+		private String service_category;
 
 		public String getService_category() {
 			return service_category;
 		}
 
 		public void setService_category(String service_category) {
-			this.service_category = (service_category == null? "" : service_category.trim());
+			this.service_category = (service_category == null? null : service_category.trim());
 		}
 	}
 
 	public static class Users {
 		private long id;
-		private String username = "";
+		private String username;
+		private long lastupdate;
 		private Avatar avatar;
 		private Sam_pros_info sam_pros_info;
 		private long favourite_tag;
@@ -52,7 +53,15 @@ public class FollowListQuery_res{
 		}
 
 		public void setUsername(String username) {
-			this.username = (username == null? "" : username.trim());
+			this.username = (username == null? null : username.trim());
+		}
+
+		public long getLastupdate() {
+			return lastupdate;
+		}
+
+		public void setLastupdate(long lastupdate) {
+			this.lastupdate = lastupdate;
 		}
 
 		public Avatar getAvatar() {

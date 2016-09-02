@@ -6,15 +6,15 @@ public class PwdUpdate_req{
 	private Body body;
 
 	public static class Header {
-		private String action = "";
-		private String token = "";
+		private String action;
+		private String token;
 
 		public String getAction() {
 			return action;
 		}
 
 		public void setAction(String action) {
-			this.action = (action == null? "" : action.trim());
+			this.action = (action == null? null : action.trim());
 		}
 
 		public String getToken() {
@@ -22,20 +22,20 @@ public class PwdUpdate_req{
 		}
 
 		public void setToken(String token) {
-			this.token = (token == null? "" : token.trim());
+			this.token = (token == null? null : token.trim());
 		}
 	}
 
 	public static class Body {
-		private String old_pwd = "";
-		private String new_pwd = "";
+		private String old_pwd;
+		private String new_pwd;
 
 		public String getOld_pwd() {
 			return old_pwd;
 		}
 
 		public void setOld_pwd(String old_pwd) {
-			this.old_pwd = (old_pwd == null? "" : old_pwd.trim());
+			this.old_pwd = (old_pwd == null? null : old_pwd.trim());
 		}
 
 		public String getNew_pwd() {
@@ -43,7 +43,7 @@ public class PwdUpdate_req{
 		}
 
 		public void setNew_pwd(String new_pwd) {
-			this.new_pwd = (new_pwd == null? "" : new_pwd.trim());
+			this.new_pwd = (new_pwd == null? null : new_pwd.trim());
 		}
 	}
 

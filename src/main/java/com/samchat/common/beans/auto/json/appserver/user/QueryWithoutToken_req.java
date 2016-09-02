@@ -1,19 +1,21 @@
 package com.samchat.common.beans.auto.json.appserver.user;
 
+import com.samchat.common.exceptions.AppException;
+import com.samchat.common.Constant;
 public class QueryWithoutToken_req{
 
 	private Header header;
 	private Body body;
 
 	public static class Header {
-		private String action = "";
+		private String action;
 
 		public String getAction() {
 			return action;
 		}
 
 		public void setAction(String action) {
-			this.action = (action == null? "" : action.trim());
+			this.action = (action == null? null : action.trim());
 		}
 	}
 
@@ -40,15 +42,18 @@ public class QueryWithoutToken_req{
 
 	public static class Param {
 		private long type;
-		private String username = "";
-		private String countrycode = "";
-		private String cellphone  = "";
+		private String username;
+		private String countrycode;
+		private String cellphone ;
 
 		public long getType() {
 			return type;
 		}
 
 		public void setType(long type) {
+			if (type != 0 &&type != 2 ){
+				 throw new AppException(Constant.ERROR.PARAM_NONSUPPORT, "value:" + type);
+			}
 			this.type = type;
 		}
 
@@ -57,7 +62,7 @@ public class QueryWithoutToken_req{
 		}
 
 		public void setUsername(String username) {
-			this.username = (username == null? "" : username.trim());
+			this.username = (username == null? null : username.trim());
 		}
 
 		public String getCountrycode() {
@@ -65,7 +70,7 @@ public class QueryWithoutToken_req{
 		}
 
 		public void setCountrycode(String countrycode) {
-			this.countrycode = (countrycode == null? "" : countrycode.trim());
+			this.countrycode = (countrycode == null? null : countrycode.trim());
 		}
 
 		public String getCellphone () {
@@ -73,7 +78,7 @@ public class QueryWithoutToken_req{
 		}
 
 		public void setCellphone (String cellphone ) {
-			this.cellphone  = (cellphone  == null? "" : cellphone .trim());
+			this.cellphone  = (cellphone  == null? null : cellphone .trim());
 		}
 	}
 

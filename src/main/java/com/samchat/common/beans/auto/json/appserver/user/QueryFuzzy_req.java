@@ -6,15 +6,15 @@ public class QueryFuzzy_req{
 	private Body body;
 
 	public static class Header {
-		private String action = "";
-		private String token = "";
+		private String action;
+		private String token;
 
 		public String getAction() {
 			return action;
 		}
 
 		public void setAction(String action) {
-			this.action = (action == null? "" : action.trim());
+			this.action = (action == null? null : action.trim());
 		}
 
 		public String getToken() {
@@ -22,7 +22,7 @@ public class QueryFuzzy_req{
 		}
 
 		public void setToken(String token) {
-			this.token = (token == null? "" : token.trim());
+			this.token = (token == null? null : token.trim());
 		}
 	}
 
@@ -48,14 +48,14 @@ public class QueryFuzzy_req{
 	}
 
 	public static class Param {
-		private String search_key = "";
+		private String search_key;
 
 		public String getSearch_key() {
 			return search_key;
 		}
 
 		public void setSearch_key(String search_key) {
-			this.search_key = (search_key == null? "" : search_key.trim());
+			this.search_key = (search_key == null? null : search_key.trim());
 		}
 	}
 

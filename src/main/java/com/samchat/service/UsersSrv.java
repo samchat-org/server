@@ -130,7 +130,24 @@ public class UsersSrv implements IUsersSrv {
 			}
 		}
 	}
-
+	
+	public void resetToken(String countryCode, String cellPhone, String realToken){
+		String key = CacheUtil.getTokenCacheKey(realToken);
+		TokenRds tk = userRedisDao.getJsonObj(key);
+		if(tk == null){
+			return;
+		}
+		tk.setCountryCode(countryCode);
+		tk.setCellPhone(cellPhone);
+		userRedisDao.set(key, tk, 0);
+		
+	}
+	
+	public void cancelUserInfoIntoRedis(String countryCode, String cellPhone){
+		String key = CacheUtil.getUserInfoCacheKey(countryCode, cellPhone);
+		userRedisDao.delete(key);
+	}
+	
 	public void setUserInfoIntoRedis(String countryCode, String cellPhone, String token) {
 		UserInfoRds uif = new UserInfoRds();
 		uif.setToken(token);
@@ -244,7 +261,7 @@ public class UsersSrv implements IUsersSrv {
 		return userDbDao.queryUsersFuzzy(key);
 	}
 	
-	public List<QryUserInfoVO> queryUserAccurate(Long type,String cellphone, String userName, String userId){
+	public List<QryUserInfoVO> queryUserAccurate(Long type, String cellphone, String userName, String userId){
 		
  		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("cellphone", cellphone);
@@ -262,7 +279,14 @@ public class UsersSrv implements IUsersSrv {
 		return userDbDao.queryUserWithoutToken(type, countrycode, cellphone, userName);
 	}
 	
-	
+	public long updateAvatar(String origin, String thumb, long userId){
+		TUserUsers u = new TUserUsers();
+		u.setUser_id(userId);
+		u.setAvatar_origin(origin);
+		u.setAvatar_thumb(thumb);
+		userDbDao.updateUser(u);
+		return u.getState_date().getTime();
+	}
 
 
 }

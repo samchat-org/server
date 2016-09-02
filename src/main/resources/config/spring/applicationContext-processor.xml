@@ -7,7 +7,8 @@
 	default-autowire="byType">
 
 
-	<bean id="dispatcher" class="com.samchat.processor.QuestionDispatch.Dispatcher" />
+	<bean id="questionDispatcher" class="com.samchat.processor.QuestionDispatch.Dispatcher" />
+	<bean id="advertisementDispatcher" class="com.samchat.processor.AdvertisementDispatch.Dispatcher" />
 	<bean id="sysConfigRefreshThread" class="com.samchat.common.thread.SysConfigRefreshThread" />
 	<bean id="jedisTest" class="com.samchat.JedisTest" />
 	

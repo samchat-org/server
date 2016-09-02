@@ -1,5 +1,7 @@
 package com.samchat.common.beans.manual.db;
 
+import java.sql.Timestamp;
+
 public class QryFollowVO {
 	
 	private long user_id;
@@ -11,6 +13,15 @@ public class QryFollowVO {
 	private String company_name;
 	private String service_category;
 	private String service_description;
+	private Timestamp lastupdate;
+ 
+	public Timestamp getLastupdate() {
+		return lastupdate;
+	}
+
+	public void setLastupdate(Timestamp lastupdate) {
+		this.lastupdate = lastupdate;
+	}
 
 	public long getUser_id() {
 		return user_id;

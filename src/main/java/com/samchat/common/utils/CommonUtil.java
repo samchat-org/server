@@ -90,4 +90,9 @@ public class CommonUtil {
 		return (Math.random() + "").substring(2, len + 2);
 
 	}
+
+	public static String getHashSharding(String tableName, long userId) {
+		int shardingMode = CommonUtil.getSysConfigInt(("sharding_" + tableName).toLowerCase());
+		return tableName + "_" + userId % shardingMode;
+	}
 }

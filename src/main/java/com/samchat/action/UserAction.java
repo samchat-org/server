@@ -199,7 +199,7 @@ public class UserAction extends BaseAction {
 		String cellPhone = user.getPhone_no();
 		String cCode = user.getCountry_code();
 		UserInfoRds userfo = usersSrv.getUserInfoIntoRedis(cCode, cellPhone);
-		if (userfo != null) {
+   		if (userfo != null) {
 			usersSrv.deleteToken(userfo.getToken());
 		}
 
@@ -363,8 +363,7 @@ public class UserAction extends BaseAction {
 				.getSysConfigStr(Constant.SYS_PARAM_KEY.TWILIO_VERIFICATION_FINDPWD_CODE_SMS_TEMPLETE);
 		String smsContent = smstpl.replaceAll(Constant.TWILLO_VERIFICATION_CODE, verificationCode);
 
-		String twilloPhoneNo = CommonUtil.getSysConfigStr(Constant.SYS_PARAM_KEY.TWILIO_PHONE_NO);
-		TwilioUtil.sendSms(CommonUtil.getE164PhoneNo(countryCode, cellPhone), twilloPhoneNo, smsContent);
+		TwilioUtil.sendSms(countryCode, cellPhone, smsContent);
 
 		return new FindpwdCodeRequest_res();
 	}
@@ -525,7 +524,7 @@ public class UserAction extends BaseAction {
 	public QueryAccurate_res queryAccurate(QueryAccurate_req req, TokenRds token) {
 
 		QueryAccurate_req.Param p = req.getBody().getParam();
-		String cellphone = p.getCellphone();
+		String cellphone = p.getCellphone().replaceAll("\\+| ", "");
 		String username = p.getUsername();
 		String id = p.getUnique_id();
 		Long type = p.getType();
@@ -641,4 +640,5 @@ public class UserAction extends BaseAction {
 	public void queryWithoutTokenValidate(QueryWithoutToken_req req) {
 	}
 
+	
 }

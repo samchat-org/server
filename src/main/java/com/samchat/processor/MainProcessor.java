@@ -25,7 +25,7 @@ public class MainProcessor {
 
 	public void process(String processor, String cfgPrefix) {
 		Thread thread = (Thread) ctx.getBean(processor);
-		int count = CommonUtil.getSysConfigInt(cfgPrefix + "_count");
+		int count = CommonUtil.getSysConfigInt(cfgPrefix + "_thread_count");
 		
 		log.info("count:" + count);
 		Executors.newScheduledThreadPool(count).execute(thread);
@@ -33,7 +33,11 @@ public class MainProcessor {
 
 	public static void main(String args[]) throws Exception {
 		log.info("dispatcher start");
-		new  MainProcessor().process("dispatcher", "aws_sqs_question_thread");
+		if(args.length != 2){
+			throw new Exception("input the params: processer name , config perfix ");
+		}
+		//"advertisementDispatcher", "aws_sqs_advertisement"
+		new  MainProcessor().process(args[0], args[1]);
 	}
 
 }

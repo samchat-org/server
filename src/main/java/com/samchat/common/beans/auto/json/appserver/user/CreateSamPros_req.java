@@ -6,15 +6,15 @@ public class CreateSamPros_req{
 	private Body body;
 
 	public static class Header {
-		private String action = "";
-		private String token = "";
+		private String action;
+		private String token;
 
 		public String getAction() {
 			return action;
 		}
 
 		public void setAction(String action) {
-			this.action = (action == null? "" : action.trim());
+			this.action = (action == null? null : action.trim());
 		}
 
 		public String getToken() {
@@ -22,17 +22,17 @@ public class CreateSamPros_req{
 		}
 
 		public void setToken(String token) {
-			this.token = (token == null? "" : token.trim());
+			this.token = (token == null? null : token.trim());
 		}
 	}
 
 	public static class Body {
-		private String company_name = "";
-		private String service_category = "";
-		private String service_description = "";
-		private String countrycode = "";
-		private String phone = "";
-		private String email = "";
+		private String company_name;
+		private String service_category;
+		private String service_description;
+		private String countrycode;
+		private String phone;
+		private String email;
 		private Location location;
 
 		public String getCompany_name() {
@@ -40,7 +40,7 @@ public class CreateSamPros_req{
 		}
 
 		public void setCompany_name(String company_name) {
-			this.company_name = (company_name == null? "" : company_name.trim());
+			this.company_name = (company_name == null? null : company_name.trim());
 		}
 
 		public String getService_category() {
@@ -48,7 +48,7 @@ public class CreateSamPros_req{
 		}
 
 		public void setService_category(String service_category) {
-			this.service_category = (service_category == null? "" : service_category.trim());
+			this.service_category = (service_category == null? null : service_category.trim());
 		}
 
 		public String getService_description() {
@@ -56,7 +56,7 @@ public class CreateSamPros_req{
 		}
 
 		public void setService_description(String service_description) {
-			this.service_description = (service_description == null? "" : service_description.trim());
+			this.service_description = (service_description == null? null : service_description.trim());
 		}
 
 		public String getCountrycode() {
@@ -64,7 +64,7 @@ public class CreateSamPros_req{
 		}
 
 		public void setCountrycode(String countrycode) {
-			this.countrycode = (countrycode == null? "" : countrycode.trim());
+			this.countrycode = (countrycode == null? null : countrycode.trim());
 		}
 
 		public String getPhone() {
@@ -72,7 +72,7 @@ public class CreateSamPros_req{
 		}
 
 		public void setPhone(String phone) {
-			this.phone = (phone == null? "" : phone.trim());
+			this.phone = (phone == null? null : phone.trim());
 		}
 
 		public String getEmail() {
@@ -80,7 +80,7 @@ public class CreateSamPros_req{
 		}
 
 		public void setEmail(String email) {
-			this.email = (email == null? "" : email.trim());
+			this.email = (email == null? null : email.trim());
 		}
 
 		public Location getLocation() {
@@ -94,8 +94,8 @@ public class CreateSamPros_req{
 
 	public static class Location {
 		private Location_info location_info;
-		private String place_id = "";
-		private String address = "";
+		private String place_id;
+		private String address;
 
 		public Location_info getLocation_info() {
 			return location_info;
@@ -110,7 +110,7 @@ public class CreateSamPros_req{
 		}
 
 		public void setPlace_id(String place_id) {
-			this.place_id = (place_id == null? "" : place_id.trim());
+			this.place_id = (place_id == null? null : place_id.trim());
 		}
 
 		public String getAddress() {
@@ -118,20 +118,20 @@ public class CreateSamPros_req{
 		}
 
 		public void setAddress(String address) {
-			this.address = (address == null? "" : address.trim());
+			this.address = (address == null? null : address.trim());
 		}
 	}
 
 	public static class Location_info {
-		private String longitude = "";
-		private String latitude = "";
+		private String longitude;
+		private String latitude;
 
 		public String getLongitude() {
 			return longitude;
 		}
 
 		public void setLongitude(String longitude) {
-			this.longitude = (longitude == null? "" : longitude.trim());
+			this.longitude = (longitude == null? null : longitude.trim());
 		}
 
 		public String getLatitude() {
@@ -139,7 +139,7 @@ public class CreateSamPros_req{
 		}
 
 		public void setLatitude(String latitude) {
-			this.latitude = (latitude == null? "" : latitude.trim());
+			this.latitude = (latitude == null? null : latitude.trim());
 		}
 	}
 

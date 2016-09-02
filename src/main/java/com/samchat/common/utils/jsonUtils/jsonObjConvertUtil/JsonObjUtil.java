@@ -15,6 +15,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.samchat.common.Constant;
+import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.StrUtils;
 import com.samchat.common.utils.jsonUtils.jsonObjConvertUtil.entity.ArrayType;
 import com.samchat.common.utils.jsonUtils.jsonObjConvertUtil.entity.Json2JavaElement;
@@ -167,6 +169,12 @@ public class JsonObjUtil {
 		if(sb.indexOf("ArrayList") > 0){
 			init.append("import java.util.ArrayList;\r\n");
 		}
+		if(sb.indexOf("AppException") > 0){
+			init.append("import com.samchat.common.exceptions.AppException;\r\n");
+		}
+		if(sb.indexOf("Constant") > 0){
+			init.append("import com.samchat.common.Constant;\r\n");
+		}
 		
 		
 		return init.append(sb).toString();
@@ -200,11 +208,38 @@ public class JsonObjUtil {
 		}
 
 		// 申明变量
+		StringBuffer validate = null;
 		// private String name;
 		if("String".equals(getTypeName(j2j))){
+			String j2jName = j2j.getName();
+			int start = j2jName.indexOf("[");
+			int end = j2jName.indexOf("]");
+			if(end - start > 1){
+				j2j.setName(j2jName.substring(0,start));				
+				if("Y".equals(j2jName.substring(start + 1, end))){
+					validate = new StringBuffer("if (\"\".equals(").append(j2j.getName()).append(") || ").append(j2j.getName()).append( "== null){\r\n");
+					validate.append("\t\t\t\t throw new AppException(Constant.ERROR.PARAM_NONSUPPORT, \"value:\" + " + j2j.getName() +");\r\n\t\t\t}");
+				}
+ 			}
 			sb.append(StrUtils.formatSingleLine(1 + extraTabNum, "private "
-					+ getTypeName(j2j) + " " + j2j.getName() + " = \"\";"));
-		}else{
+					+ getTypeName(j2j) + " " + j2j.getName() + ";"));
+		}else {
+			if("long".equals(getTypeName(j2j))){
+				String j2jName = j2j.getName();
+				int start = j2jName.indexOf("[");
+				int end = j2jName.indexOf("]");
+				if(end - start > 1){
+					j2j.setName(j2jName.substring(0,start));
+					String[] enumValue = j2jName.substring(start + 1, end).split(",");
+					validate = new StringBuffer("if (");
+					for(String value : enumValue){
+						validate.append(j2j.getName() + " != " + value + " &&");
+					}
+					validate = new StringBuffer(validate.substring(0, validate.length() - 2)).append("){\r\n");
+					validate.append("\t\t\t\t throw new AppException(Constant.ERROR.PARAM_NONSUPPORT, \"value:\" + " + j2j.getName() +");\r\n\t\t\t}");
+					
+				}
+			}
 			sb.append(StrUtils.formatSingleLine(1 + extraTabNum, "private "
 					+ getTypeName(j2j) + " " + j2j.getName() + ";"));
 		}
@@ -236,9 +271,13 @@ public class JsonObjUtil {
 								+ StrUtils.firstToUpperCase(j2j.getName())
 								+ "(" + getTypeName(j2j) + " " + j2j.getName()
 								+ ") {"));
+		
+		if(validate != null){
+			sbGetterAndSetter.append(StrUtils.formatSingleLine(2 + extraTabNum, validate.toString()));
+		}
 		if("String".equals(getTypeName(j2j))){
 			sbGetterAndSetter.append(StrUtils.formatSingleLine(2 + extraTabNum,
-					"this." + j2j.getName() + " = (" + j2j.getName() + " == null? \"\" : " + j2j.getName() + ".trim());"));
+					"this." + j2j.getName() + " = (" + j2j.getName() + " == null? null : " + j2j.getName() + ".trim());"));
 		}else{
 			sbGetterAndSetter.append(StrUtils.formatSingleLine(2 + extraTabNum,
 					"this." + j2j.getName() + " = " + j2j.getName() + ";"));

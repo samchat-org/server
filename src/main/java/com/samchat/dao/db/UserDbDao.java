@@ -4,22 +4,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.samchat.action.ProfileAction;
 import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
+import com.samchat.common.beans.auto.db.entitybeans.TUserProUsersExample;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsersExample;
 import com.samchat.common.beans.auto.db.mapper.TUserProUsersMapper;
 import com.samchat.common.beans.auto.db.mapper.TUserUsersMapper;
 import com.samchat.common.beans.manual.db.QryUserInfoVO;
-import com.samchat.common.exceptions.AppException;
 import com.samchat.dao.db.interfaces.IUserDbDao;
 
 @Repository
 public class UserDbDao extends BaseDbDao implements IUserDbDao {
-
+	
+	private static Logger log = Logger.getLogger(UserDbDao.class);
+	
 	@Autowired
 	private TUserUsersMapper userUsersMapper;
 	@Autowired
@@ -33,7 +37,9 @@ public class UserDbDao extends BaseDbDao implements IUserDbDao {
 		TUserUsersExample uue = new TUserUsersExample();
 		uue.createCriteria().andPhone_noEqualTo(phoneNo).andCountry_codeEqualTo(countryCode)
 				.andStateEqualTo(Constant.STATE_IN_USE);
+		log.info("phoneNo:" + phoneNo + "--countrycode:" + countryCode);
 		List<TUserUsers> luu = userUsersMapper.selectByExample(uue);
+		log.info(luu.size());
 		if (luu.size() > 0) {
 			return luu.get(0);
 		}
@@ -69,15 +75,23 @@ public class UserDbDao extends BaseDbDao implements IUserDbDao {
 	}
 
 	public void updateUser(TUserUsers user) {
+		user.setState_date(this.querySysdate());
 		userUsersMapper.updateByPrimaryKeySelective(user);
 	}
 
 	public void updateProUser(TUserProUsers user) {
-		userProUsersMapper.updateByPrimaryKeySelective(user);
-	}
+ 		TUserProUsersExample uue = new TUserProUsersExample();
+		uue.createCriteria().andUser_idEqualTo(user.getUser_id()).andStateEqualTo(Constant.STATE_IN_USE);
+		userProUsersMapper.updateByExampleSelective(user, uue);
+ 	}
 
 	public TUserProUsers queryProUser(long userId) {
-		return userProUsersMapper.selectByPrimaryKey(userId);
+		TUserProUsersExample uue = new TUserProUsersExample();
+		uue.createCriteria().andUser_idEqualTo(userId).andStateEqualTo(Constant.STATE_IN_USE);
+		List<TUserProUsers> prousers = userProUsersMapper.selectByExample(uue);
+		if(prousers.size() > 0)
+			return prousers.get(0);
+		return null;
 	}
 
 	public TUserUsers queryUser(long userId) {
@@ -111,10 +125,8 @@ public class UserDbDao extends BaseDbDao implements IUserDbDao {
 			ca.andCountry_codeEqualTo(countrycode).andPhone_noEqualTo(cellphone);
 		} else if (type == 2) {
 			ca.andUser_nameEqualTo(userName);
-		} else {
-			throw new AppException(Constant.ERROR.PARAM_NONSUPPORT, "queryUserWithoutToken , type: " + type);
 		}
 		return userUsersMapper.selectByExample(uue);
 	}
-
+	
 }

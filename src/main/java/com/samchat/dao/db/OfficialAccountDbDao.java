@@ -80,12 +80,20 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 		param.put("user_id", new Long(userId));
 		return executeSqlList("queryFollowList", param);
 	}
-	
-	public List<QryPublicQueryVO> queryPublicList(String key){
-		
+
+	public List<QryPublicQueryVO> queryPublicList(String key) {
+
 		Map param = new HashMap();
 		param.put("key", key);
-		
+
 		return executeSqlList("queryPublicList", param);
+	}
+
+	public List<TOaFollow> queryFollowListByAdserId(long userId) {
+ 		TOaFollowExample ttx = new TOaFollowExample();
+		ttx.createCriteria().andUser_id_proEqualTo(userId).andStateEqualTo(Constant.STATE_IN_USE);
+		return oaFollowMapper.selectByExample(ttx);
+		
+ 
 	}
 }

@@ -6,7 +6,7 @@
     "body":{
         "opt":2,
         "param":{
-            "type":0,
+            "type[0,1,2]":0,
             "cellphone":"",
             "unique_id ":"",
             "username":""

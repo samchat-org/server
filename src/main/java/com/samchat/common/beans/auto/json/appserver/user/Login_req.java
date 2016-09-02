@@ -6,29 +6,29 @@ public class Login_req{
 	private Body body;
 
 	public static class Header {
-		private String action = "";
+		private String action;
 
 		public String getAction() {
 			return action;
 		}
 
 		public void setAction(String action) {
-			this.action = (action == null? "" : action.trim());
+			this.action = (action == null? null : action.trim());
 		}
 	}
 
 	public static class Body {
-		private String countrycode = "";
-		private String account = "";
-		private String pwd = "";
-		private String deviceid = "";
+		private String countrycode;
+		private String account;
+		private String pwd;
+		private String deviceid;
 
 		public String getCountrycode() {
 			return countrycode;
 		}
 
 		public void setCountrycode(String countrycode) {
-			this.countrycode = (countrycode == null? "" : countrycode.trim());
+			this.countrycode = (countrycode == null? null : countrycode.trim());
 		}
 
 		public String getAccount() {
@@ -36,7 +36,7 @@ public class Login_req{
 		}
 
 		public void setAccount(String account) {
-			this.account = (account == null? "" : account.trim());
+			this.account = (account == null? null : account.trim());
 		}
 
 		public String getPwd() {
@@ -44,7 +44,7 @@ public class Login_req{
 		}
 
 		public void setPwd(String pwd) {
-			this.pwd = (pwd == null? "" : pwd.trim());
+			this.pwd = (pwd == null? null : pwd.trim());
 		}
 
 		public String getDeviceid() {
@@ -52,7 +52,7 @@ public class Login_req{
 		}
 
 		public void setDeviceid(String deviceid) {
-			this.deviceid = (deviceid == null? "" : deviceid.trim());
+			this.deviceid = (deviceid == null? null : deviceid.trim());
 		}
 	}
 

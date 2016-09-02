@@ -6,15 +6,15 @@ public class Question_req{
 	private Body body;
 
 	public static class Header {
-		private String action = "";
-		private String token = "";
+		private String action;
+		private String token;
 
 		public String getAction() {
 			return action;
 		}
 
 		public void setAction(String action) {
-			this.action = (action == null? "" : action.trim());
+			this.action = (action == null? null : action.trim());
 		}
 
 		public String getToken() {
@@ -22,13 +22,13 @@ public class Question_req{
 		}
 
 		public void setToken(String token) {
-			this.token = (token == null? "" : token.trim());
+			this.token = (token == null? null : token.trim());
 		}
 	}
 
 	public static class Body {
 		private long opt;
-		private String question = "";
+		private String question;
 		private Location location;
 
 		public long getOpt() {
@@ -44,7 +44,7 @@ public class Question_req{
 		}
 
 		public void setQuestion(String question) {
-			this.question = (question == null? "" : question.trim());
+			this.question = (question == null? null : question.trim());
 		}
 
 		public Location getLocation() {
@@ -58,8 +58,8 @@ public class Question_req{
 
 	public static class Location {
 		private Location_info location_info;
-		private String place_id = "";
-		private String address = "";
+		private String place_id;
+		private String address;
 
 		public Location_info getLocation_info() {
 			return location_info;
@@ -74,7 +74,7 @@ public class Question_req{
 		}
 
 		public void setPlace_id(String place_id) {
-			this.place_id = (place_id == null? "" : place_id.trim());
+			this.place_id = (place_id == null? null : place_id.trim());
 		}
 
 		public String getAddress() {
@@ -82,20 +82,20 @@ public class Question_req{
 		}
 
 		public void setAddress(String address) {
-			this.address = (address == null? "" : address.trim());
+			this.address = (address == null? null : address.trim());
 		}
 	}
 
 	public static class Location_info {
-		private String longitude = "";
-		private String latitude = "";
+		private String longitude;
+		private String latitude;
 
 		public String getLongitude() {
 			return longitude;
 		}
 
 		public void setLongitude(String longitude) {
-			this.longitude = (longitude == null? "" : longitude.trim());
+			this.longitude = (longitude == null? null : longitude.trim());
 		}
 
 		public String getLatitude() {
@@ -103,7 +103,7 @@ public class Question_req{
 		}
 
 		public void setLatitude(String latitude) {
-			this.latitude = (latitude == null? "" : latitude.trim());
+			this.latitude = (latitude == null? null : latitude.trim());
 		}
 	}
 

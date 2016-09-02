@@ -23,8 +23,6 @@ public class CommonDbDao extends BaseDbDao implements ICommonDbDao {
 		return "commonSqlMapper";
 	}
 
-
-
 	public List<TSysConfigs> queryAllSysconfigs() {
 		TSysConfigsExample sce = new TSysConfigsExample();
 		sce.createCriteria().andStateEqualTo(Constant.STATE_IN_USE);

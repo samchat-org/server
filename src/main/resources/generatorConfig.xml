@@ -66,6 +66,11 @@
 			<generatedKey column="param_id" sqlStatement="MySql"
 				identity="true" />
 		</table>
-	</context>
+		<table tableName="t_advertisement_advertisements" domainObjectName="TAdvertisementAdvertisements">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="param_id" sqlStatement="MySql"
+				identity="true" />
+		</table>
+ 	</context>
 
 </generatorConfiguration>

@@ -53,7 +53,7 @@ WHERE
 		resultType="com.samchat.common.beans.manual.db.QryUserInfoVO">	
 		<include refid="query_user_column_list"/>
  		<if test="type == 0">
- 			AND uu.phone_no = #{cellphone}
+  			AND INSTR(CONCAT(uu.country_code,uu.phone_no),#{cellphone}) > 0
 		</if>
 		<if test="type == 1">
 			AND uu.user_id = #{user_id}

@@ -1,0 +1,10 @@
+{
+    "header":{
+        "action":"advertisement-write",
+        "token":"token"
+    },
+    "body":{
+        "type[0,1]":0,
+        "content":""
+    }
+}

@@ -9,7 +9,7 @@ import com.samchat.dao.redis.interfaces.IUserRedisDao;
 public class JedisTest {
 	
 	@Autowired
-	IUserRedisDao userRedisDao;
+	IUserRedisDao userRedisDao12;
 	
 	public void test(){
 		

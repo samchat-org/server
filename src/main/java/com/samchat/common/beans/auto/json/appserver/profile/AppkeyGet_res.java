@@ -3,9 +3,9 @@ package com.samchat.common.beans.auto.json.appserver.profile;
 public class AppkeyGet_res{
 
 	private long ret ;
-	private String appi = "";
-	private String appk = "";
-	private String apps = "";
+	private String appi;
+	private String appk;
+	private String apps;
 
 	public long getRet () {
 		return ret ;
@@ -20,7 +20,7 @@ public class AppkeyGet_res{
 	}
 
 	public void setAppi(String appi) {
-		this.appi = (appi == null? "" : appi.trim());
+		this.appi = (appi == null? null : appi.trim());
 	}
 
 	public String getAppk() {
@@ -28,7 +28,7 @@ public class AppkeyGet_res{
 	}
 
 	public void setAppk(String appk) {
-		this.appk = (appk == null? "" : appk.trim());
+		this.appk = (appk == null? null : appk.trim());
 	}
 
 	public String getApps() {
@@ -36,7 +36,7 @@ public class AppkeyGet_res{
 	}
 
 	public void setApps(String apps) {
-		this.apps = (apps == null? "" : apps.trim());
+		this.apps = (apps == null? null : apps.trim());
 	}
 
 }

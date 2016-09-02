@@ -21,4 +21,6 @@ public interface IOfficialAccountSrv {
 	public List<QryFollowVO> queryFollowList(long userId);
 	
 	public List<QryPublicQueryVO> queryPublicList(String key);
+	
+	public List<TOaFollow> queryFollowListByAdserId(long userId);
 }

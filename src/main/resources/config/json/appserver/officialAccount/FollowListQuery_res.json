@@ -5,6 +5,7 @@
         {
             "id":1,
             "username":"Kevin Dong",
+            "lastupdate":123123,
             "avatar":{
                  "thumb":"http://121.42.207.185/avatar/2016/1/18/thumb_145312348.png"
             },

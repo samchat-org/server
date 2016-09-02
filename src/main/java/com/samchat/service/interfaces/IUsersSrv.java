@@ -28,6 +28,8 @@ public interface IUsersSrv {
 	public String getRegisterCode(String countryCode, String cellPhone);
 
 	public String[] getAddedToken(String countryCode, String cellPhone, long time, String deviceId, long userId) throws Exception;
+	
+	public void resetToken(String countryCode, String cellPhone, String realToken);
 
 	public void niRegister(long userId, String userName, String token, Timestamp cur) throws Exception;
 
@@ -52,6 +54,8 @@ public interface IUsersSrv {
 	
 	public UserInfoRds getUserInfoIntoRedis(String countryCode, String cellPhone);
 	
+	public void cancelUserInfoIntoRedis(String countryCode, String cellPhone);
+	
 	public List<TUserUsers> queryUsers();
 	
 	public TUserUsers queryUser(long userId);
@@ -60,7 +64,9 @@ public interface IUsersSrv {
 	
 	public List<QryUserInfoVO> queryUsersGroup(List<Long> userIds);
 	
-	public List<QryUserInfoVO> queryUserAccurate(Long type,String cellphone, String userName, String userId);
+	public List<QryUserInfoVO> queryUserAccurate(Long type, String cellphone, String userName, String userId);
 	
 	public List<TUserUsers> queryUserWithoutToken(long type, String countrycode, String cellphone, String userName);
+	
+	public long updateAvatar(String origin, String thumb, long userId);
 }

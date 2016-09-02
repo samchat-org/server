@@ -12,7 +12,8 @@ SELECT
 	upu.service_category,
 	upu.service_description,
 	oo.favourite_tag,
-	oo.block_tag
+	oo.block_tag,
+	uu.state_date lastupdate
 FROM
 	t_oa_follow oo,
 	t_user_pro_users upu,

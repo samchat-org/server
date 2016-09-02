@@ -1,20 +1,22 @@
 package com.samchat.common.beans.auto.json.appserver.user;
 
+import com.samchat.common.exceptions.AppException;
+import com.samchat.common.Constant;
 public class QueryAccurate_req{
 
 	private Header header;
 	private Body body;
 
 	public static class Header {
-		private String action = "";
-		private String token = "";
+		private String action;
+		private String token;
 
 		public String getAction() {
 			return action;
 		}
 
 		public void setAction(String action) {
-			this.action = (action == null? "" : action.trim());
+			this.action = (action == null? null : action.trim());
 		}
 
 		public String getToken() {
@@ -22,7 +24,7 @@ public class QueryAccurate_req{
 		}
 
 		public void setToken(String token) {
-			this.token = (token == null? "" : token.trim());
+			this.token = (token == null? null : token.trim());
 		}
 	}
 
@@ -49,15 +51,18 @@ public class QueryAccurate_req{
 
 	public static class Param {
 		private long type;
-		private String cellphone = "";
-		private String unique_id  = "";
-		private String username = "";
+		private String cellphone;
+		private String unique_id ;
+		private String username;
 
 		public long getType() {
 			return type;
 		}
 
 		public void setType(long type) {
+			if (type != 0 &&type != 1 &&type != 2 ){
+				 throw new AppException(Constant.ERROR.PARAM_NONSUPPORT, "value:" + type);
+			}
 			this.type = type;
 		}
 
@@ -66,7 +71,7 @@ public class QueryAccurate_req{
 		}
 
 		public void setCellphone(String cellphone) {
-			this.cellphone = (cellphone == null? "" : cellphone.trim());
+			this.cellphone = (cellphone == null? null : cellphone.trim());
 		}
 
 		public String getUnique_id () {
@@ -74,7 +79,7 @@ public class QueryAccurate_req{
 		}
 
 		public void setUnique_id (String unique_id ) {
-			this.unique_id  = (unique_id  == null? "" : unique_id .trim());
+			this.unique_id  = (unique_id  == null? null : unique_id .trim());
 		}
 
 		public String getUsername() {
@@ -82,7 +87,7 @@ public class QueryAccurate_req{
 		}
 
 		public void setUsername(String username) {
-			this.username = (username == null? "" : username.trim());
+			this.username = (username == null? null : username.trim());
 		}
 	}
 

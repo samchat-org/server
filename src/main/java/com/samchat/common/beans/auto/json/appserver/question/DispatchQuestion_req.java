@@ -6,24 +6,24 @@ public class DispatchQuestion_req{
 	private Body body;
 
 	public static class Header {
-		private String category = "";
+		private String category;
 
 		public String getCategory() {
 			return category;
 		}
 
 		public void setCategory(String category) {
-			this.category = (category == null? "" : category.trim());
+			this.category = (category == null? null : category.trim());
 		}
 	}
 
 	public static class Body {
 		private long datetime;
 		private long question_id;
-		private String question = "";
+		private String question;
 		private long opt;
 		private long dest_id;
-		private String address = "";
+		private String address;
 		private User user;
 
 		public long getDatetime() {
@@ -47,7 +47,7 @@ public class DispatchQuestion_req{
 		}
 
 		public void setQuestion(String question) {
-			this.question = (question == null? "" : question.trim());
+			this.question = (question == null? null : question.trim());
 		}
 
 		public long getOpt() {
@@ -71,7 +71,7 @@ public class DispatchQuestion_req{
 		}
 
 		public void setAddress(String address) {
-			this.address = (address == null? "" : address.trim());
+			this.address = (address == null? null : address.trim());
 		}
 
 		public User getUser() {
@@ -85,7 +85,7 @@ public class DispatchQuestion_req{
 
 	public static class User {
 		private long id;
-		private String username = "";
+		private String username;
 		private long lastupdate;
 
 		public long getId() {
@@ -101,7 +101,7 @@ public class DispatchQuestion_req{
 		}
 
 		public void setUsername(String username) {
-			this.username = (username == null? "" : username.trim());
+			this.username = (username == null? null : username.trim());
 		}
 
 		public long getLastupdate() {

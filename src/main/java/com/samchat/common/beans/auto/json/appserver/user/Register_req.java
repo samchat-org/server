@@ -6,31 +6,31 @@ public class Register_req{
 	private Body body;
 
 	public static class Header {
-		private String action = "";
+		private String action;
 
 		public String getAction() {
 			return action;
 		}
 
 		public void setAction(String action) {
-			this.action = (action == null? "" : action.trim());
+			this.action = (action == null? null : action.trim());
 		}
 	}
 
 	public static class Body {
-		private String countrycode = "";
-		private String cellphone = "";
+		private String countrycode;
+		private String cellphone;
 		private long verifycode;
-		private String username = "";
-		private String pwd = "";
-		private String deviceid = "";
+		private String username;
+		private String pwd;
+		private String deviceid;
 
 		public String getCountrycode() {
 			return countrycode;
 		}
 
 		public void setCountrycode(String countrycode) {
-			this.countrycode = (countrycode == null? "" : countrycode.trim());
+			this.countrycode = (countrycode == null? null : countrycode.trim());
 		}
 
 		public String getCellphone() {
@@ -38,7 +38,7 @@ public class Register_req{
 		}
 
 		public void setCellphone(String cellphone) {
-			this.cellphone = (cellphone == null? "" : cellphone.trim());
+			this.cellphone = (cellphone == null? null : cellphone.trim());
 		}
 
 		public long getVerifycode() {
@@ -54,7 +54,7 @@ public class Register_req{
 		}
 
 		public void setUsername(String username) {
-			this.username = (username == null? "" : username.trim());
+			this.username = (username == null? null : username.trim());
 		}
 
 		public String getPwd() {
@@ -62,7 +62,7 @@ public class Register_req{
 		}
 
 		public void setPwd(String pwd) {
-			this.pwd = (pwd == null? "" : pwd.trim());
+			this.pwd = (pwd == null? null : pwd.trim());
 		}
 
 		public String getDeviceid() {
@@ -70,7 +70,7 @@ public class Register_req{
 		}
 
 		public void setDeviceid(String deviceid) {
-			this.deviceid = (deviceid == null? "" : deviceid.trim());
+			this.deviceid = (deviceid == null? null : deviceid.trim());
 		}
 	}
 

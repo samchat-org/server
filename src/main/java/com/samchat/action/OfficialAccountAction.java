@@ -189,6 +189,7 @@ public class OfficialAccountAction extends BaseAction {
 			userPro.setUsername(fo.getUser_name());
 			userPro.setBlock_tag(fo.getBlock_tag());
 			userPro.setFavourite_tag(fo.getFavourite_tag());
+			userPro.setLastupdate(fo.getLastupdate().getTime());
 			userPro.setAvatar(avatar);
 			userPro.setSam_pros_info(prosInfo);
   			

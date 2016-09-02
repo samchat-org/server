@@ -52,4 +52,8 @@ public class OfficialAccountSrv implements IOfficialAccountSrv {
 	public List<QryPublicQueryVO> queryPublicList(String key){
 		return officialAccountDbDao.queryPublicList(key);
 	}
+	
+	public List<TOaFollow> queryFollowListByAdserId(long userId){
+		return officialAccountDbDao.queryFollowListByAdserId(userId);
+	}
 }

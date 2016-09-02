@@ -1,6 +1,9 @@
 package com.samchat;
 
-import java.util.HashMap;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import com.samchat.common.beans.auto.json.appserver.user.Login_req;
+
 
 public class Jtest {
 
@@ -15,10 +18,9 @@ public class Jtest {
     static int port = 6379;
 
     public static void main(String[] args) throws Exception{
-    	HashMap<String, Object> str = new HashMap<String, Object>(); 
-    	str.put("1", new Long(1));
-    	long r = (Long)str.get("1");
-    	System.out.print(r);
+    	ObjectMapper  om = new ObjectMapper();
+    	Login_req req = om.readValue("{\"header\":{\"action\":\"\"},\"body\":{\"countrycode\":\"86\",\"account\":\"1381196123\",\"pwd\":\"123456\",\"deviceid\":\"14EF65\"}}", Login_req.class);
+    	System.out.print(req.getClass());
     }
 
 }
