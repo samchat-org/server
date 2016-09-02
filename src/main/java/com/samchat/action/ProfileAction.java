@@ -49,7 +49,7 @@ public class ProfileAction extends BaseAction {
 		
 		long lastupdate = profileSrv.updateProfile(req, token.getUserId());
 		
-		if(updatedUser != null){
+		if(updatedUser.getCountry_code() != null){
 			
 			log.info("cancel userinfo : " + token.getCountryCode());
  			usersSrv.cancelUserInfoIntoRedis(token.getCountryCode(), token.getCellPhone());
@@ -60,7 +60,7 @@ public class ProfileAction extends BaseAction {
  			log.info("set userinfo : " + newcellphone);
 			usersSrv.setUserInfoIntoRedis(newcountrycode, newcellphone, tokenStr);
 			
- 			usersSrv.resetToken(newcountrycode, newcellphone, tokenStr);
+ 			usersSrv.resetToken(null, newcountrycode, newcellphone, tokenStr);
 			
 		}
  		ProfileUpdate_res res = new ProfileUpdate_res();
@@ -86,15 +86,14 @@ public class ProfileAction extends BaseAction {
 		if (cellphoneOpt == null) {
 			cellphoneOpt = cellphone;
 		}
-		TUserUsers u = null;
+		TUserUsers u = new TUserUsers();;
 		if (countrycodeOpt != countrycode || cellphoneOpt != cellphone) {
 			u = usersSrv.queryUserInfoByPhone(cellphoneOpt, countrycodeOpt);
 			if (u != null) {
 				throw new AppException(Constant.ERROR.PHONEorUSERNAME_EXIST, "countrycode:" + countrycodeOpt
 						+ "--cellphone:" + cellphoneOpt);
 			}
-			u = new TUserUsers();
-			u.setCountry_code(countrycodeOpt);
+ 			u.setCountry_code(countrycodeOpt);
 			u.setPhone_no(cellphoneOpt);
 		}
 		return u;

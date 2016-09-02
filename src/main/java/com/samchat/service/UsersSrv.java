@@ -74,7 +74,7 @@ public class UsersSrv implements IUsersSrv {
 		uu.setCreate_date(sysdate);
 		userDbDao.insertUser(uu);
 
-		String[] token = getAddedToken(countryCode, cellPhone, time, deviceId, uu.getUser_id());
+		String[] token = getAddedToken(countryCode, cellPhone, time, deviceId, uu.getUser_id(), uu.getUser_type());
 		String retToken = token[0];
 		String realToken = token[1];
 		niRegister(uu.getUser_id(), userName, realToken, sysdate);
@@ -111,13 +111,14 @@ public class UsersSrv implements IUsersSrv {
 		userRedisDao.set(keystr, verificationCode, expireSec);
 	}
 
-	public String[] getAddedToken(String countryCode, String cellPhone, long time, String deviceId, long userId)
+	public String[] getAddedToken(String countryCode, String cellPhone, long time, String deviceId, long userId, long userType)
 			throws Exception {
 
 		TokenRds tk = new TokenRds();
 		tk.setUserId(userId);
 		tk.setCountryCode(countryCode);
 		tk.setCellPhone(cellPhone);
+		tk.setUserType(userType);
 		tk.setDeviceId(deviceId);
 		for (int i = 0;; i++) {
 			String retToken = Md5Util.getSign4String(countryCode + "_" + cellPhone + "_" + time + "_" + deviceId + i);
@@ -131,14 +132,21 @@ public class UsersSrv implements IUsersSrv {
 		}
 	}
 	
-	public void resetToken(String countryCode, String cellPhone, String realToken){
+	public void resetToken(String userType, String countryCode, String cellPhone, String realToken){
 		String key = CacheUtil.getTokenCacheKey(realToken);
 		TokenRds tk = userRedisDao.getJsonObj(key);
 		if(tk == null){
 			return;
 		}
-		tk.setCountryCode(countryCode);
-		tk.setCellPhone(cellPhone);
+		if(userType != null){
+			tk.setUserType(Long.parseLong(userType));
+		}
+		if(countryCode != null){
+			tk.setCountryCode(countryCode);
+		}
+		if(cellPhone != null){
+			tk.setCellPhone(cellPhone);
+		}
 		userRedisDao.set(key, tk, 0);
 		
 	}

@@ -120,7 +120,7 @@ public class JsonObjUtil {
 				hasCustomeClass = true;
 			} else {
 				// 如果不是自定义子类,则根据类型名和控件对象名生成变量申明语句
-				genFieldd(sb, sbGetterAndSetter, j2j, 0);
+				genFieldd(sb, sbGetterAndSetter, j2j, 0, className);
 
 				// 已经使用的数据会移除,则集合中只会剩下自定义子类相关的元素数据,将在后续的循环中处理
 				iterator.remove();
@@ -151,7 +151,7 @@ public class JsonObjUtil {
 					// 如果当前数据属于本次外层循环需要处理的子类
 					if (parentClassName.equals(customClassName)) {
 						// 根据类型名和控件对象名生成变量申明语句
-						genFieldd(sb, sbSubGetterAndSetter, j2j, 1);
+						genFieldd(sb, sbSubGetterAndSetter, j2j, 1, className);
 
 						// 已经使用的数据会移除,减少下一次外层循环的遍历次数
 						customIterator.remove();
@@ -194,7 +194,7 @@ public class JsonObjUtil {
 	 */
 	private static void genFieldd(StringBuilder sb,
 			StringBuilder sbGetterAndSetter, Json2JavaElement j2j,
-			int extraTabNum) {
+			int extraTabNum, String className) {
 		// 先判断是否有注释,有的话添加之
 		// /**
 		// * 姓名
@@ -276,8 +276,14 @@ public class JsonObjUtil {
 			sbGetterAndSetter.append(StrUtils.formatSingleLine(2 + extraTabNum, validate.toString()));
 		}
 		if("String".equals(getTypeName(j2j))){
-			sbGetterAndSetter.append(StrUtils.formatSingleLine(2 + extraTabNum,
-					"this." + j2j.getName() + " = (" + j2j.getName() + " == null? null : " + j2j.getName() + ".trim());"));
+			if(className.endsWith("res")){
+				sbGetterAndSetter.append(StrUtils.formatSingleLine(2 + extraTabNum,
+						"this." + j2j.getName() + " = (" + j2j.getName() + " == null? \"\" : " + j2j.getName() + ".trim());"));
+			}else{
+				sbGetterAndSetter.append(StrUtils.formatSingleLine(2 + extraTabNum,
+						"this." + j2j.getName() + " = (" + j2j.getName() + " == null? null : " + j2j.getName() + ".trim());"));
+			}
+			
 		}else{
 			sbGetterAndSetter.append(StrUtils.formatSingleLine(2 + extraTabNum,
 					"this." + j2j.getName() + " = " + j2j.getName() + ";"));

@@ -27,9 +27,9 @@ public interface IUsersSrv {
 
 	public String getRegisterCode(String countryCode, String cellPhone);
 
-	public String[] getAddedToken(String countryCode, String cellPhone, long time, String deviceId, long userId) throws Exception;
+	public String[] getAddedToken(String countryCode, String cellPhone, long time, String deviceId, long userId, long userType) throws Exception;
 	
-	public void resetToken(String countryCode, String cellPhone, String realToken);
+	public void resetToken(String userType, String countryCode, String cellPhone, String realToken);
 
 	public void niRegister(long userId, String userName, String token, Timestamp cur) throws Exception;
 

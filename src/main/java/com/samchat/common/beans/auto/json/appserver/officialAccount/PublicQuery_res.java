@@ -16,7 +16,7 @@ public class PublicQuery_res{
 		}
 
 		public void setOrigin(String origin) {
-			this.origin = (origin == null? null : origin.trim());
+			this.origin = (origin == null? "" : origin.trim());
 		}
 
 		public String getThumb() {
@@ -24,7 +24,7 @@ public class PublicQuery_res{
 		}
 
 		public void setThumb(String thumb) {
-			this.thumb = (thumb == null? null : thumb.trim());
+			this.thumb = (thumb == null? "" : thumb.trim());
 		}
 	}
 
@@ -42,7 +42,7 @@ public class PublicQuery_res{
 		}
 
 		public void setCompany_name(String company_name) {
-			this.company_name = (company_name == null? null : company_name.trim());
+			this.company_name = (company_name == null? "" : company_name.trim());
 		}
 
 		public String getService_category() {
@@ -50,7 +50,7 @@ public class PublicQuery_res{
 		}
 
 		public void setService_category(String service_category) {
-			this.service_category = (service_category == null? null : service_category.trim());
+			this.service_category = (service_category == null? "" : service_category.trim());
 		}
 
 		public String getService_description() {
@@ -58,7 +58,7 @@ public class PublicQuery_res{
 		}
 
 		public void setService_description(String service_description) {
-			this.service_description = (service_description == null? null : service_description.trim());
+			this.service_description = (service_description == null? "" : service_description.trim());
 		}
 
 		public String getCountrycode() {
@@ -66,7 +66,7 @@ public class PublicQuery_res{
 		}
 
 		public void setCountrycode(String countrycode) {
-			this.countrycode = (countrycode == null? null : countrycode.trim());
+			this.countrycode = (countrycode == null? "" : countrycode.trim());
 		}
 
 		public String getPhone() {
@@ -74,7 +74,7 @@ public class PublicQuery_res{
 		}
 
 		public void setPhone(String phone) {
-			this.phone = (phone == null? null : phone.trim());
+			this.phone = (phone == null? "" : phone.trim());
 		}
 
 		public String getEmail() {
@@ -82,7 +82,7 @@ public class PublicQuery_res{
 		}
 
 		public void setEmail(String email) {
-			this.email = (email == null? null : email.trim());
+			this.email = (email == null? "" : email.trim());
 		}
 
 		public String getAddress() {
@@ -90,7 +90,7 @@ public class PublicQuery_res{
 		}
 
 		public void setAddress(String address) {
-			this.address = (address == null? null : address.trim());
+			this.address = (address == null? "" : address.trim());
 		}
 	}
 
@@ -119,7 +119,7 @@ public class PublicQuery_res{
 		}
 
 		public void setUsername(String username) {
-			this.username = (username == null? null : username.trim());
+			this.username = (username == null? "" : username.trim());
 		}
 
 		public String getCountrycode() {
@@ -127,7 +127,7 @@ public class PublicQuery_res{
 		}
 
 		public void setCountrycode(String countrycode) {
-			this.countrycode = (countrycode == null? null : countrycode.trim());
+			this.countrycode = (countrycode == null? "" : countrycode.trim());
 		}
 
 		public String getCellphone() {
@@ -135,7 +135,7 @@ public class PublicQuery_res{
 		}
 
 		public void setCellphone(String cellphone) {
-			this.cellphone = (cellphone == null? null : cellphone.trim());
+			this.cellphone = (cellphone == null? "" : cellphone.trim());
 		}
 
 		public String getEmail() {
@@ -143,7 +143,7 @@ public class PublicQuery_res{
 		}
 
 		public void setEmail(String email) {
-			this.email = (email == null? null : email.trim());
+			this.email = (email == null? "" : email.trim());
 		}
 
 		public String getAddress() {
@@ -151,7 +151,7 @@ public class PublicQuery_res{
 		}
 
 		public void setAddress(String address) {
-			this.address = (address == null? null : address.trim());
+			this.address = (address == null? "" : address.trim());
 		}
 
 		public long getType() {

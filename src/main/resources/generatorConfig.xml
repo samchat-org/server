@@ -71,6 +71,18 @@
 			<generatedKey column="param_id" sqlStatement="MySql"
 				identity="true" />
 		</table>
+		
+		<table tableName="t_contact_user" domainObjectName="TContactUser">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="param_id" sqlStatement="MySql"
+				identity="true" />
+		</table>
+		
+		<table tableName="t_contact_pro_user" domainObjectName="TContactProUser">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="param_id" sqlStatement="MySql"
+				identity="true" />
+		</table>
  	</context>
 
 </generatorConfiguration>

@@ -1,7 +1,7 @@
-package com.samchat.common.beans.auto.json.appserver.officialAccount;
+package com.samchat.common.beans.auto.json.appserver.contact;
 
 import java.util.ArrayList;
-public class FollowListQuery_res{
+public class ContactListQuery_res{
 
 	private long ret;
 	private long count;
@@ -35,10 +35,9 @@ public class FollowListQuery_res{
 		private long id;
 		private String username;
 		private long lastupdate;
+		private long type;
 		private Avatar avatar;
 		private Sam_pros_info sam_pros_info;
-		private long favourite_tag;
-		private long block_tag;
 
 		public long getId() {
 			return id;
@@ -64,6 +63,14 @@ public class FollowListQuery_res{
 			this.lastupdate = lastupdate;
 		}
 
+		public long getType() {
+			return type;
+		}
+
+		public void setType(long type) {
+			this.type = type;
+		}
+
 		public Avatar getAvatar() {
 			return avatar;
 		}
@@ -78,22 +85,6 @@ public class FollowListQuery_res{
 
 		public void setSam_pros_info(Sam_pros_info sam_pros_info) {
 			this.sam_pros_info = sam_pros_info;
-		}
-
-		public long getFavourite_tag() {
-			return favourite_tag;
-		}
-
-		public void setFavourite_tag(long favourite_tag) {
-			this.favourite_tag = favourite_tag;
-		}
-
-		public long getBlock_tag() {
-			return block_tag;
-		}
-
-		public void setBlock_tag(long block_tag) {
-			this.block_tag = block_tag;
 		}
 	}
 

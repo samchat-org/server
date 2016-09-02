@@ -4,11 +4,21 @@ public class TokenRds {
 	
 	private long userId;
 	
+	private long userType;
+	
 	private String cellPhone;
 	
 	private String countryCode;
 	
 	private String deviceId;
+	
+	public long getUserType() {
+		return userType;
+	}
+
+	public void setUserType(long userType) {
+		this.userType = userType;
+	}
 
 	public String getDeviceId() {
 		return deviceId;

@@ -40,7 +40,7 @@ public class Register_res{
 	}
 
 	public void setToken(String token) {
-		this.token = (token == null? null : token.trim());
+		this.token = (token == null? "" : token.trim());
 	}
 
 	public User getUser() {

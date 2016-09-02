@@ -206,7 +206,7 @@ public class UserAction extends BaseAction {
 		Login_res res = new Login_res();
 
 		Timestamp cur = commonSrv.querySysdate();
-		String[] token = usersSrv.getAddedToken(cCode, cellPhone, cur.getTime(), deviceId, userId);
+		String[] token = usersSrv.getAddedToken(cCode, cellPhone, cur.getTime(), deviceId, userId, user.getUser_type());
 
 		String retToken = token[0];
 		String realToken = token[1];
@@ -222,7 +222,7 @@ public class UserAction extends BaseAction {
 		userRes.setType(user.getUser_type());
 		userRes.setCountrycode(cCode);
 		userRes.setCellphone(user.getPhone_no());
-		userRes.setAddress("");
+		userRes.setAddress(user.getAddress());
 		userRes.setEmail(user.getEmail());
 		userRes.setLastupdate(user.getState_date().getTime());
 
@@ -310,7 +310,7 @@ public class UserAction extends BaseAction {
 	public CreateSamPros_res createSamPros(CreateSamPros_req req, TokenRds token, TUserUsers user) {
 
 		TUserProUsers proUsers = usersSrv.saveProsUserInfo(req, user);
-
+		usersSrv.resetToken(Constant.USER_TYPE_SERVICES + "", null, null, req.getHeader().getToken());
 		CreateSamPros_res res = new CreateSamPros_res();
 
 		CreateSamPros_res.User userRet = new CreateSamPros_res.User();
@@ -328,7 +328,7 @@ public class UserAction extends BaseAction {
 		userRet.setAvatar(avatar);
 		userRet.setLastupdate(proUsers.getState_date().getTime());
 		userRet.setAvatar(avatar);
-
+		
 		res.setUser(userRet);
 
 		return res;
@@ -524,8 +524,11 @@ public class UserAction extends BaseAction {
 	public QueryAccurate_res queryAccurate(QueryAccurate_req req, TokenRds token) {
 
 		QueryAccurate_req.Param p = req.getBody().getParam();
-		String cellphone = p.getCellphone().replaceAll("\\+| ", "");
-		String username = p.getUsername();
+		String cellphone = null;
+		if(p.getCellphone() != null){
+			cellphone = p.getCellphone().replaceAll("\\+| ", "");
+		}
+ 		String username = p.getUsername();
 		String id = p.getUnique_id();
 		Long type = p.getType();
 		List<QryUserInfoVO> userlist = usersSrv.queryUserAccurate(type, cellphone, username, id);

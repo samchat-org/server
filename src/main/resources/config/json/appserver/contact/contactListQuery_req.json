@@ -1,0 +1,9 @@
+{
+    "header":{
+        "action":"contact-list-query",
+        "token":"token"
+    },
+    "body":{
+        "type[0,1]":0
+    }
+}
