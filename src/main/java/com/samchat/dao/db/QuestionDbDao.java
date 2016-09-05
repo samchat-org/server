@@ -22,8 +22,7 @@ public class QuestionDbDao extends BaseDbDao implements IQuestionDbDao {
 	}
 	
 	public TQuestionQuestions saveQuestion(TQuestionQuestions  qst){
-		qst.setTable_name("t_question_questions_" + Constant.SDF_YYYYMM.format(qst.getCreate_date()));
-  		questionQuestionsMapper.insert(qst);
+   		questionQuestionsMapper.insert(qst);
  		return qst;
 	}
 }

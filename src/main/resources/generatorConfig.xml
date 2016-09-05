@@ -83,6 +83,11 @@
 			<generatedKey column="param_id" sqlStatement="MySql"
 				identity="true" />
 		</table>
+		<table tableName="t_question_questions" domainObjectName="TQuestionQuestions">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="param_id" sqlStatement="MySql"
+				identity="true" />
+		</table>
  	</context>
 
 </generatorConfiguration>

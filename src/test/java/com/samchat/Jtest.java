@@ -1,8 +1,10 @@
 package com.samchat;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.samchat.common.beans.auto.json.appserver.user.Login_req;
+import com.dangdang.ddframe.rdb.sharding.api.HintManager;
+import com.dangdang.ddframe.rdb.sharding.example.config.spring.masterslave.service.OrderService;
 
 
 public class Jtest {
@@ -18,9 +20,15 @@ public class Jtest {
     static int port = 6379;
 
     public static void main(String[] args) throws Exception{
-    	ObjectMapper  om = new ObjectMapper();
-    	Login_req req = om.readValue("{\"header\":{\"action\":\"\"},\"body\":{\"countrycode\":\"86\",\"account\":\"1381196123\",\"pwd\":\"123456\",\"deviceid\":\"14EF65\"}}", Login_req.class);
-    	System.out.print(req.getClass());
+    	ApplicationContext applicationContext = new ClassPathXmlApplicationContext("config/spring/applicationContextWithMasterSlave.xml");
+
+        // CHECKSTYLE:ON
+             OrderService orderService =  applicationContext.getBean(OrderService.class);
+            orderService.insert();
+            orderService.select();
+            orderService.delete();
+            orderService.select();
+        
     }
 
 }
