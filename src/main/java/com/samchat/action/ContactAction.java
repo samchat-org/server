@@ -1,5 +1,6 @@
 package com.samchat.action;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,19 +16,22 @@ import com.samchat.common.beans.auto.json.appserver.contact.Contact_res;
 import com.samchat.common.beans.manual.db.QryContactVO;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.exceptions.AppException;
-import com.samchat.dao.db.ContactDbDao;
-import com.samchat.service.interfaces.IContactSrv;
-import com.samchat.service.interfaces.IUsersSrv;
+import com.samchat.service.interfaces.ICommonSrvm;
+import com.samchat.service.interfaces.IContactSrvs;
+import com.samchat.service.interfaces.IUsersSrvs;
 
 public class ContactAction extends BaseAction {
-	
+
 	private static Logger log = Logger.getLogger(ContactAction.class);
 
 	@Autowired
-	private IUsersSrv usersSrv;
+	private IUsersSrvs usersSrv;
 
 	@Autowired
-	private IContactSrv contactSrv;
+	private IContactSrvs contactSrv;
+
+	@Autowired
+	private ICommonSrvm commonSrvm;
 
 	public Contact_res contact(Contact_req req, TokenRds token) {
 
@@ -35,6 +39,7 @@ public class ContactAction extends BaseAction {
 		long userId = body.getId();
 		long opt = body.getOpt();
 		long type = body.getType();
+		Timestamp sysdate = commonSrvm.querySysdate();
 
 		TUserUsers user = usersSrv.queryUser(userId);
 		if (user == null) {
@@ -45,13 +50,13 @@ public class ContactAction extends BaseAction {
 				if (user.getUser_type() == Constant.USER_TYPE_CUSTOMER) {
 					throw new AppException(Constant.ERROR.CUSTORMER_ADD_CUSTORMER);
 				}
-				log.info("user_id:" + token.getUserId() + "--user_id_pro:" +  userId);
-				contactSrv.addContactUser(token.getUserId(), userId);
+				log.info("user_id:" + token.getUserId() + "--user_id_pro:" + userId);
+				contactSrv.addContactUser(token.getUserId(), userId, sysdate);
 			} else if (type == 1) {
 				if (token.getUserType() == Constant.USER_TYPE_CUSTOMER) {
 					throw new AppException(Constant.ERROR.CUSTORMER_ADD_SERVIER_CONTACT_LIST);
 				}
-				contactSrv.addContactProUser(token.getUserId(), userId);
+				contactSrv.addContactProUser(token.getUserId(), userId, sysdate);
 			}
 		} else if (opt == 1) {
 			if (type == 0) {
@@ -68,7 +73,7 @@ public class ContactAction extends BaseAction {
 	}
 
 	public ContactListQuery_res contactListQuery(ContactListQuery_req req, TokenRds token) {
-		
+
 		log.info("start list");
 		long userId = token.getUserId();
 		long type = req.getBody().getType();
@@ -105,8 +110,8 @@ public class ContactAction extends BaseAction {
 		return res;
 
 	}
-	
-	public void contactListQueryValidate(ContactListQuery_req req, TokenRds token) {}
 
+	public void contactListQueryValidate(ContactListQuery_req req, TokenRds token) {
+	}
 
 }

@@ -14,31 +14,31 @@ import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.utils.SqsUtil;
 import com.samchat.dao.db.interfaces.IAdvertisementDbDao;
-import com.samchat.service.interfaces.IAdvertisementSrv;
+import com.samchat.service.interfaces.IAdvertisementSrvs;
 
 @Service
-public class AdvertisementSrv implements IAdvertisementSrv{
-	
+public class AdvertisementSrvs implements IAdvertisementSrvs {
+
 	@Autowired
-	private  IAdvertisementDbDao advertisementDbDao;
-	
-	public TAdvertisementAdvertisements saveAdvertisement(long userId, byte type, String content ){
-		return advertisementDbDao.saveAdvertisement(userId, type, content);
+	private IAdvertisementDbDao advertisementDbDao;
+
+	public TAdvertisementAdvertisements saveAdvertisement(long userId, byte type, String content, long adsId,
+			Timestamp sysdate) {
+		return advertisementDbDao.saveAdvertisement(adsId, sysdate, userId, type, content);
 	}
-	
-	public void updateAdvertisementNotinuse(List<AdvertisementDelete_req.Advertisements> ads, long userId) throws Exception{
-		for(AdvertisementDelete_req.Advertisements ad : ads){
+
+	public void updateAdvertisementNotinuse(List<AdvertisementDelete_req.Advertisements> ads, long userId)
+			throws Exception {
+		for (AdvertisementDelete_req.Advertisements ad : ads) {
 			advertisementDbDao.updateAdvertisementNotInuse(ad.getAdv_id(), ad.getPublish_timestamp(), userId);
 		}
- 	}
-	
-	public AdvertisementSqs advertisementSend(AdvertisementWrite_req req, TokenRds token) throws Exception {
-		
-		Timestamp sysdate = advertisementDbDao.querySysdate();
-		long adsId = advertisementDbDao.querySeqId(Constant.SEQUENCE.S_ADVERTISEMENT);
+	}
+
+	public AdvertisementSqs advertisementSend(AdvertisementWrite_req req, TokenRds token, long adsId, Timestamp sysdate)
+			throws Exception {
 
 		AdvertisementSqs ads = new AdvertisementSqs();
- 		AdvertisementWrite_req.Body body = req.getBody();
+		AdvertisementWrite_req.Body body = req.getBody();
 		ads.setAds_id(adsId);
 		ads.setType(body.getType());
 		ads.setUser_id(token.getUserId());
@@ -48,5 +48,5 @@ public class AdvertisementSrv implements IAdvertisementSrv{
 
 		return ads;
 	}
-	
+
 }

@@ -1,11 +1,9 @@
 package com.samchat.dao.db.interfaces;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
 import com.github.pagehelper.PageInfo;
-import com.samchat.common.beans.manual.db.QrySequenceVO;
 
 public interface IBaseDbDao {
 	public int executeUpdateSql(String sqlName, Object param);
@@ -17,9 +15,5 @@ public interface IBaseDbDao {
 	public <T1 extends Object> PageInfo<T1> getPageInfo(List<T1> resList);
 
 	public PageInfo<Object> executePageSql(String sqlName, Map paramMap, int currentPage, int pageSize);
-	
-	public Long querySeqId(String seqName);
-	
-	public Timestamp querySysdate();
 
 }

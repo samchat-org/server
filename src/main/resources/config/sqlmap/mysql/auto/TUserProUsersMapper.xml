@@ -19,8 +19,8 @@
     <result column="place_id" jdbcType="VARCHAR" property="place_id" />
     <result column="address" jdbcType="VARCHAR" property="address" />
     <result column="state" jdbcType="TINYINT" property="state" />
-    <result column="state_date" jdbcType="DATE" property="state_date" />
-    <result column="create_date" jdbcType="DATE" property="create_date" />
+    <result column="state_date" jdbcType="TIMESTAMP" property="state_date" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="create_date" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -159,7 +159,7 @@
       #{service_description,jdbcType=VARCHAR}, #{country_code,jdbcType=VARCHAR}, #{phone_no,jdbcType=VARCHAR}, 
       #{email,jdbcType=VARCHAR}, #{longitude,jdbcType=VARCHAR}, #{latitude,jdbcType=VARCHAR}, 
       #{place_id,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{state,jdbcType=TINYINT}, 
-      #{state_date,jdbcType=DATE}, #{create_date,jdbcType=DATE})
+      #{state_date,jdbcType=TIMESTAMP}, #{create_date,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.samchat.common.beans.auto.db.entitybeans.TUserProUsers">
     <!--
@@ -252,10 +252,10 @@
         #{state,jdbcType=TINYINT},
       </if>
       <if test="state_date != null">
-        #{state_date,jdbcType=DATE},
+        #{state_date,jdbcType=TIMESTAMP},
       </if>
       <if test="create_date != null">
-        #{create_date,jdbcType=DATE},
+        #{create_date,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -316,10 +316,10 @@
         state = #{record.state,jdbcType=TINYINT},
       </if>
       <if test="record.state_date != null">
-        state_date = #{record.state_date,jdbcType=DATE},
+        state_date = #{record.state_date,jdbcType=TIMESTAMP},
       </if>
       <if test="record.create_date != null">
-        create_date = #{record.create_date,jdbcType=DATE},
+        create_date = #{record.create_date,jdbcType=TIMESTAMP},
       </if>
     </set>
     <if test="_parameter != null">
@@ -345,8 +345,8 @@
       place_id = #{record.place_id,jdbcType=VARCHAR},
       address = #{record.address,jdbcType=VARCHAR},
       state = #{record.state,jdbcType=TINYINT},
-      state_date = #{record.state_date,jdbcType=DATE},
-      create_date = #{record.create_date,jdbcType=DATE}
+      state_date = #{record.state_date,jdbcType=TIMESTAMP},
+      create_date = #{record.create_date,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -395,10 +395,10 @@
         state = #{state,jdbcType=TINYINT},
       </if>
       <if test="state_date != null">
-        state_date = #{state_date,jdbcType=DATE},
+        state_date = #{state_date,jdbcType=TIMESTAMP},
       </if>
       <if test="create_date != null">
-        create_date = #{create_date,jdbcType=DATE},
+        create_date = #{create_date,jdbcType=TIMESTAMP},
       </if>
     </set>
     where pro_user_id = #{pro_user_id,jdbcType=BIGINT}
@@ -421,8 +421,8 @@
       place_id = #{place_id,jdbcType=VARCHAR},
       address = #{address,jdbcType=VARCHAR},
       state = #{state,jdbcType=TINYINT},
-      state_date = #{state_date,jdbcType=DATE},
-      create_date = #{create_date,jdbcType=DATE}
+      state_date = #{state_date,jdbcType=TIMESTAMP},
+      create_date = #{create_date,jdbcType=TIMESTAMP}
     where pro_user_id = #{pro_user_id,jdbcType=BIGINT}
   </update>
 </mapper>

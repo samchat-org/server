@@ -16,22 +16,22 @@ import com.samchat.common.beans.auto.json.appserver.question.DispatchQuestion_re
 import com.samchat.common.beans.manual.json.sqs.QuestionSqs;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.GetuiUtil;
-import com.samchat.service.interfaces.ICommonSrv;
-import com.samchat.service.interfaces.IQuestionSrv;
-import com.samchat.service.interfaces.IUsersSrv;
+import com.samchat.service.interfaces.ICommonSrvs;
+import com.samchat.service.interfaces.IQuestionSrvs;
+import com.samchat.service.interfaces.IUsersSrvs;
 
 public class Dispatcher extends Thread {
 
 	private static Logger log = Logger.getLogger(Dispatcher.class);
 
 	@Autowired
-	private ICommonSrv commonSrv;
+	private ICommonSrvs commonSrv;
 
 	@Autowired
-	private IQuestionSrv questionSrv;
+	private IQuestionSrvs questionSrv;
 
 	@Autowired
-	private IUsersSrv usersSrv;
+	private IUsersSrvs usersSrv;
 
 	private ObjectMapper om = null;
 

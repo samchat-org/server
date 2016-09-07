@@ -7,11 +7,11 @@ public class CreateSamPros_res{
 
 	public static class User {
 		private long id;
-		private String username;
-		private String countrycode;
-		private String cellphone;
-		private String email;
-		private String address;
+		private String username = "";
+		private String countrycode = "";
+		private String cellphone = "";
+		private String email = "";
+		private String address = "";
 		private long type;
 		private Avatar avatar;
 		private long lastupdate;
@@ -90,8 +90,8 @@ public class CreateSamPros_res{
 	}
 
 	public static class Avatar {
-		private String origin;
-		private String thumb;
+		private String origin = "";
+		private String thumb = "";
 
 		public String getOrigin() {
 			return origin;

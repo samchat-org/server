@@ -7,14 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.samchat.common.Constant;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.exceptions.AppException;
-import com.samchat.service.interfaces.IUsersSrv;
+import com.samchat.service.interfaces.IUsersSrvs;
 
 public class ToolAction extends HttpServlet {
 	
 	
 	
 	@Autowired
-	protected IUsersSrv usersSrv;
+	protected IUsersSrvs usersSrv;
 
 	protected String sysErrorRet(int errorCode) {
 		return "{\"ret\":" + errorCode + "}";

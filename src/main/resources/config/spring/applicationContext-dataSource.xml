@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-    xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:rdb="http://www.dangdang.com/schema/ddframe/rdb"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:rdb="http://www.dangdang.com/schema/ddframe/rdb"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/aop
                                          http://www.springframework.org/schema/aop/spring-aop.xsd   
@@ -15,85 +13,106 @@
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.dangdang.com/schema/ddframe/rdb
                         http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd
-                        ">                       
-                       
-       <bean id="myDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
-              destroy-method="close">
-              <property name="driverClass" value="${jdbc.driverClass}"></property>
-              <property name="jdbcUrl" value="${jdbc.url}"></property>
-              <property name="user" value="${jdbc.user}"></property>
-              <property name="password" value="${jdbc.password}"></property>
-              <property name="minPoolSize" value="${jdbc.minPoolSize}"></property>
-              <property name="maxPoolSize" value="${jdbc.maxPoolSize}"></property>
-              <property name="maxIdleTime" value="${jdbc.maxIdleTime}"></property>
-              <property name="acquireIncrement" value="${jdbc.acquireIncrement}"></property>
-              <property name="maxStatements" value="${jdbc.maxStatements}"></property>
-              <property name="maxStatementsPerConnection" value="${jdbc.maxStatements}"></property>
-              <property name="initialPoolSize" value="${jdbc.initialPoolSize}"></property>
-              <property name="idleConnectionTestPeriod" value="${jdbc.idleConnectionTestPeriod}"></property>
-              <property name="acquireRetryAttempts" value="${jdbc.acquireRetryAttempts}"></property>
-              <property name="preferredTestQuery" value="select 1"></property>
-              <property name="checkoutTimeout" value="${jdbc.checkoutTimeout}"></property>
-              <property name="testConnectionOnCheckout" value="${jdbc.testConnectionOnCheckout}"></property>
-       </bean>
-       <rdb:strategy id="questionSDSY" sharding-columns="create_date" algorithm-expression="t_question_questions_${create_date.toString('yyyyMM')}" />
-       <rdb:data-source id="shardingDataSource">
-              <rdb:sharding-rule data-sources="myDataSource">
-                     <rdb:table-rules>
-                           <rdb:table-rule logic-table="t_question_questions"
-                                  actual-tables="t_question_questions_${201608..203001}"
-                                  table-strategy="questionSDSY" />
-                     </rdb:table-rules>
-                     <rdb:default-database-strategy sharding-columns="user_id" algorithm-expression="myDataSource"/>
-              </rdb:sharding-rule>
-       </rdb:data-source>
-       <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-              <property name="dataSource" ref="shardingDataSource" />
-              <property name="configLocation" value="classpath:setting.xml"></property>
-              <property name="mapperLocations" value="classpath*:config/sqlmap/mysql/**/*.xml" />
-              <!-- 分页插件设置 -->
-              <property name="plugins">
-                     <array>
-                           <bean class="com.github.pagehelper.PageHelper">
-                                  <property name="properties">
-                                         <value>
-                                                dialect=mysql
-                                                reasonable=true
-                                                pageSizeZero=true
-                                         </value>
-                                  </property>
-                           </bean>
-                     </array>
-              </property>
-       </bean>
-       <!-- 通过扫描的模式，扫描在com.wuliu.beans.auto.mapper目录下的所有mapper -->
-       <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-              <property name="basePackage" value="com.samchat.common.beans.auto.db.mapper" />
-       </bean>
-       <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
-              <constructor-arg index="0" ref="sqlSessionFactory" />
-       </bean>
-       <bean id="myTransactionManager"
-              class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-              <property name="dataSource">
-                     <ref bean="shardingDataSource" />
-              </property>
-       </bean>
-       <!-- 配置事务传播特性 -->
-       <tx:advice id="myWebAdvice" transaction-manager="myTransactionManager">
-              <tx:attributes>
-                     <tx:method name="save*" propagation="REQUIRED"
-                           rollback-for="java.lang.Exception" />
-                     <tx:method name="del*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
-                     <tx:method name="update*" propagation="REQUIRED"
-                           rollback-for="java.lang.Exception" />
-                     <tx:method name="add*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
-                     <tx:method name="*" propagation="SUPPORTS" />
-              </tx:attributes>
-       </tx:advice>
-       <aop:config>
-              <aop:pointcut id="allServiceMethod"
-                     expression="execution(* com.samchat.service.*.*(..))" />
-              <aop:advisor pointcut-ref="allServiceMethod" advice-ref="myWebAdvice" />
-       </aop:config>
+                        ">
+
+	<bean id="myDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${jdbc.driverClass}"></property>
+		<property name="jdbcUrl" value="${jdbc.url}"></property>
+		<property name="user" value="${jdbc.user}"></property>
+		<property name="password" value="${jdbc.password}"></property>
+		<property name="minPoolSize" value="${jdbc.minPoolSize}"></property>
+		<property name="maxPoolSize" value="${jdbc.maxPoolSize}"></property>
+		<property name="maxIdleTime" value="${jdbc.maxIdleTime}"></property>
+		<property name="acquireIncrement" value="${jdbc.acquireIncrement}"></property>
+		<property name="maxStatements" value="${jdbc.maxStatements}"></property>
+		<property name="maxStatementsPerConnection" value="${jdbc.maxStatements}"></property>
+		<property name="initialPoolSize" value="${jdbc.initialPoolSize}"></property>
+		<property name="idleConnectionTestPeriod" value="${jdbc.idleConnectionTestPeriod}"></property>
+		<property name="acquireRetryAttempts" value="${jdbc.acquireRetryAttempts}"></property>
+		<property name="preferredTestQuery" value="select 1"></property>
+		<property name="checkoutTimeout" value="${jdbc.checkoutTimeout}"></property>
+		<property name="testConnectionOnCheckout" value="${jdbc.testConnectionOnCheckout}"></property>
+	</bean>
+
+	<rdb:strategy id="questionSDSY" sharding-columns="create_date"
+		algorithm-expression="t_question_questions_${create_date.toString('yyyyMM')}" />
+	<rdb:data-source id="shardingDataSource">
+		<rdb:sharding-rule data-sources="myDataSource">
+			<rdb:table-rules>
+				<rdb:table-rule logic-table="t_question_questions"
+					actual-tables="t_question_questions_${201608..203001}"
+					table-strategy="questionSDSY" />
+			</rdb:table-rules>
+			<rdb:default-database-strategy
+				sharding-columns="none"
+				algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm" />
+			<rdb:default-table-strategy
+				sharding-columns="none"
+				algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm" />
+		</rdb:sharding-rule>
+	</rdb:data-source>
+
+	<bean id="dynamicDataSource" class="com.samchat.common.datas.DynamicDataSource">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+				<entry key="shardingDataSource" value-ref="shardingDataSource" />
+				<entry key="myDataSource" value-ref="myDataSource" />
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="shardingDataSource" />
+	</bean>
+
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dynamicDataSource" />
+		<property name="configLocation" value="classpath:setting.xml"></property>
+		<property name="mapperLocations" value="classpath*:config/sqlmap/mysql/**/*.xml" />
+		<!-- 分页插件设置 -->
+		<property name="plugins">
+			<array>
+				<bean class="com.github.pagehelper.PageHelper">
+					<property name="properties">
+						<value>
+							dialect=mysql
+							reasonable=true
+							pageSizeZero=true
+						</value>
+					</property>
+				</bean>
+			</array>
+		</property>
+	</bean>
+
+	<!-- 通过扫描的模式，扫描在com.wuliu.beans.auto.mapper目录下的所有mapper -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.samchat.common.beans.auto.db.mapper" />
+	</bean>
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+	<bean id="myTransactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource">
+			<ref bean="dynamicDataSource" />
+		</property>
+	</bean>
+	<!-- 配置事务传播特性 -->
+	<tx:advice id="myWebAdvice" transaction-manager="myTransactionManager">
+		<tx:attributes>
+			<tx:method name="save*" propagation="REQUIRED"
+				rollback-for="java.lang.Exception" />
+			<tx:method name="del*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="update*" propagation="REQUIRED"
+				rollback-for="java.lang.Exception" />
+			<tx:method name="add*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="*" propagation="SUPPORTS" />
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:pointcut id="allServiceMethod"
+			expression="execution(* com.samchat.service.*.*(..))" />
+		<aop:advisor pointcut-ref="allServiceMethod" advice-ref="myWebAdvice" />
+	</aop:config>
+	<aop:aspectj-autoproxy />
 </beans>

@@ -3,9 +3,9 @@ package com.samchat.common.beans.auto.json.appserver.profile;
 public class AppkeyGet_res{
 
 	private long ret ;
-	private String appi;
-	private String appk;
-	private String apps;
+	private String appi = "";
+	private String appk = "";
+	private String apps = "";
 
 	public long getRet () {
 		return ret ;

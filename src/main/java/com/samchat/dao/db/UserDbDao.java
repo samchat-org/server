@@ -1,5 +1,6 @@
 package com.samchat.dao.db;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.samchat.action.ProfileAction;
 import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsersExample;
@@ -21,9 +21,9 @@ import com.samchat.dao.db.interfaces.IUserDbDao;
 
 @Repository
 public class UserDbDao extends BaseDbDao implements IUserDbDao {
-	
+
 	private static Logger log = Logger.getLogger(UserDbDao.class);
-	
+
 	@Autowired
 	private TUserUsersMapper userUsersMapper;
 	@Autowired
@@ -66,30 +66,33 @@ public class UserDbDao extends BaseDbDao implements IUserDbDao {
 		return null;
 	}
 
-	public void insertUser(TUserUsers user) {
+	public void insertUser(TUserUsers user, Timestamp sysdate) {
+		user.setState_date(sysdate);
 		userUsersMapper.insert(user);
 	}
 
-	public void insertProUser(TUserProUsers proUser) {
+	public void insertProUser(TUserProUsers proUser, Timestamp sysdate) {
+		proUser.setState_date(sysdate);
 		userProUsersMapper.insert(proUser);
 	}
 
-	public void updateUser(TUserUsers user) {
-		user.setState_date(this.querySysdate());
+	public void updateUser(TUserUsers user, Timestamp sysdate) {
+		user.setState_date(sysdate);
 		userUsersMapper.updateByPrimaryKeySelective(user);
 	}
 
-	public void updateProUser(TUserProUsers user) {
- 		TUserProUsersExample uue = new TUserProUsersExample();
+	public void updateProUser(TUserProUsers user, Timestamp sysdate) {
+		user.setState_date(sysdate);
+		TUserProUsersExample uue = new TUserProUsersExample();
 		uue.createCriteria().andUser_idEqualTo(user.getUser_id()).andStateEqualTo(Constant.STATE_IN_USE);
 		userProUsersMapper.updateByExampleSelective(user, uue);
- 	}
+	}
 
 	public TUserProUsers queryProUser(long userId) {
 		TUserProUsersExample uue = new TUserProUsersExample();
 		uue.createCriteria().andUser_idEqualTo(userId).andStateEqualTo(Constant.STATE_IN_USE);
 		List<TUserProUsers> prousers = userProUsersMapper.selectByExample(uue);
-		if(prousers.size() > 0)
+		if (prousers.size() > 0)
 			return prousers.get(0);
 		return null;
 	}
@@ -128,5 +131,5 @@ public class UserDbDao extends BaseDbDao implements IUserDbDao {
 		}
 		return userUsersMapper.selectByExample(uue);
 	}
-	
+
 }

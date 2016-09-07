@@ -1,5 +1,6 @@
 package com.samchat.action;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,20 +26,24 @@ import com.samchat.common.beans.manual.db.QryFollowVO;
 import com.samchat.common.beans.manual.db.QryPublicQueryVO;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.exceptions.AppException;
-import com.samchat.service.interfaces.IOfficialAccountSrv;
-import com.samchat.service.interfaces.IUsersSrv;
+import com.samchat.service.interfaces.ICommonSrvm;
+import com.samchat.service.interfaces.IOfficialAccountSrvs;
+import com.samchat.service.interfaces.IUsersSrvs;
 
 public class OfficialAccountAction extends BaseAction {
 
 	private static Logger log = Logger.getLogger(OfficialAccountAction.class);
 
 	@Autowired
-	private IUsersSrv usersSrv;
+	private IUsersSrvs usersSrv;
 
 	@Autowired
-	private IOfficialAccountSrv officialAccountSrv;
+	private IOfficialAccountSrvs officialAccountSrv;
 
-	public Follow_res follow(Follow_req req, TokenRds token, HashMap<String, Object> paramRet) {
+	@Autowired
+	private ICommonSrvm commonSrvm;
+
+	public Follow_res follow(Follow_req req, TokenRds token, HashMap<String, Object> paramRet, Timestamp sysdate) {
 
 		TUserUsers userPro = (TUserUsers) paramRet.get("userPro");
 		TOaFollow follow = (TOaFollow) paramRet.get("follow");
@@ -48,7 +53,7 @@ public class OfficialAccountAction extends BaseAction {
 
 		if (req.getBody().getOpt() == Constant.OA_FOLLOW) {
 			if (follow == null) {
-				officialAccountSrv.insertFollow(userId, userIdPro);
+				officialAccountSrv.insertFollow(userId, userIdPro, sysdate);
 			}
 		} else {
 			officialAccountSrv.deleteFollow(userId, userIdPro);
@@ -89,13 +94,14 @@ public class OfficialAccountAction extends BaseAction {
 
 		TUserUsers userPro = (TUserUsers) paramRet.get("userPro");
 		TOaFollow follow = (TOaFollow) paramRet.get("follow");
+		Timestamp sysdate = commonSrvm.querySysdate();
 
 		long userIdPro = req.getBody().getId();
 		long userId = token.getUserId();
 
 		long opt = req.getBody().getOpt();
 		if (follow.getBlock_tag() != opt) {
-			officialAccountSrv.updateBlock(userId, userIdPro, (byte) opt);
+			officialAccountSrv.updateBlock(userId, userIdPro, (byte) opt, sysdate);
 		}
 		Block_res res = new Block_res();
 		Block_res.User user = new Block_res.User();
@@ -130,13 +136,14 @@ public class OfficialAccountAction extends BaseAction {
 
 		TUserUsers userPro = (TUserUsers) paramRet.get("userPro");
 		TOaFollow follow = (TOaFollow) paramRet.get("follow");
+		Timestamp sysdate = commonSrvm.querySysdate();
 
 		long userIdPro = req.getBody().getId();
 		long userId = token.getUserId();
 
 		long opt = req.getBody().getOpt();
 		if (follow.getFavourite_tag() != opt) {
-			officialAccountSrv.updateFavourite(userId, userIdPro, (byte) opt);
+			officialAccountSrv.updateFavourite(userId, userIdPro, (byte) opt, sysdate);
 		}
 		Favourite_res res = new Favourite_res();
 		Favourite_res.User user = new Favourite_res.User();
@@ -192,10 +199,10 @@ public class OfficialAccountAction extends BaseAction {
 			userPro.setLastupdate(fo.getLastupdate().getTime());
 			userPro.setAvatar(avatar);
 			userPro.setSam_pros_info(prosInfo);
-  			
+
 			avatar.setThumb(fo.getThumb());
-  			prosInfo.setService_category(fo.getService_category());
- 			
+			prosInfo.setService_category(fo.getService_category());
+
 			users.add(userPro);
 		}
 		return res;
@@ -203,36 +210,36 @@ public class OfficialAccountAction extends BaseAction {
 
 	public void followListQueryValidate(FollowListQuery_req req, TokenRds token) {
 	}
-	
-	public PublicQuery_res publicQuery(PublicQuery_req req, TokenRds token){
+
+	public PublicQuery_res publicQuery(PublicQuery_req req, TokenRds token) {
 		PublicQuery_req.Body body = req.getBody();
 		String key = body.getKey();
 		String address = "";
 		String placeId = "";
 		String longitude = "";
 		String latitude = "";
-		
+
 		PublicQuery_req.Location location = body.getLocation();
-		
-		if(location != null){
+
+		if (location != null) {
 			address = location.getAddress();
 			placeId = location.getPlace_id();
-			
+
 			PublicQuery_req.Location_info info = location.getLocation_info();
-			if(info != null){
-				
+			if (info != null) {
+
 			}
 		}
 
-		List<QryPublicQueryVO>  oalist = officialAccountSrv.queryPublicList(key);
+		List<QryPublicQueryVO> oalist = officialAccountSrv.queryPublicList(key);
 		PublicQuery_res res = new PublicQuery_res();
 		res.setCount(oalist.size());
-		
-		ArrayList<PublicQuery_res.Users> users = new ArrayList<PublicQuery_res.Users>(); 
+
+		ArrayList<PublicQuery_res.Users> users = new ArrayList<PublicQuery_res.Users>();
 		res.setUsers(users);
-		
- 		for(QryPublicQueryVO pq : oalist){
-			
+
+		for (QryPublicQueryVO pq : oalist) {
+
 			PublicQuery_res.Users user = new PublicQuery_res.Users();
 			user.setId(pq.getUser_id());
 			user.setUsername(pq.getUser_name());
@@ -241,32 +248,32 @@ public class OfficialAccountAction extends BaseAction {
 			user.setEmail(pq.getEmail());
 			user.setAddress(pq.getAddress());
 			user.setType(pq.getType());
-			
+
 			PublicQuery_res.Avatar avatar = new PublicQuery_res.Avatar();
 			user.setAvatar(avatar);
 			avatar.setOrigin(pq.getOrigin());
 			avatar.setThumb(pq.getThumb());
-			
+
 			user.setLastupdate(pq.getLastupdate().getTime());
-			
+
 			PublicQuery_res.Sam_pros_info pros = new PublicQuery_res.Sam_pros_info();
 			user.setSam_pros_info(pros);
 			pros.setCompany_name(pq.getCompany_name());
- 			pros.setService_category(pq.getService_category());
+			pros.setService_category(pq.getService_category());
 			pros.setService_description(pq.getService_description());
 			pros.setCountrycode(pq.getCountrycode_pro());
 			pros.setPhone(pq.getPhone_pro());
 			pros.setEmail(pq.getEmail_pro());
 			pros.setAddress(pq.getAddress_pro());
-			
+
 			users.add(user);
 
 		}
-  		
+
 		return res;
 	}
-	
-	public void publicQueryValidate(PublicQuery_req req, TokenRds token){
-		
+
+	public void publicQueryValidate(PublicQuery_req req, TokenRds token) {
+
 	}
 }

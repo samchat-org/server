@@ -1,5 +1,7 @@
 package com.samchat.dao.db;
 
+import java.sql.Timestamp;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -18,14 +20,14 @@ public class AdvertisementDbDao extends BaseDbDao implements IAdvertisementDbDao
 		return "adsSqlMapper";
 	}
 	
-	public TAdvertisementAdvertisements saveAdvertisement(long userId, byte type, String content ){
+	public TAdvertisementAdvertisements saveAdvertisement(long adsId, Timestamp sysdate, long userId, byte type, String content ){
 		TAdvertisementAdvertisements ads = new TAdvertisementAdvertisements();
 		
-		ads.setAds_id(this.querySeqId("s_advertisement"));
+		ads.setAds_id(adsId);
 		ads.setUser_id(userId);
 		ads.setType(type);
 		ads.setContent(content);
-		ads.setCreate_date(querySysdate());
+		ads.setCreate_date(sysdate);
 		ads.setState_date(ads.getCreate_date());
 		ads.setState(Constant.STATE_IN_USE);
 		advertisementsMapper.insert(ads);

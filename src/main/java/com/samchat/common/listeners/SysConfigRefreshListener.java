@@ -18,14 +18,14 @@ import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
 import com.samchat.common.beans.manual.common.SecurityAccessBean;
 import com.samchat.common.thread.SysConfigRefreshThread;
 import com.samchat.common.utils.CacheUtil;
-import com.samchat.service.interfaces.ICommonSrv;
+import com.samchat.service.interfaces.ICommonSrvs;
 
 public class SysConfigRefreshListener implements ServletContextListener {
 
 	private final Logger log = Logger.getLogger(SysConfigRefreshListener.class);
 	
 	@Autowired
-	private ICommonSrv commonSrv;
+	private ICommonSrvs commonSrv;
 
 	public void contextDestroyed(ServletContextEvent arg0) {
 	}
@@ -37,7 +37,7 @@ public class SysConfigRefreshListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent arg0) {
 		try {
 			commonSrv = WebApplicationContextUtils.getWebApplicationContext(arg0.getServletContext()).getBean(
-					ICommonSrv.class);
+					ICommonSrvs.class);
 			SysConfigRefreshThread thread = new SysConfigRefreshThread(commonSrv);
 			thread.run();
 

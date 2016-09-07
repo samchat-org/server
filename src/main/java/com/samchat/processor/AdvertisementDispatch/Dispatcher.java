@@ -1,5 +1,6 @@
 package com.samchat.processor.AdvertisementDispatch;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -12,31 +13,30 @@ import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
-import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementDispatch_req;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.GetuiUtil;
-import com.samchat.service.interfaces.IAdvertisementSrv;
-import com.samchat.service.interfaces.ICommonSrv;
-import com.samchat.service.interfaces.IOfficialAccountSrv;
-import com.samchat.service.interfaces.IUsersSrv;
+import com.samchat.service.interfaces.IAdvertisementSrvs;
+import com.samchat.service.interfaces.ICommonSrvs;
+import com.samchat.service.interfaces.IOfficialAccountSrvs;
+import com.samchat.service.interfaces.IUsersSrvs;
 
 public class Dispatcher extends Thread {
 
 	private static Logger log = Logger.getLogger(Dispatcher.class);
 
 	@Autowired
-	private ICommonSrv commonSrv;
+	private ICommonSrvs commonSrv;
 
 	@Autowired
-	private IAdvertisementSrv advertisementSrv;
+	private IAdvertisementSrvs advertisementSrv;
 
 	@Autowired
-	private IUsersSrv usersSrv;
+	private IUsersSrvs usersSrv;
 
 	@Autowired
-	private IOfficialAccountSrv officialAccountSrv;
+	private IOfficialAccountSrvs officialAccountSrv;
 
 	private ObjectMapper om = null;
 
@@ -89,7 +89,8 @@ public class Dispatcher extends Thread {
 					log.info("messages body:" + body);
 					try {
 						AdvertisementSqs req = om.readValue(body, AdvertisementSqs.class);
-						advertisementSrv.saveAdvertisement(req.getUser_id(), (byte) req.getType(), req.getContent());
+						advertisementSrv.saveAdvertisement(req.getUser_id(), (byte) req.getType(), req.getContent(),
+								req.getAds_id(), new Timestamp(req.getTime()));
 						List<TOaFollow> followlst = officialAccountSrv.queryFollowListByAdserId(req.getUser_id());
 						for (TOaFollow ff : followlst) {
 							String dispatchReq = om.writeValueAsString(getRequest(ff.getUser_id(), req));

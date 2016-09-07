@@ -11,20 +11,20 @@ import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
 import com.samchat.common.beans.manual.common.SecurityAccessBean;
 import com.samchat.common.utils.CacheUtil;
-import com.samchat.service.interfaces.ICommonSrv;
+import com.samchat.service.interfaces.ICommonSrvs;
 
 public class SysConfigRefreshThread extends Thread {
 
 	private final Logger log = Logger.getLogger(SysConfigRefreshThread.class);
 
 	@Autowired
-	private ICommonSrv commonSrv;
+	private ICommonSrvs commonSrv;
 	
 	public SysConfigRefreshThread(){
 		
 	}
 	
-	public SysConfigRefreshThread(ICommonSrv commonSrv){
+	public SysConfigRefreshThread(ICommonSrvs commonSrv){
 		this.commonSrv = commonSrv;
 	}
 	

@@ -52,6 +52,11 @@ public interface Constant {
 
 	int REGISTER_TYPE_PHONE = 0;
 	int REGISTER_TYPE_EMAIL = 1;
+	
+	interface DATA_SOURCE{
+		String S_MAIN = "myDataSource";
+ 		String S_SHARDING = "shardingDataSource";
+	}
 
 	interface SEQUENCE {
 		String S_QUESTION = "s_question";

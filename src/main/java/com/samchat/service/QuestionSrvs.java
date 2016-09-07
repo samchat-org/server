@@ -20,12 +20,12 @@ import com.samchat.common.utils.SqsUtil;
 import com.samchat.dao.db.interfaces.IQuestionDbDao;
 import com.samchat.dao.db.interfaces.IUserDbDao;
 import com.samchat.dao.redis.interfaces.IUserRedisDao;
-import com.samchat.service.interfaces.IQuestionSrv;
+import com.samchat.service.interfaces.IQuestionSrvs;
 
 @Service
-public class QuestionSrv implements IQuestionSrv {
+public class QuestionSrvs implements IQuestionSrvs {
 
-	private static Logger log = Logger.getLogger(QuestionSrv.class);
+	private static Logger log = Logger.getLogger(QuestionSrvs.class);
 
 	@Autowired
 	private IUserRedisDao<String, Object> userRedisDao;
@@ -50,17 +50,14 @@ public class QuestionSrv implements IQuestionSrv {
 		return questionDbDao.saveQuestion(qq);
 	}
 
-	public QuestionSqs sendQuestion(Question_req req, TokenRds token) throws Exception {
+	public QuestionSqs sendQuestion(Question_req req, TokenRds token, long qstId, Timestamp sysdate) throws Exception {
 
 		QuestionSqs sqs = new QuestionSqs();
 		Question_req.Body body = req.getBody();
 
-		Timestamp sysdate = questionDbDao.querySysdate();
-		questionSendControl(sysdate.getTime(), token.getCountryCode(), token.getCellPhone());
+ 		questionSendControl(sysdate.getTime(), token.getCountryCode(), token.getCellPhone());
 
-		long questionId = questionDbDao.querySeqId(Constant.SEQUENCE.S_QUESTION);
-		
-		sqs.setQuestion_id(questionId);
+		sqs.setQuestion_id(qstId);
 		sqs.setUser_id(token.getUserId());
  		sqs.setTime(sysdate.getTime());
 		sqs.setOpt(Constant.QST_OPT_SEND);

@@ -77,16 +77,5 @@ public abstract class BaseDbDao implements IBaseDbDao {
 		sqlSessionTemplate.insert(getNamespace() + "." + sqlName);
 	}
 
-	public Long querySeqId(String seqName) {
-		QrySequenceVO sq = new QrySequenceVO();
-		sq.setSeq_name(seqName);
-		sqlSessionTemplate.insert("commonSqlMapper.query_seqId", sq);
-		return sq.getSeq_id();
-	}
-
-	public Timestamp querySysdate() {
-		return (Timestamp) sqlSessionTemplate.selectOne("commonSqlMapper.query_sysdate");
-	}
-
 	protected abstract String getNamespace();
 }

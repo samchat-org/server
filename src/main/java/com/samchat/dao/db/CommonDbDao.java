@@ -37,4 +37,15 @@ public class CommonDbDao extends BaseDbDao implements ICommonDbDao {
 			return null;
 		return cfgs.get(0);
 	}
+	
+	public Long querySeqId(String seqName) {
+		QrySequenceVO sq = new QrySequenceVO();
+		sq.setSeq_name(seqName);
+		insert("query_seqId", sq);
+		return sq.getSeq_id();
+	}
+
+	public Timestamp querySysdate() {
+		return (Timestamp) executeSqlOne("query_sysdate");
+	}
 }

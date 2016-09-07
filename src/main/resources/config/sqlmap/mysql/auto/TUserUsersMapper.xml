@@ -17,8 +17,8 @@
     <result column="avatar_origin" jdbcType="VARCHAR" property="avatar_origin" />
     <result column="avatar_thumb" jdbcType="VARCHAR" property="avatar_thumb" />
     <result column="state" jdbcType="TINYINT" property="state" />
-    <result column="state_date" jdbcType="DATE" property="state_date" />
-    <result column="create_date" jdbcType="DATE" property="create_date" />
+    <result column="state_date" jdbcType="TIMESTAMP" property="state_date" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="create_date" />
     <result column="cur_device_id" jdbcType="VARCHAR" property="cur_device_id" />
     <result column="cur_token" jdbcType="VARCHAR" property="cur_token" />
   </resultMap>
@@ -158,7 +158,7 @@
     values (#{user_type,jdbcType=TINYINT}, #{user_name,jdbcType=VARCHAR}, #{user_pwd,jdbcType=VARCHAR}, 
       #{country_code,jdbcType=VARCHAR}, #{phone_no,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
       #{address,jdbcType=VARCHAR}, #{avatar_origin,jdbcType=VARCHAR}, #{avatar_thumb,jdbcType=VARCHAR}, 
-      #{state,jdbcType=TINYINT}, #{state_date,jdbcType=DATE}, #{create_date,jdbcType=DATE}, 
+      #{state,jdbcType=TINYINT}, #{state_date,jdbcType=TIMESTAMP}, #{create_date,jdbcType=TIMESTAMP}, 
       #{cur_device_id,jdbcType=VARCHAR}, #{cur_token,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.samchat.common.beans.auto.db.entitybeans.TUserUsers">
@@ -246,10 +246,10 @@
         #{state,jdbcType=TINYINT},
       </if>
       <if test="state_date != null">
-        #{state_date,jdbcType=DATE},
+        #{state_date,jdbcType=TIMESTAMP},
       </if>
       <if test="create_date != null">
-        #{create_date,jdbcType=DATE},
+        #{create_date,jdbcType=TIMESTAMP},
       </if>
       <if test="cur_device_id != null">
         #{cur_device_id,jdbcType=VARCHAR},
@@ -310,10 +310,10 @@
         state = #{record.state,jdbcType=TINYINT},
       </if>
       <if test="record.state_date != null">
-        state_date = #{record.state_date,jdbcType=DATE},
+        state_date = #{record.state_date,jdbcType=TIMESTAMP},
       </if>
       <if test="record.create_date != null">
-        create_date = #{record.create_date,jdbcType=DATE},
+        create_date = #{record.create_date,jdbcType=TIMESTAMP},
       </if>
       <if test="record.cur_device_id != null">
         cur_device_id = #{record.cur_device_id,jdbcType=VARCHAR},
@@ -343,8 +343,8 @@
       avatar_origin = #{record.avatar_origin,jdbcType=VARCHAR},
       avatar_thumb = #{record.avatar_thumb,jdbcType=VARCHAR},
       state = #{record.state,jdbcType=TINYINT},
-      state_date = #{record.state_date,jdbcType=DATE},
-      create_date = #{record.create_date,jdbcType=DATE},
+      state_date = #{record.state_date,jdbcType=TIMESTAMP},
+      create_date = #{record.create_date,jdbcType=TIMESTAMP},
       cur_device_id = #{record.cur_device_id,jdbcType=VARCHAR},
       cur_token = #{record.cur_token,jdbcType=VARCHAR}
     <if test="_parameter != null">
@@ -389,10 +389,10 @@
         state = #{state,jdbcType=TINYINT},
       </if>
       <if test="state_date != null">
-        state_date = #{state_date,jdbcType=DATE},
+        state_date = #{state_date,jdbcType=TIMESTAMP},
       </if>
       <if test="create_date != null">
-        create_date = #{create_date,jdbcType=DATE},
+        create_date = #{create_date,jdbcType=TIMESTAMP},
       </if>
       <if test="cur_device_id != null">
         cur_device_id = #{cur_device_id,jdbcType=VARCHAR},
@@ -419,8 +419,8 @@
       avatar_origin = #{avatar_origin,jdbcType=VARCHAR},
       avatar_thumb = #{avatar_thumb,jdbcType=VARCHAR},
       state = #{state,jdbcType=TINYINT},
-      state_date = #{state_date,jdbcType=DATE},
-      create_date = #{create_date,jdbcType=DATE},
+      state_date = #{state_date,jdbcType=TIMESTAMP},
+      create_date = #{create_date,jdbcType=TIMESTAMP},
       cur_device_id = #{cur_device_id,jdbcType=VARCHAR},
       cur_token = #{cur_token,jdbcType=VARCHAR}
     where user_id = #{user_id,jdbcType=BIGINT}

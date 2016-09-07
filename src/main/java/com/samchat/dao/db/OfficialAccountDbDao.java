@@ -1,5 +1,6 @@
 package com.samchat.dao.db;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,14 +37,14 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 		return null;
 	}
 
-	public void insertFollow(long userId, long userIdPros) {
+	public void insertFollow(long userId, long userIdPros, Timestamp sysdate) {
 		TOaFollow tf = new TOaFollow();
 		tf.setUser_id(userId);
 		tf.setUser_id_pro(userIdPros);
 		tf.setBlock_tag(Constant.ADS_UNBLOCK);
 		tf.setFavourite_tag(Constant.OA_UNFAVOURITE);
 		tf.setState(Constant.STATE_IN_USE);
-		tf.setState_date(this.querySysdate());
+		tf.setState_date(sysdate);
 		oaFollowMapper.insert(tf);
 	}
 
@@ -54,24 +55,27 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 		oaFollowMapper.deleteByExample(fe);
 	}
 
-	public void updateBlock(long userId, long userIdPros, byte block) {
+	public void updateBlock(long userId, long userIdPros, byte block, Timestamp sysdate) {
 		TOaFollowExample fe = new TOaFollowExample();
 		fe.createCriteria().andUser_idEqualTo(userId).andUser_id_proEqualTo(userIdPros)
 				.andStateEqualTo(Constant.STATE_IN_USE);
 
 		TOaFollow record = new TOaFollow();
 		record.setBlock_tag(block);
-		;
+		record.setState_date(sysdate);
+		
 		oaFollowMapper.updateByExampleSelective(record, fe);
 	}
 
-	public void updateFavourite(long userId, long userIdPros, byte favourite) {
+	public void updateFavourite(long userId, long userIdPros, byte favourite, Timestamp sysdate) {
 		TOaFollowExample fe = new TOaFollowExample();
 		fe.createCriteria().andUser_idEqualTo(userId).andUser_id_proEqualTo(userIdPros)
 				.andStateEqualTo(Constant.STATE_IN_USE);
 
 		TOaFollow record = new TOaFollow();
 		record.setFavourite_tag(favourite);
+		record.setState_date(sysdate);
+		
 		oaFollowMapper.updateByExampleSelective(record, fe);
 	}
 

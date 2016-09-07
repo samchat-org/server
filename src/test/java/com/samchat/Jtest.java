@@ -1,34 +1,35 @@
 package com.samchat;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import java.io.File;
 
-import com.dangdang.ddframe.rdb.sharding.api.HintManager;
-import com.dangdang.ddframe.rdb.sharding.example.config.spring.masterslave.service.OrderService;
-
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.Upload;
 
 public class Jtest {
 
-	 
+	// redis服务器主机
 
-    // redis服务器主机
+	static String host = "samchat.unebf5.0001.cnn1.cache.amazonaws.com.cn";
 
-    static String host = "samchat.unebf5.0001.cnn1.cache.amazonaws.com.cn";
+	// 端口号
 
-    // 端口号
+	static int port = 6379;
 
-    static int port = 6379;
+	public static void main(String[] args) throws Exception {
 
-    public static void main(String[] args) throws Exception{
-    	ApplicationContext applicationContext = new ClassPathXmlApplicationContext("config/spring/applicationContextWithMasterSlave.xml");
+		AWSCredentials credentials = null;
+		credentials = new BasicAWSCredentials("AKIAOGLPJB2XJV3WPYPA", "8A+gIJL/azSMIYxDqI3JXvXpH3S77pO936QP11Fy");
+		AmazonS3Client s3 = new AmazonS3Client(credentials);
+		// Region usWest2 = Region.getRegion(Regions.US_WEST_2);
+		// s3.setRegion(usWest2);
+		TransferManager tx = new TransferManager(s3);
 
-        // CHECKSTYLE:ON
-             OrderService orderService =  applicationContext.getBean(OrderService.class);
-            orderService.insert();
-            orderService.select();
-            orderService.delete();
-            orderService.select();
-        
-    }
-
+		File fileToUpload = new File("e:/download/credentials.csv");
+		
+		s3.putObject("samchat", "test", fileToUpload);
+ 	}
 }

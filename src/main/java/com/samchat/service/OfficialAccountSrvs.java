@@ -1,5 +1,6 @@
 package com.samchat.service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +10,10 @@ import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
 import com.samchat.common.beans.manual.db.QryFollowVO;
 import com.samchat.common.beans.manual.db.QryPublicQueryVO;
 import com.samchat.dao.db.interfaces.IOfficialAccountDbDao;
-import com.samchat.service.interfaces.IOfficialAccountSrv;
+import com.samchat.service.interfaces.IOfficialAccountSrvs;
 
 @Service
-public class OfficialAccountSrv implements IOfficialAccountSrv {
+public class OfficialAccountSrvs implements IOfficialAccountSrvs {
 
 	@Autowired
 	private IOfficialAccountDbDao officialAccountDbDao;
@@ -21,28 +22,24 @@ public class OfficialAccountSrv implements IOfficialAccountSrv {
 		return officialAccountDbDao.queryUserFollow(userId, userIdPros);
 	}
 
-	public void insertFollow(long userId, long userIdPros) {
-		officialAccountDbDao.insertFollow(userId, userIdPros);
+	public void insertFollow(long userId, long userIdPros, Timestamp sysdate) {
+		officialAccountDbDao.insertFollow(userId, userIdPros, sysdate);
 	}
 
 	public void deleteFollow(long userId, long userIdPros) {
 		officialAccountDbDao.deleteFollow(userId, userIdPros);
-	}
-	
-	public void updateBlock(long userId, long userIdPros) {
-		officialAccountDbDao.insertFollow(userId, userIdPros);
 	}
 
 	public void updateUnblock(long userId, long userIdPros) {
 		officialAccountDbDao.deleteFollow(userId, userIdPros);
 	}
 	
-	public void updateBlock(long userId, long userIdPros, byte block){
-		officialAccountDbDao.updateBlock(userId, userIdPros, block);
+	public void updateBlock(long userId, long userIdPros, byte block, Timestamp sysdate){
+		officialAccountDbDao.updateBlock(userId, userIdPros, block, sysdate);
 	}
 	
-	public void updateFavourite(long userId, long userIdPros, byte favourite){
-		officialAccountDbDao.updateFavourite(userId, userIdPros, favourite);
+	public void updateFavourite(long userId, long userIdPros, byte favourite, Timestamp sysdate){
+		officialAccountDbDao.updateFavourite(userId, userIdPros, favourite, sysdate);
 	}
 	
 	public List<QryFollowVO> queryFollowList(long userId){

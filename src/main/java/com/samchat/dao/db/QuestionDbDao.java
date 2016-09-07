@@ -1,12 +1,9 @@
 package com.samchat.dao.db;
 
  
-import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TQuestionQuestions;
 import com.samchat.common.beans.auto.db.mapper.TQuestionQuestionsMapper;
 import com.samchat.dao.db.interfaces.IQuestionDbDao;

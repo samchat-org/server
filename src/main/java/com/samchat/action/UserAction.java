@@ -46,18 +46,22 @@ import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.Md5Util;
 import com.samchat.common.utils.TwilioUtil;
-import com.samchat.service.interfaces.ICommonSrv;
-import com.samchat.service.interfaces.IUsersSrv;
+import com.samchat.service.interfaces.ICommonSrvm;
+import com.samchat.service.interfaces.ICommonSrvs;
+import com.samchat.service.interfaces.IUsersSrvs;
 
 public class UserAction extends BaseAction {
 
 	private static Logger log = Logger.getLogger(UserAction.class);
 
 	@Autowired
-	private IUsersSrv usersSrv;
+	private IUsersSrvs usersSrv;
 
 	@Autowired
-	private ICommonSrv commonSrv;
+	private ICommonSrvs commonSrv;
+
+	@Autowired
+	private ICommonSrvm commonSrvm;
 
 	/**
 	 * 注册验证码验证
@@ -158,8 +162,8 @@ public class UserAction extends BaseAction {
 	 * @throws Exception
 	 */
 	public Register_res register(Register_req req) throws Exception {
-
-		return usersSrv.saveRegisterUserInfo(req);
+		Timestamp sysdate = commonSrvm.querySysdate();
+		return usersSrv.saveRegisterUserInfo(req, sysdate);
 
 	}
 
@@ -199,13 +203,13 @@ public class UserAction extends BaseAction {
 		String cellPhone = user.getPhone_no();
 		String cCode = user.getCountry_code();
 		UserInfoRds userfo = usersSrv.getUserInfoIntoRedis(cCode, cellPhone);
-   		if (userfo != null) {
+		if (userfo != null) {
 			usersSrv.deleteToken(userfo.getToken());
 		}
 
 		Login_res res = new Login_res();
 
-		Timestamp cur = commonSrv.querySysdate();
+		Timestamp cur = commonSrvm.querySysdate();
 		String[] token = usersSrv.getAddedToken(cCode, cellPhone, cur.getTime(), deviceId, userId, user.getUser_type());
 
 		String retToken = token[0];
@@ -309,7 +313,8 @@ public class UserAction extends BaseAction {
 	 */
 	public CreateSamPros_res createSamPros(CreateSamPros_req req, TokenRds token, TUserUsers user) {
 
-		TUserProUsers proUsers = usersSrv.saveProsUserInfo(req, user);
+		Timestamp sysdate = commonSrvm.querySysdate();
+		TUserProUsers proUsers = usersSrv.saveProsUserInfo(req, user, sysdate);
 		usersSrv.resetToken(Constant.USER_TYPE_SERVICES + "", null, null, req.getHeader().getToken());
 		CreateSamPros_res res = new CreateSamPros_res();
 
@@ -328,7 +333,7 @@ public class UserAction extends BaseAction {
 		userRet.setAvatar(avatar);
 		userRet.setLastupdate(proUsers.getState_date().getTime());
 		userRet.setAvatar(avatar);
-		
+
 		res.setUser(userRet);
 
 		return res;
@@ -424,7 +429,8 @@ public class UserAction extends BaseAction {
 	 */
 	public FindpwdUpdate_res findpwdUpdate(FindpwdUpdate_req req, TUserUsers user) throws Exception {
 		String password = Md5Util.getSign4String(req.getBody().getPwd(), "");
-		usersSrv.updatePassword(user.getUser_id(), password);
+		Timestamp sysdate = commonSrvm.querySysdate();
+		usersSrv.updatePassword(user.getUser_id(), password, sysdate);
 		return new FindpwdUpdate_res();
 
 	}
@@ -459,7 +465,8 @@ public class UserAction extends BaseAction {
 	 */
 	public PwdUpdate_res pwdUpdate(PwdUpdate_req req, TokenRds token, TUserUsers user) throws Exception {
 		String newPwd = Md5Util.getSign4String(req.getBody().getNew_pwd(), "");
-		usersSrv.updatePassword(user.getUser_id(), newPwd);
+		Timestamp sysate = commonSrvm.querySysdate();
+		usersSrv.updatePassword(user.getUser_id(), newPwd, sysate);
 		return new PwdUpdate_res();
 	}
 
@@ -525,10 +532,10 @@ public class UserAction extends BaseAction {
 
 		QueryAccurate_req.Param p = req.getBody().getParam();
 		String cellphone = null;
-		if(p.getCellphone() != null){
+		if (p.getCellphone() != null) {
 			cellphone = p.getCellphone().replaceAll("\\+| ", "");
 		}
- 		String username = p.getUsername();
+		String username = p.getUsername();
 		String id = p.getUnique_id();
 		Long type = p.getType();
 		List<QryUserInfoVO> userlist = usersSrv.queryUserAccurate(type, cellphone, username, id);
@@ -623,7 +630,7 @@ public class UserAction extends BaseAction {
 	}
 
 	public void queryGroupValidate(QueryGroup_req req, TokenRds token) {
- 	}
+	}
 
 	public QueryWithoutToken_res queryWithoutToken(QueryWithoutToken_req req) {
 		QueryWithoutToken_req.Param param = req.getBody().getParam();
@@ -631,17 +638,16 @@ public class UserAction extends BaseAction {
 		String countrycode = param.getCountrycode();
 		String userName = param.getUsername();
 		long type = param.getType();
-		
+
 		List<TUserUsers> users = usersSrv.queryUserWithoutToken(type, countrycode, cellphone, userName);
-		
+
 		QueryWithoutToken_res res = new QueryWithoutToken_res();
 		res.setCount(users.size());
-		
+
 		return res;
 	}
 
 	public void queryWithoutTokenValidate(QueryWithoutToken_req req) {
 	}
 
-	
 }

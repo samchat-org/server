@@ -221,8 +221,14 @@ public class JsonObjUtil {
 					validate.append("\t\t\t\t throw new AppException(Constant.ERROR.PARAM_NONSUPPORT, \"value:\" + " + j2j.getName() +");\r\n\t\t\t}");
 				}
  			}
-			sb.append(StrUtils.formatSingleLine(1 + extraTabNum, "private "
-					+ getTypeName(j2j) + " " + j2j.getName() + ";"));
+			if(className.endsWith("res")){
+				sb.append(StrUtils.formatSingleLine(1 + extraTabNum, "private "
+						+ getTypeName(j2j) + " " + j2j.getName() + " = \"\";"));
+			}else{
+				sb.append(StrUtils.formatSingleLine(1 + extraTabNum, "private "
+						+ getTypeName(j2j) + " " + j2j.getName() + ";"));
+			}
+			
 		}else {
 			if("long".equals(getTypeName(j2j))){
 				String j2jName = j2j.getName();

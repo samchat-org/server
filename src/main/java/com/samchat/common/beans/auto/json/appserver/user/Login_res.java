@@ -3,16 +3,16 @@ package com.samchat.common.beans.auto.json.appserver.user;
 public class Login_res{
 
 	private long ret;
-	private String token;
+	private String token = "";
 	private User user;
 
 	public static class User {
 		private long id;
-		private String username;
-		private String countrycode;
-		private String cellphone;
-		private String email;
-		private String address;
+		private String username = "";
+		private String countrycode = "";
+		private String cellphone = "";
+		private String email = "";
+		private String address = "";
 		private long type;
 		private Avatar avatar;
 		private long lastupdate;
@@ -100,8 +100,8 @@ public class Login_res{
 	}
 
 	public static class Avatar {
-		private String origin;
-		private String thumb;
+		private String origin = "";
+		private String thumb = "";
 
 		public String getOrigin() {
 			return origin;
@@ -121,13 +121,13 @@ public class Login_res{
 	}
 
 	public static class Sam_pros_info {
-		private String company_name;
-		private String service_category;
-		private String service_description;
-		private String countrycode;
-		private String phone;
-		private String email;
-		private String address;
+		private String company_name = "";
+		private String service_category = "";
+		private String service_description = "";
+		private String countrycode = "";
+		private String phone = "";
+		private String email = "";
+		private String address = "";
 
 		public String getCompany_name() {
 			return company_name;

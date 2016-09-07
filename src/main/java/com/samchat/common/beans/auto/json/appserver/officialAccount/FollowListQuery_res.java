@@ -8,7 +8,7 @@ public class FollowListQuery_res{
 	private ArrayList<Users> users;
 
 	public static class Avatar {
-		private String thumb;
+		private String thumb = "";
 
 		public String getThumb() {
 			return thumb;
@@ -20,7 +20,7 @@ public class FollowListQuery_res{
 	}
 
 	public static class Sam_pros_info {
-		private String service_category;
+		private String service_category = "";
 
 		public String getService_category() {
 			return service_category;
@@ -33,7 +33,7 @@ public class FollowListQuery_res{
 
 	public static class Users {
 		private long id;
-		private String username;
+		private String username = "";
 		private long lastupdate;
 		private Avatar avatar;
 		private Sam_pros_info sam_pros_info;

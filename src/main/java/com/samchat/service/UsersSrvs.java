@@ -25,12 +25,12 @@ import com.samchat.common.utils.niUtils.NiUtil;
 import com.samchat.dao.db.interfaces.ICommonDbDao;
 import com.samchat.dao.db.interfaces.IUserDbDao;
 import com.samchat.dao.redis.interfaces.IUserRedisDao;
-import com.samchat.service.interfaces.IUsersSrv;
+import com.samchat.service.interfaces.IUsersSrvs;
 
 @Service
-public class UsersSrv implements IUsersSrv {
+public class UsersSrvs implements IUsersSrvs {
 
-	private static Logger log = Logger.getLogger(UsersSrv.class);
+	private static Logger log = Logger.getLogger(UsersSrvs.class);
 
 	@Autowired
 	private IUserRedisDao<String, Object> userRedisDao;
@@ -51,9 +51,8 @@ public class UsersSrv implements IUsersSrv {
 		return userDbDao.queryUserInfoByEmail(email);
 	}
 
-	public Register_res saveRegisterUserInfo(Register_req req) throws Exception {
+	public Register_res saveRegisterUserInfo(Register_req req, Timestamp sysdate) throws Exception {
 
-		Timestamp sysdate = commonDbDao.querySysdate();
 		long time = sysdate.getTime();
 		Register_req.Body body = req.getBody();
 		String cellPhone = body.getCellphone();
@@ -72,7 +71,7 @@ public class UsersSrv implements IUsersSrv {
 		uu.setState(Constant.STATE_IN_USE);
 		uu.setState_date(sysdate);
 		uu.setCreate_date(sysdate);
-		userDbDao.insertUser(uu);
+		userDbDao.insertUser(uu, sysdate);
 
 		String[] token = getAddedToken(countryCode, cellPhone, time, deviceId, uu.getUser_id(), uu.getUser_type());
 		String retToken = token[0];
@@ -111,8 +110,8 @@ public class UsersSrv implements IUsersSrv {
 		userRedisDao.set(keystr, verificationCode, expireSec);
 	}
 
-	public String[] getAddedToken(String countryCode, String cellPhone, long time, String deviceId, long userId, long userType)
-			throws Exception {
+	public String[] getAddedToken(String countryCode, String cellPhone, long time, String deviceId, long userId,
+			long userType) throws Exception {
 
 		TokenRds tk = new TokenRds();
 		tk.setUserId(userId);
@@ -122,40 +121,40 @@ public class UsersSrv implements IUsersSrv {
 		tk.setDeviceId(deviceId);
 		for (int i = 0;; i++) {
 			String retToken = Md5Util.getSign4String(countryCode + "_" + cellPhone + "_" + time + "_" + deviceId + i);
- 			String realToken = CacheUtil.getRealToken(retToken, deviceId);
+			String realToken = CacheUtil.getRealToken(retToken, deviceId);
 			if (userRedisDao.setNX(CacheUtil.getTokenCacheKey(realToken), tk, 0)) {
- 				String[] ret = new String[2];
+				String[] ret = new String[2];
 				ret[0] = retToken;
 				ret[1] = realToken;
 				return ret;
 			}
 		}
 	}
-	
-	public void resetToken(String userType, String countryCode, String cellPhone, String realToken){
+
+	public void resetToken(String userType, String countryCode, String cellPhone, String realToken) {
 		String key = CacheUtil.getTokenCacheKey(realToken);
 		TokenRds tk = userRedisDao.getJsonObj(key);
-		if(tk == null){
+		if (tk == null) {
 			return;
 		}
-		if(userType != null){
+		if (userType != null) {
 			tk.setUserType(Long.parseLong(userType));
 		}
-		if(countryCode != null){
+		if (countryCode != null) {
 			tk.setCountryCode(countryCode);
 		}
-		if(cellPhone != null){
+		if (cellPhone != null) {
 			tk.setCellPhone(cellPhone);
 		}
 		userRedisDao.set(key, tk, 0);
-		
+
 	}
-	
-	public void cancelUserInfoIntoRedis(String countryCode, String cellPhone){
+
+	public void cancelUserInfoIntoRedis(String countryCode, String cellPhone) {
 		String key = CacheUtil.getUserInfoCacheKey(countryCode, cellPhone);
 		userRedisDao.delete(key);
 	}
-	
+
 	public void setUserInfoIntoRedis(String countryCode, String cellPhone, String token) {
 		UserInfoRds uif = new UserInfoRds();
 		uif.setToken(token);
@@ -172,7 +171,7 @@ public class UsersSrv implements IUsersSrv {
 		Map<String, String> register = new HashMap<String, String>();
 		register.put("accid", String.valueOf(userId));
 		register.put("name", userName);
-		register.put("token", token );
+		register.put("token", token);
 		NiUtil.createAction(register, cur);
 	}
 
@@ -193,7 +192,7 @@ public class UsersSrv implements IUsersSrv {
 		userRedisDao.delete(key);
 	}
 
-	public TUserProUsers saveProsUserInfo(CreateSamPros_req req, TUserUsers user) {
+	public TUserProUsers saveProsUserInfo(CreateSamPros_req req, TUserUsers user, Timestamp sysdate) {
 
 		CreateSamPros_req.Body body = req.getBody();
 
@@ -216,39 +215,36 @@ public class UsersSrv implements IUsersSrv {
 		proUsers.setAddress(location.getAddress());
 		proUsers.setState(Constant.STATE_IN_USE);
 
-		Timestamp cur = commonDbDao.querySysdate();
-		proUsers.setState_date(cur);
-		proUsers.setCreate_date(cur);
-		userDbDao.insertProUser(proUsers);
+		proUsers.setState_date(sysdate);
+		proUsers.setCreate_date(sysdate);
+		userDbDao.insertProUser(proUsers, sysdate);
 
 		TUserUsers userCon = new TUserUsers();
 		userCon.setUser_id(user.getUser_id());
 		userCon.setUser_type(Constant.USER_TYPE_SERVICES);
-		userCon.setState_date(cur);
-		userDbDao.updateUser(userCon);
+		userCon.setState_date(sysdate);
+		userDbDao.updateUser(userCon, sysdate);
 
 		return proUsers;
 
 	}
 
-	public void updatePassword(long userId, String password) {
+	public void updatePassword(long userId, String password, Timestamp sysdate) {
 		TUserUsers userCon = new TUserUsers();
 		userCon.setUser_id(userId);
 		userCon.setUser_pwd(password);
 
-		Timestamp sysdate = commonDbDao.querySysdate();
 		userCon.setState_date(sysdate);
-		userDbDao.updateUser(userCon);
+		userDbDao.updateUser(userCon, sysdate);
 	}
 
 	public TUserProUsers queryProUser(long userId) {
 		return userDbDao.queryProUser(userId);
 	}
 
-	public void loginPwderrorCheck(String countryCode, String cellphone) {
+	public void loginPwderrorCheck(String countryCode, String cellphone, Timestamp sysdate) {
 		LoginErrRds loginerr = this.userRedisDao.getJsonObj(Constant.CACHE_NAME.LOGIN_ERR + ":" + countryCode + "_"
 				+ cellphone);
-		Timestamp sysdate = commonDbDao.querySysdate();
 		if (loginerr == null) {
 			loginerr = new LoginErrRds();
 			loginerr.setFirst(sysdate.getTime());
@@ -264,37 +260,36 @@ public class UsersSrv implements IUsersSrv {
 	public TUserUsers queryUser(long userId) {
 		return userDbDao.queryUser(userId);
 	}
-	
+
 	public List<QryUserInfoVO> queryUsersFuzzy(String key) {
 		return userDbDao.queryUsersFuzzy(key);
 	}
-	
-	public List<QryUserInfoVO> queryUserAccurate(Long type, String cellphone, String userName, String userId){
-		
- 		HashMap<String, Object> param = new HashMap<String, Object>();
+
+	public List<QryUserInfoVO> queryUserAccurate(Long type, String cellphone, String userName, String userId) {
+
+		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("cellphone", cellphone);
 		param.put("user_id", userId);
 		param.put("user_name", userName);
 		param.put("type", type);
- 		return  userDbDao.queryUserAccurate(param);
- 	}
-	
-	public List<QryUserInfoVO> queryUsersGroup(List<Long> userIds){
+		return userDbDao.queryUserAccurate(param);
+	}
+
+	public List<QryUserInfoVO> queryUsersGroup(List<Long> userIds) {
 		return userDbDao.queryUsersGroup(userIds);
 	}
-	
-	public List<TUserUsers> queryUserWithoutToken(long type, String countrycode, String cellphone, String userName){
+
+	public List<TUserUsers> queryUserWithoutToken(long type, String countrycode, String cellphone, String userName) {
 		return userDbDao.queryUserWithoutToken(type, countrycode, cellphone, userName);
 	}
-	
-	public long updateAvatar(String origin, String thumb, long userId){
+
+	public long updateAvatar(String origin, String thumb, long userId, Timestamp sysdate) {
 		TUserUsers u = new TUserUsers();
 		u.setUser_id(userId);
 		u.setAvatar_origin(origin);
 		u.setAvatar_thumb(thumb);
-		userDbDao.updateUser(u);
+		userDbDao.updateUser(u, sysdate);
 		return u.getState_date().getTime();
 	}
-
 
 }

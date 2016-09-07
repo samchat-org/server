@@ -1,5 +1,6 @@
 package com.samchat.dao.db;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.samchat.action.OfficialAccountAction;
 import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TContactProUser;
 import com.samchat.common.beans.auto.db.entitybeans.TContactProUserExample;
@@ -34,7 +34,7 @@ public class ContactDbDao extends BaseDbDao implements IContactDbDao {
 		return "contactSqlMapper";
 	}
 
-	public void addContactUser(long userId, long proUserId) {
+	public void addContactUser(long userId, long proUserId, Timestamp sysdate) {
 		TContactUserExample cue = new TContactUserExample();
 		cue.createCriteria().andUser_idEqualTo(userId).andUser_id_proEqualTo(proUserId)
 				.andStateEqualTo(Constant.STATE_IN_USE);
@@ -46,11 +46,11 @@ public class ContactDbDao extends BaseDbDao implements IContactDbDao {
 		cu.setUser_id(userId);
 		cu.setUser_id_pro(proUserId);
 		cu.setState(Constant.STATE_IN_USE);
-		cu.setState_date(querySysdate());
+		cu.setState_date(sysdate);
 		contactUserMapper.insert(cu);
 	}
 
-	public void addContactProUser(long proUserId, long userId) {
+	public void addContactProUser( long proUserId, long userId, Timestamp sysdate) {
 		TContactProUserExample cue = new TContactProUserExample();
 		cue.createCriteria().andUser_idEqualTo(userId).andUser_id_proEqualTo(proUserId)
 				.andStateEqualTo(Constant.STATE_IN_USE);
@@ -62,7 +62,7 @@ public class ContactDbDao extends BaseDbDao implements IContactDbDao {
 		cu.setUser_id(userId);
 		cu.setUser_id_pro(proUserId);
 		cu.setState(Constant.STATE_IN_USE);
-		cu.setState_date(querySysdate());
+		cu.setState_date(sysdate);
 		contactProUserMapper.insert(cu);
 	}
 

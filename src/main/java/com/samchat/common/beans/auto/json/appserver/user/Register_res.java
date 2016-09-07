@@ -3,7 +3,7 @@ package com.samchat.common.beans.auto.json.appserver.user;
 public class Register_res{
 
 	private long ret;
-	private String token;
+	private String token = "";
 	private User user;
 
 	public static class User {
