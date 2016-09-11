@@ -6,8 +6,15 @@ public class AdvertisementSqs {
 	private long user_id;
 	private long type;
 	private String content;
+	private String content_thumb;
 	private long time;
 	
+	public String getContent_thumb() {
+		return content_thumb;
+	}
+	public void setContent_thumb(String content_thumb) {
+		this.content_thumb = content_thumb;
+	}
 	public long getAds_id() {
 		return ads_id;
 	}

@@ -21,6 +21,7 @@ import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.utils.CacheUtil;
 import com.samchat.common.utils.Md5Util;
+import com.samchat.common.utils.S3Util;
 import com.samchat.common.utils.niUtils.NiUtil;
 import com.samchat.dao.db.interfaces.ICommonDbDao;
 import com.samchat.dao.db.interfaces.IUserDbDao;
@@ -283,13 +284,13 @@ public class UsersSrvs implements IUsersSrvs {
 		return userDbDao.queryUserWithoutToken(type, countrycode, cellphone, userName);
 	}
 
-	public long updateAvatar(String origin, String thumb, long userId, Timestamp sysdate) {
+	public TUserUsers updateAvatar(String origin, String thumb, long userId, Timestamp sysdate) throws Exception{
 		TUserUsers u = new TUserUsers();
 		u.setUser_id(userId);
 		u.setAvatar_origin(origin);
-		u.setAvatar_thumb(thumb);
+		u.setAvatar_thumb(S3Util.getThumbObject(origin));
 		userDbDao.updateUser(u, sysdate);
-		return u.getState_date().getTime();
+		return u;
 	}
 
 }

@@ -6,7 +6,16 @@ public class AvatarUpdate_res{
 	private User user;
 
 	public static class User {
+		private String thumb = "";
 		private long lastupdate;
+
+		public String getThumb() {
+			return thumb;
+		}
+
+		public void setThumb(String thumb) {
+			this.thumb = (thumb == null? "" : thumb.trim());
+		}
 
 		public long getLastupdate() {
 			return lastupdate;

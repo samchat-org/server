@@ -8,6 +8,7 @@
         "publish_timestamp":1,
         "type[0,1,2]":0,
         "content":"",
+        "content_thumb": "",
         "dest_id":12
     }
 }

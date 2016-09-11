@@ -33,6 +33,7 @@ public class AdvertisementAction extends BaseAction {
 		AdvertisementSqs ads = advertisementSrv.advertisementSend(req, token, qstId, sysdate);
 		AdvertisementWrite_res res = new AdvertisementWrite_res();
 		res.setAdv_id(ads.getAds_id());
+		res.setContent_thumb(ads.getContent_thumb());
 		res.setPublish_timestamp(ads.getTime());
 		return res;
 	}

@@ -1,9 +1,2 @@
 /com
 /config
-/createtable_mysql.sql
-/ehcache.xml
-/generatorConfig.xml
-/jdbc.properties
-/log4j.properties
-/redis.properties
-/setting.xml

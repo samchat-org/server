@@ -5,6 +5,7 @@
     },
     "body":{
         "type[0,1]":0,
-        "content":""
+        "content":"",
+        "content_thumb": ""
     }
 }

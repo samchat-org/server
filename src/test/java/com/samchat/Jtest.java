@@ -1,13 +1,10 @@
 package com.samchat;
 
-import java.io.File;
-
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.Upload;
+import com.amazonaws.auth.AnonymousAWSCredentials;
+import com.amazonaws.services.cognitoidentity.AmazonCognitoIdentity;
+import com.amazonaws.services.cognitoidentity.AmazonCognitoIdentityClient;
+import com.amazonaws.services.cognitoidentity.model.GetIdRequest;
+import com.amazonaws.services.cognitoidentity.model.GetIdResult;
 
 public class Jtest {
 
@@ -19,17 +16,24 @@ public class Jtest {
 
 	static int port = 6379;
 
+	public void download(){}
+
 	public static void main(String[] args) throws Exception {
-
-		AWSCredentials credentials = null;
-		credentials = new BasicAWSCredentials("AKIAOGLPJB2XJV3WPYPA", "8A+gIJL/azSMIYxDqI3JXvXpH3S77pO936QP11Fy");
-		AmazonS3Client s3 = new AmazonS3Client(credentials);
-		// Region usWest2 = Region.getRegion(Regions.US_WEST_2);
-		// s3.setRegion(usWest2);
-		TransferManager tx = new TransferManager(s3);
-
-		File fileToUpload = new File("e:/download/credentials.csv");
-		
-		s3.putObject("samchat", "test", fileToUpload);
- 	}
+		AmazonCognitoIdentity identityClient = new AmazonCognitoIdentityClient(new AnonymousAWSCredentials());
+		 
+		// send a get id request. This only needs to be executed the first time
+		// and the result should be cached.
+		GetIdRequest idRequest = new GetIdRequest();
+		idRequest.setAccountId("");
+		idRequest.setIdentityPoolId("us-west-2:083f7106-00ad-4b9e-8e1d-2214d30975ba");
+		// If you are authenticating your users through an identity provider
+		// then you can set the Map of tokens in the request
+		// Map providerTokens = new HashMap();
+		// providerTokens.put(“graph.facebook.com”, “facebook session key”);
+		// idRequest.setLogins(providerTokens);
+		 
+		GetIdResult idResp = identityClient.getId(idRequest);
+		 
+		String identityId = idResp.getIdentityId();
+	}
 }

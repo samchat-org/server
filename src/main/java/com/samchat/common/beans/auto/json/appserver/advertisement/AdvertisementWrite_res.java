@@ -4,6 +4,7 @@ public class AdvertisementWrite_res{
 
 	private long ret;
 	private long adv_id;
+	private String content_thumb = "";
 	private long publish_timestamp;
 
 	public long getRet() {
@@ -20,6 +21,14 @@ public class AdvertisementWrite_res{
 
 	public void setAdv_id(long adv_id) {
 		this.adv_id = adv_id;
+	}
+
+	public String getContent_thumb() {
+		return content_thumb;
+	}
+
+	public void setContent_thumb(String content_thumb) {
+		this.content_thumb = (content_thumb == null? "" : content_thumb.trim());
 	}
 
 	public long getPublish_timestamp() {

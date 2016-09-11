@@ -106,7 +106,7 @@ public class ProfileAction extends BaseAction {
 		return u;
 	}
 
-	public AvatarUpdate_res avatarUpdate(AvatarUpdate_req req, TokenRds token) {
+	public AvatarUpdate_res avatarUpdate(AvatarUpdate_req req, TokenRds token) throws Exception {
 
 		AvatarUpdate_req.Avatar avatar = req.getBody().getAvatar();
 		String origin = avatar.getOrigin();
@@ -114,12 +114,13 @@ public class ProfileAction extends BaseAction {
 		long userId = token.getUserId();
 		Timestamp sysdate = commonSrvm.querySysdate();
 
-		long lastupdate = usersSrv.updateAvatar(origin, thumb, userId, sysdate);
+		TUserUsers userdb = usersSrv.updateAvatar(origin, thumb, userId, sysdate);
 
 		AvatarUpdate_res res = new AvatarUpdate_res();
 		AvatarUpdate_res.User user = new AvatarUpdate_res.User();
 		res.setUser(user);
-		user.setLastupdate(lastupdate);
+		user.setThumb(userdb.getAvatar_thumb());
+		user.setLastupdate(userdb.getState_date().getTime());
 
 		return res;
 	}

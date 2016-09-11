@@ -3,6 +3,7 @@ package com.samchat.service;
 import java.sql.Timestamp;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,8 @@ import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementD
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementWrite_req;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
+import com.samchat.common.utils.CommonUtil;
+import com.samchat.common.utils.S3Util;
 import com.samchat.common.utils.SqsUtil;
 import com.samchat.dao.db.interfaces.IAdvertisementDbDao;
 import com.samchat.service.interfaces.IAdvertisementSrvs;
@@ -43,6 +46,9 @@ public class AdvertisementSrvs implements IAdvertisementSrvs {
 		ads.setType(body.getType());
 		ads.setUser_id(token.getUserId());
 		ads.setContent(body.getContent());
+		
+ 		String thumbpath = S3Util.getThumbObject(body.getContent());
+		ads.setContent_thumb(thumbpath);
 		ads.setTime(sysdate.getTime());
 		SqsUtil.pushMessage(ads, Constant.SYS_PARAM_KEY.SQS_ADVERTISEMENT);
 

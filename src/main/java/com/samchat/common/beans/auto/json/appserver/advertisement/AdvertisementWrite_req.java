@@ -31,6 +31,7 @@ public class AdvertisementWrite_req{
 	public static class Body {
 		private long type;
 		private String content;
+		private String content_thumb;
 
 		public long getType() {
 			return type;
@@ -49,6 +50,14 @@ public class AdvertisementWrite_req{
 
 		public void setContent(String content) {
 			this.content = (content == null? null : content.trim());
+		}
+
+		public String getContent_thumb() {
+			return content_thumb;
+		}
+
+		public void setContent_thumb(String content_thumb) {
+			this.content_thumb = (content_thumb == null? null : content_thumb.trim());
 		}
 	}
 

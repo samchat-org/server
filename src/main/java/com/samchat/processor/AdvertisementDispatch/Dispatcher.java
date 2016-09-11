@@ -58,6 +58,7 @@ public class Dispatcher extends Thread {
 		body.setId(reqSqs.getUser_id());
 		body.setAdv_id(reqSqs.getAds_id());
 		body.setContent(reqSqs.getContent());
+		body.setContent_thumb(reqSqs.getContent_thumb());
 		body.setDest_id(testId);
 		body.setPublish_timestamp(reqSqs.getTime());
 		body.setType(reqSqs.getType());

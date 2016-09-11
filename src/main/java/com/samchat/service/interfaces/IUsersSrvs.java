@@ -70,6 +70,6 @@ public interface IUsersSrvs {
 
 	public List<TUserUsers> queryUserWithoutToken(long type, String countrycode, String cellphone, String userName);
 
-	public long updateAvatar(String origin, String thumb, long userId, Timestamp sysdate);
+	public TUserUsers updateAvatar(String origin, String thumb, long userId, Timestamp sysdate) throws Exception;
 
 }

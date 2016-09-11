@@ -25,6 +25,7 @@ public class AdvertisementDispatch_req{
 		private long publish_timestamp;
 		private long type;
 		private String content;
+		private String content_thumb;
 		private long dest_id;
 
 		public long getId() {
@@ -68,6 +69,14 @@ public class AdvertisementDispatch_req{
 
 		public void setContent(String content) {
 			this.content = (content == null? null : content.trim());
+		}
+
+		public String getContent_thumb() {
+			return content_thumb;
+		}
+
+		public void setContent_thumb(String content_thumb) {
+			this.content_thumb = (content_thumb == null? null : content_thumb.trim());
 		}
 
 		public long getDest_id() {
