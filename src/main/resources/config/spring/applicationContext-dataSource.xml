@@ -37,12 +37,20 @@
 
 	<rdb:strategy id="questionSDSY" sharding-columns="create_date"
 		algorithm-expression="t_question_questions_${create_date.toString('yyyyMM')}" />
+	<rdb:strategy id="advertisementSDSY" sharding-columns="create_date"
+		algorithm-expression="t_advertisement_advertisements_${create_date.toString('yyyyMM')}" />
+
 	<rdb:data-source id="shardingDataSource">
 		<rdb:sharding-rule data-sources="myDataSource">
 			<rdb:table-rules>
 				<rdb:table-rule logic-table="t_question_questions"
 					actual-tables="t_question_questions_${201608..203001}"
 					table-strategy="questionSDSY" />
+
+				<rdb:table-rule logic-table="t_advertisement_advertisements"
+					actual-tables="t_advertisement_advertisements_${201608..203001}"
+					table-strategy="advertisementSDSY" />
+
 			</rdb:table-rules>
 			<rdb:default-database-strategy
 				sharding-columns="none"

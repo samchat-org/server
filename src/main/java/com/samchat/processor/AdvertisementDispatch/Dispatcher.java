@@ -17,6 +17,7 @@ import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementD
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.GetuiUtil;
+import com.samchat.common.utils.S3Util;
 import com.samchat.service.interfaces.IAdvertisementSrvs;
 import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IOfficialAccountSrvs;
@@ -90,9 +91,10 @@ public class Dispatcher extends Thread {
 					log.info("messages body:" + body);
 					try {
 						AdvertisementSqs req = om.readValue(body, AdvertisementSqs.class);
-						advertisementSrv.saveAdvertisement(req.getUser_id(), (byte) req.getType(), req.getContent(),
+						req.setContent_thumb(S3Util.getThumbObject(req.getContent()));
+ 						advertisementSrv.saveAdvertisement(req.getUser_id(), (byte) req.getType(), req.getContent(),
 								req.getAds_id(), new Timestamp(req.getTime()));
-						List<TOaFollow> followlst = officialAccountSrv.queryFollowListByAdserId(req.getUser_id());
+ 						List<TOaFollow> followlst = officialAccountSrv.queryFollowListByAdserId(req.getUser_id());
 						for (TOaFollow ff : followlst) {
 							String dispatchReq = om.writeValueAsString(getRequest(ff.getUser_id(), req));
 							GetuiUtil.push(ff.getUser_id().toString(), dispatchReq);

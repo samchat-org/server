@@ -47,7 +47,7 @@ public class AdvertisementSrvs implements IAdvertisementSrvs {
 		ads.setUser_id(token.getUserId());
 		ads.setContent(body.getContent());
 		
- 		String thumbpath = S3Util.getThumbObject(body.getContent());
+ 		String thumbpath = S3Util.getThumbPath(body.getContent());
 		ads.setContent_thumb(thumbpath);
 		ads.setTime(sysdate.getTime());
 		SqsUtil.pushMessage(ads, Constant.SYS_PARAM_KEY.SQS_ADVERTISEMENT);
