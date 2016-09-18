@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.samchat.common.Constant;
+import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.user.CreateSamPros_req;
@@ -42,6 +42,7 @@ import com.samchat.common.beans.auto.json.appserver.user.SignupCodeVerify_res;
 import com.samchat.common.beans.manual.db.QryUserInfoVO;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
+import com.samchat.common.enums.Constant;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.Md5Util;
@@ -162,8 +163,21 @@ public class UserAction extends BaseAction {
 	 * @throws Exception
 	 */
 	public Register_res register(Register_req req) throws Exception {
-		Timestamp sysdate = commonSrvm.querySysdate();
-		return usersSrv.saveRegisterUserInfo(req, sysdate);
+		Timestamp sysdate = commonSrv.querySysdate();
+		Register_res res = usersSrv.saveRegisterUserInfo(req, sysdate);
+		
+		List<TSysConfigs> scslist = commonSrv.queryAllSysconfigsForApp();
+		ArrayList<Register_res.Sys_params> paramslist = new ArrayList<Register_res.Sys_params>();
+		
+		for(TSysConfigs scs:scslist){
+			Register_res.Sys_params param = new Register_res.Sys_params();
+			param.setParam_code(scs.getParam_code());
+			param.setParam_value(scs.getParam_value());
+			paramslist.add(param);
+		}
+		res.setSys_params(paramslist);
+		
+  		return res;
 
 	}
 
@@ -198,24 +212,21 @@ public class UserAction extends BaseAction {
 
 		Login_req.Body body = req.getBody();
 		String deviceId = body.getDeviceid();
-
 		long userId = user.getUser_id();
-		String cellPhone = user.getPhone_no();
-		String cCode = user.getCountry_code();
-		UserInfoRds userfo = usersSrv.getUserInfoIntoRedis(cCode, cellPhone);
+
+		UserInfoRds userfo = usersSrv.getUserInfoRedis(userId);
 		if (userfo != null) {
-			usersSrv.deleteToken(userfo.getToken());
+			usersSrv.deleteToken(userfo.getCur_token());
 		}
 
 		Login_res res = new Login_res();
 
-		Timestamp cur = commonSrvm.querySysdate();
-		String[] token = usersSrv.getAddedToken(cCode, cellPhone, cur.getTime(), deviceId, userId, user.getUser_type());
+		Timestamp cur = commonSrv.querySysdate();
+		String[] token = usersSrv.getAddedToken(userId, cur.getTime(), deviceId);
 
 		String retToken = token[0];
 		String realToken = token[1];
 
-		usersSrv.setUserInfoIntoRedis(cCode, cellPhone, realToken);
 		usersSrv.niTokenUpdate(userId, realToken, cur);
 		res.setToken(retToken);
 
@@ -224,7 +235,7 @@ public class UserAction extends BaseAction {
 		userRes.setId(userId);
 		userRes.setUsername(user.getUser_name());
 		userRes.setType(user.getUser_type());
-		userRes.setCountrycode(cCode);
+		userRes.setCountrycode(user.getCountry_code());
 		userRes.setCellphone(user.getPhone_no());
 		userRes.setAddress(user.getAddress());
 		userRes.setEmail(user.getEmail());
@@ -250,6 +261,18 @@ public class UserAction extends BaseAction {
 			}
 		}
 		res.setUser(userRes);
+		
+		List<TSysConfigs> scslist = commonSrv.queryAllSysconfigsForApp();
+		ArrayList<Login_res.Sys_params> paramslist = new ArrayList<Login_res.Sys_params>();
+		
+		for(TSysConfigs scs:scslist){
+			Login_res.Sys_params param = new Login_res.Sys_params();
+			param.setParam_code(scs.getParam_code());
+			param.setParam_value(scs.getParam_value());
+			paramslist.add(param);
+		}
+		res.setSys_params(paramslist);
+		
 		return res;
 	}
 
@@ -264,8 +287,7 @@ public class UserAction extends BaseAction {
 		String account = body.getAccount();
 		String countryCode = body.getCountrycode();
 		String pwd = Md5Util.getSign4String(body.getPwd(), "");
-		String deviceId = body.getDeviceid();
-
+ 
 		TUserUsers user = usersSrv.queryUserInfoByPhone(account, countryCode);
 		if (user == null) {
 			user = usersSrv.queryUserInfoByUserName(account);
@@ -311,13 +333,12 @@ public class UserAction extends BaseAction {
 	 * @param req
 	 * @return
 	 */
-	public CreateSamPros_res createSamPros(CreateSamPros_req req, TokenRds token, TUserUsers user) {
+	public CreateSamPros_res createSamPros(CreateSamPros_req req, TokenRds token, TUserUsers user) throws Exception{
 
-		Timestamp sysdate = commonSrvm.querySysdate();
-		TUserProUsers proUsers = usersSrv.saveProsUserInfo(req, user, sysdate);
-		usersSrv.resetToken(Constant.USER_TYPE_SERVICES + "", null, null, req.getHeader().getToken());
-		CreateSamPros_res res = new CreateSamPros_res();
+		Timestamp sysdate = commonSrv.querySysdate();
+		usersSrv.saveProsUserInfo(req, user, sysdate);
 
+ 		CreateSamPros_res res = new CreateSamPros_res();
 		CreateSamPros_res.User userRet = new CreateSamPros_res.User();
 		userRet.setId(user.getUser_id());
 		userRet.setUsername(user.getUser_name());
@@ -331,7 +352,7 @@ public class UserAction extends BaseAction {
 		avatar.setOrigin(user.getAvatar_origin());
 		avatar.setThumb(user.getAvatar_thumb());
 		userRet.setAvatar(avatar);
-		userRet.setLastupdate(proUsers.getState_date().getTime());
+		userRet.setLastupdate(sysdate.getTime());
 		userRet.setAvatar(avatar);
 
 		res.setUser(userRet);
@@ -429,7 +450,7 @@ public class UserAction extends BaseAction {
 	 */
 	public FindpwdUpdate_res findpwdUpdate(FindpwdUpdate_req req, TUserUsers user) throws Exception {
 		String password = Md5Util.getSign4String(req.getBody().getPwd(), "");
-		Timestamp sysdate = commonSrvm.querySysdate();
+		Timestamp sysdate = commonSrv.querySysdate();
 		usersSrv.updatePassword(user.getUser_id(), password, sysdate);
 		return new FindpwdUpdate_res();
 
@@ -465,7 +486,7 @@ public class UserAction extends BaseAction {
 	 */
 	public PwdUpdate_res pwdUpdate(PwdUpdate_req req, TokenRds token, TUserUsers user) throws Exception {
 		String newPwd = Md5Util.getSign4String(req.getBody().getNew_pwd(), "");
-		Timestamp sysate = commonSrvm.querySysdate();
+		Timestamp sysate = commonSrv.querySysdate();
 		usersSrv.updatePassword(user.getUser_id(), newPwd, sysate);
 		return new PwdUpdate_res();
 	}
@@ -649,5 +670,6 @@ public class UserAction extends BaseAction {
 
 	public void queryWithoutTokenValidate(QueryWithoutToken_req req) {
 	}
+	
 
 }

@@ -7,7 +7,7 @@ import com.samchat.common.beans.auto.json.appserver.question.Question_req;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.sqs.QuestionSqs;
 
-public interface IQuestionSrvs {
+public interface IQuestionSrvs extends IBaseSrvs{
 
 	public TQuestionQuestions saveQuestion(QuestionSqs req);
 

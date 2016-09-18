@@ -1,7 +1,7 @@
 package com.samchat.common.beans.auto.json.appserver.profile;
 
 import com.samchat.common.exceptions.AppException;
-import com.samchat.common.Constant;
+import com.samchat.common.enums.Constant;
 public class ProfileUpdate_req{
 
 	private Header header;

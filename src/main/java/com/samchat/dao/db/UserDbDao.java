@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsersExample;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
@@ -17,6 +16,7 @@ import com.samchat.common.beans.auto.db.entitybeans.TUserUsersExample;
 import com.samchat.common.beans.auto.db.mapper.TUserProUsersMapper;
 import com.samchat.common.beans.auto.db.mapper.TUserUsersMapper;
 import com.samchat.common.beans.manual.db.QryUserInfoVO;
+import com.samchat.common.enums.Constant;
 import com.samchat.dao.db.interfaces.IUserDbDao;
 
 @Repository
@@ -71,14 +71,12 @@ public class UserDbDao extends BaseDbDao implements IUserDbDao {
 		userUsersMapper.insert(user);
 	}
 
-	public void insertProUser(TUserProUsers proUser, Timestamp sysdate) {
-		proUser.setState_date(sysdate);
-		userProUsersMapper.insert(proUser);
+	public void insertProUser(TUserProUsers proUser) {
+ 		userProUsersMapper.insert(proUser);
 	}
 
-	public void updateUser(TUserUsers user, Timestamp sysdate) {
-		user.setState_date(sysdate);
-		userUsersMapper.updateByPrimaryKeySelective(user);
+	public void updateUser(TUserUsers user) {
+ 		userUsersMapper.updateByPrimaryKeySelective(user);
 	}
 
 	public void updateProUser(TUserProUsers user, Timestamp sysdate) {

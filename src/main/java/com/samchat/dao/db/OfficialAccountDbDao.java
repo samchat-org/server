@@ -8,12 +8,12 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
 import com.samchat.common.beans.auto.db.entitybeans.TOaFollowExample;
 import com.samchat.common.beans.auto.db.mapper.TOaFollowMapper;
 import com.samchat.common.beans.manual.db.QryFollowVO;
 import com.samchat.common.beans.manual.db.QryPublicQueryVO;
+import com.samchat.common.enums.Constant;
 import com.samchat.dao.db.interfaces.IOfficialAccountDbDao;
 
 @Repository
@@ -63,7 +63,7 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 		TOaFollow record = new TOaFollow();
 		record.setBlock_tag(block);
 		record.setState_date(sysdate);
-		
+
 		oaFollowMapper.updateByExampleSelective(record, fe);
 	}
 
@@ -75,7 +75,7 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 		TOaFollow record = new TOaFollow();
 		record.setFavourite_tag(favourite);
 		record.setState_date(sysdate);
-		
+
 		oaFollowMapper.updateByExampleSelective(record, fe);
 	}
 
@@ -94,10 +94,10 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 	}
 
 	public List<TOaFollow> queryFollowListByAdserId(long userId) {
- 		TOaFollowExample ttx = new TOaFollowExample();
-		ttx.createCriteria().andUser_id_proEqualTo(userId).andStateEqualTo(Constant.STATE_IN_USE);
+		TOaFollowExample ttx = new TOaFollowExample();
+		ttx.createCriteria().andUser_id_proEqualTo(userId).andBlock_tagEqualTo(Constant.ADS_UNBLOCK)
+				.andStateEqualTo(Constant.STATE_IN_USE);
 		return oaFollowMapper.selectByExample(ttx);
-		
- 
+
 	}
 }

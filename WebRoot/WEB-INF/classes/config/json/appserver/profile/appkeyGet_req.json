@@ -1,0 +1,12 @@
+{ 
+    "header":
+    {
+        "action" : "appkey-get",
+        "token": ""
+    },
+    "body" :
+    {
+    }
+    
+}
+

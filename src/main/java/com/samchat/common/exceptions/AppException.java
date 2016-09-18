@@ -1,6 +1,6 @@
 package com.samchat.common.exceptions;
 
-import com.samchat.common.Constant;
+import com.samchat.common.enums.Constant;
 import com.samchat.common.utils.CommonUtil;
 
 public class AppException extends RuntimeException {

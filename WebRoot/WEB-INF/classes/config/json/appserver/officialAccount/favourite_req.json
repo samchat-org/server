@@ -1,0 +1,10 @@
+{
+    "header":{
+        "action":"favourite",
+        "token":"token"
+    },
+    "body":{
+        "opt":0,
+        "id":1
+    }
+}

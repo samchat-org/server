@@ -1,5 +1,7 @@
 package com.samchat.common.beans.manual.json.sqs;
 
+import org.apache.commons.lang.StringUtils;
+
 public class AdvertisementSqs {
 	
 	private long ads_id;
@@ -8,12 +10,19 @@ public class AdvertisementSqs {
 	private String content;
 	private String content_thumb;
 	private long time;
+	private byte sendType;
 	
+	public byte getSendType() {
+		return sendType;
+	}
+	public void setSendType(byte sendType) {
+		this.sendType = sendType;
+	}
 	public String getContent_thumb() {
 		return content_thumb;
 	}
 	public void setContent_thumb(String content_thumb) {
-		this.content_thumb = content_thumb;
+		this.content_thumb = StringUtils.trimToEmpty(content_thumb);
 	}
 	public long getAds_id() {
 		return ads_id;

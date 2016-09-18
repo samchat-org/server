@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
+import com.samchat.common.enums.Constant;
 import com.samchat.dao.db.interfaces.ICommonDbDao;
+import com.samchat.service.interfaces.BaseSrvs;
 import com.samchat.service.interfaces.ICommonSrvs;
 
 @Service
-public class CommonSrvs implements ICommonSrvs {
+public class CommonSrvs extends BaseSrvs implements ICommonSrvs {
 
 	@Autowired
 	private ICommonDbDao commonDbDao;
@@ -22,5 +24,8 @@ public class CommonSrvs implements ICommonSrvs {
 	public TSysConfigs querySysconfig(String paramCode) {
 		return commonDbDao.querySysconfig(paramCode);
 	}
-
+	
+	public List<TSysConfigs> queryAllSysconfigsForApp() {
+		return commonDbDao.queryAllSysconfigs(Constant.SYS_PARAM_STATE.STATE_VALID_OUT);
+	}
 }

@@ -1,15 +1,17 @@
 package com.samchat.common.beans.manual.json.redis;
 
-public class UserInfoRds {
-	
-	private String token;
+import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 
-	public String getToken() {
-		return token;
+public class UserInfoRds extends TUserUsers {
+
+	private UserInfoProRds userInfoProRds;
+
+	public UserInfoProRds getUserInfoProRds() {
+		return userInfoProRds;
 	}
 
-	public void setToken(String token) {
-		this.token = token;
+	public void setUserInfoProRds(UserInfoProRds userInfoProRds) {
+		this.userInfoProRds = userInfoProRds;
 	}
 
 }

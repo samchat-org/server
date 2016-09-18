@@ -7,8 +7,10 @@ import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
 import com.samchat.common.beans.manual.db.QrySequenceVO;
 
 public interface ICommonDbDao extends IBaseDbDao {
-
+	
 	public List<TSysConfigs> queryAllSysconfigs();
+
+	public List<TSysConfigs> queryAllSysconfigs(byte state);
 
 	public TSysConfigs querySysconfig(String paramCode);
 

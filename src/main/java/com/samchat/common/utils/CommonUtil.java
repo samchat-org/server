@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.samchat.common.Constant;
+import com.samchat.common.enums.Constant;
 
 public class CommonUtil {
 

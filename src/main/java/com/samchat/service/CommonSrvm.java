@@ -17,8 +17,4 @@ public class CommonSrvm implements ICommonSrvm{
 	public Long querySeqId(String seqName) {
 		return commonDbDao.querySeqId(seqName);
 	}
-
-	public Timestamp querySysdate() {
-		return commonDbDao.querySysdate();
- 	}
 }

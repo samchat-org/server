@@ -8,7 +8,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 
 import com.samchat.action.BaseAction;
-import com.samchat.common.Constant;
+import com.samchat.common.enums.Constant;
 import com.twilio.sdk.TwilioRestClient;
 import com.twilio.sdk.TwilioRestException;
 import com.twilio.sdk.resource.factory.MessageFactory;

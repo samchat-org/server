@@ -1,0 +1,14 @@
+{
+    "header":{
+        "action":"advertisement-delete",
+        "token":"token"
+    },
+    "body":{
+        "advertisements":[
+            {
+                "adv_id":1,
+                "publish_timestamp":12
+            }
+        ]
+    }
+}

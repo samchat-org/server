@@ -1,0 +1,22 @@
+{
+    "header":{
+        "action":"create-sam-pros",
+        "token":"token"
+    },
+    "body":{
+        "company_name":"",
+        "service_category":"",
+        "service_description":"",
+        "countrycode":"",
+        "phone":"",
+        "email":"",
+        "location":{
+            "location_info":{
+                "longitude":"",
+                "latitude":""
+            },
+            "place_id":"",
+            "address":""
+        }
+    }
+}

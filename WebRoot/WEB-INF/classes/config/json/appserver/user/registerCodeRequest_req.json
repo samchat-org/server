@@ -1,0 +1,10 @@
+{
+    "header":{
+        "action":"register-code-request"
+    },
+    "body":{
+        "countrycode":"86",
+        "cellphone":"1381196123",
+        "deviceid":"14EF65"
+    }
+}

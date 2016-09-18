@@ -6,13 +6,13 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TQuestionQuestions;
-import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.question.Question_req;
 import com.samchat.common.beans.manual.json.redis.QuSendCtlRds;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.beans.manual.json.sqs.QuestionSqs;
+import com.samchat.common.enums.Constant;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CacheUtil;
 import com.samchat.common.utils.CommonUtil;
@@ -20,10 +20,11 @@ import com.samchat.common.utils.SqsUtil;
 import com.samchat.dao.db.interfaces.IQuestionDbDao;
 import com.samchat.dao.db.interfaces.IUserDbDao;
 import com.samchat.dao.redis.interfaces.IUserRedisDao;
+import com.samchat.service.interfaces.BaseSrvs;
 import com.samchat.service.interfaces.IQuestionSrvs;
 
 @Service
-public class QuestionSrvs implements IQuestionSrvs {
+public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 
 	private static Logger log = Logger.getLogger(QuestionSrvs.class);
 
@@ -54,8 +55,8 @@ public class QuestionSrvs implements IQuestionSrvs {
 
 		QuestionSqs sqs = new QuestionSqs();
 		Question_req.Body body = req.getBody();
-
- 		questionSendControl(sysdate.getTime(), token.getCountryCode(), token.getCellPhone());
+		UserInfoRds uu = getUserInfoRedis(token.getUserId());
+ 		questionSendControl(sysdate.getTime(), uu.getCountry_code(), uu.getPhone_no());
 
 		sqs.setQuestion_id(qstId);
 		sqs.setUser_id(token.getUserId());

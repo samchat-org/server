@@ -1,0 +1,18 @@
+{
+    "ret":0,
+    "count":1,
+    "users":[
+        {
+            "id":1,
+            "username":"Kevin Dong",
+            "lastupdate":123,
+            "type":0,
+            "avatar":{
+                "thumb":"http://121.42.207.185/avatar/2016/1/18/thumb_145312348.png"
+            },
+            "sam_pros_info":{
+                "service_category":"fastfood"
+            }
+        }
+    ]
+}

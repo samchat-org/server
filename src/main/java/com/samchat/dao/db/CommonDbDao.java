@@ -6,11 +6,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigsExample;
 import com.samchat.common.beans.auto.db.mapper.TSysConfigsMapper;
 import com.samchat.common.beans.manual.db.QrySequenceVO;
+import com.samchat.common.enums.Constant;
 import com.samchat.dao.db.interfaces.ICommonDbDao;
 
 @Repository
@@ -23,9 +23,15 @@ public class CommonDbDao extends BaseDbDao implements ICommonDbDao {
 		return "commonSqlMapper";
 	}
 
+	public List<TSysConfigs> queryAllSysconfigs(byte state) {
+		TSysConfigsExample sce = new TSysConfigsExample();
+		sce.createCriteria().andStateEqualTo(state);
+		return sysConfigsMapper.selectByExample(sce);
+	}
+	
 	public List<TSysConfigs> queryAllSysconfigs() {
 		TSysConfigsExample sce = new TSysConfigsExample();
-		sce.createCriteria().andStateEqualTo(Constant.STATE_IN_USE);
+		sce.createCriteria().andStateNotEqualTo(Constant.SYS_PARAM_STATE.STATE_INVALID);
 		return sysConfigsMapper.selectByExample(sce);
 	}
 	

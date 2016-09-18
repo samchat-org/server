@@ -38,9 +38,7 @@ public class Dispatcher extends Thread {
 	private AmazonSQS asqs;
 
 	public void paramInit() {
-		String accessKey = CommonUtil.getSysConfigStr("aws_access_key");
-		String secretKey = CommonUtil.getSysConfigStr("aws_secret_key");
-		asqs = new AmazonSQSClient(new BasicAWSCredentials(accessKey, secretKey));
+		asqs = new AmazonSQSClient();
 		om = new ObjectMapper();
 	}
 
@@ -95,8 +93,10 @@ public class Dispatcher extends Thread {
 						questionSrv.saveQuestion(req);
  						List<TUserUsers> users = usersSrv.queryUsers();
 						for (TUserUsers user : users) {
-							String dispatchReq = om.writeValueAsString(getRequest(user, req));
- 							GetuiUtil.push(user.getUser_id().toString(), dispatchReq);
+							if(user.getUser_id() != req.getUser_id()){
+								String dispatchReq = om.writeValueAsString(getRequest(user, req));
+	 							GetuiUtil.push(user.getUser_id().toString(), dispatchReq);
+							}
 						}
 					} catch (Exception e) {
 						log.error("error message:" + body, e);

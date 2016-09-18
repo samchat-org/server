@@ -15,7 +15,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import com.samchat.common.Constant;
+import com.samchat.common.enums.Constant;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.StrUtils;
 import com.samchat.common.utils.jsonUtils.jsonObjConvertUtil.entity.ArrayType;
@@ -173,7 +173,7 @@ public class JsonObjUtil {
 			init.append("import com.samchat.common.exceptions.AppException;\r\n");
 		}
 		if(sb.indexOf("Constant") > 0){
-			init.append("import com.samchat.common.Constant;\r\n");
+			init.append("import com.samchat.common.enums.Constant;\r\n");
 		}
 		
 		

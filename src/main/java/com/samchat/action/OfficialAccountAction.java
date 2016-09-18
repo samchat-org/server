@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.officialAccount.Block_req;
@@ -25,8 +24,10 @@ import com.samchat.common.beans.auto.json.appserver.officialAccount.PublicQuery_
 import com.samchat.common.beans.manual.db.QryFollowVO;
 import com.samchat.common.beans.manual.db.QryPublicQueryVO;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.enums.Constant;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.service.interfaces.ICommonSrvm;
+import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IOfficialAccountSrvs;
 import com.samchat.service.interfaces.IUsersSrvs;
 
@@ -42,9 +43,12 @@ public class OfficialAccountAction extends BaseAction {
 
 	@Autowired
 	private ICommonSrvm commonSrvm;
+	
+	@Autowired
+	private ICommonSrvs commonSrv;
 
-	public Follow_res follow(Follow_req req, TokenRds token, HashMap<String, Object> paramRet, Timestamp sysdate) {
-
+	public Follow_res follow(Follow_req req, TokenRds token, HashMap<String, Object> paramRet) {
+		
 		TUserUsers userPro = (TUserUsers) paramRet.get("userPro");
 		TOaFollow follow = (TOaFollow) paramRet.get("follow");
 
@@ -53,6 +57,7 @@ public class OfficialAccountAction extends BaseAction {
 
 		if (req.getBody().getOpt() == Constant.OA_FOLLOW) {
 			if (follow == null) {
+				Timestamp sysdate = commonSrv.querySysdate();
 				officialAccountSrv.insertFollow(userId, userIdPro, sysdate);
 			}
 		} else {
@@ -94,7 +99,7 @@ public class OfficialAccountAction extends BaseAction {
 
 		TUserUsers userPro = (TUserUsers) paramRet.get("userPro");
 		TOaFollow follow = (TOaFollow) paramRet.get("follow");
-		Timestamp sysdate = commonSrvm.querySysdate();
+		Timestamp sysdate = commonSrv.querySysdate();
 
 		long userIdPro = req.getBody().getId();
 		long userId = token.getUserId();
@@ -136,7 +141,7 @@ public class OfficialAccountAction extends BaseAction {
 
 		TUserUsers userPro = (TUserUsers) paramRet.get("userPro");
 		TOaFollow follow = (TOaFollow) paramRet.get("follow");
-		Timestamp sysdate = commonSrvm.querySysdate();
+		Timestamp sysdate = commonSrv.querySysdate();
 
 		long userIdPro = req.getBody().getId();
 		long userId = token.getUserId();

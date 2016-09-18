@@ -20,7 +20,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import com.samchat.common.Constant;
+import com.samchat.common.enums.Constant;
 import com.samchat.common.utils.CommonUtil;
 
 public class NiPostClient {

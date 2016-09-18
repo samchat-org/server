@@ -10,9 +10,9 @@ import net.sf.ehcache.Element;
 
 import org.apache.log4j.Logger;
 
-import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
 import com.samchat.common.beans.manual.common.SecurityAccessBean;
+import com.samchat.common.enums.Constant;
 
 /**
  * 
@@ -161,6 +161,11 @@ public class CacheUtil {
 	
 	public static String getUserInfoCacheKey(String countryCode, String cellPhone ){
 		return  getSystemId() + Constant.CACHE_NAME.USER_INFO + ":" + countryCode + "_" + cellPhone;
+		
+	}
+	
+	public static String getUserInfoIdCacheKey(long userId){
+		return  getSystemId() + Constant.CACHE_NAME.USER_INFO_ID + ":" + userId;
 		
 	}
 	

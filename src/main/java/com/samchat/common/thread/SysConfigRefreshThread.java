@@ -7,9 +7,9 @@ import net.sf.ehcache.Cache;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
 import com.samchat.common.beans.manual.common.SecurityAccessBean;
+import com.samchat.common.enums.Constant;
 import com.samchat.common.utils.CacheUtil;
 import com.samchat.service.interfaces.ICommonSrvs;
 

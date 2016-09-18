@@ -1,0 +1,13 @@
+{
+    "header":{
+        "action":"register"
+    },
+    "body":{
+        "countrycode":"86",
+        "cellphone":"1381196123",
+        "verifycode":332682,
+        "username":"Kevin Dong",
+        "pwd":"123456",
+        "deviceid":"14EF65"
+    }
+}

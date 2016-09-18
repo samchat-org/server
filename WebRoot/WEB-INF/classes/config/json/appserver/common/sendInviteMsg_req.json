@@ -1,0 +1,15 @@
+{
+    "header":{
+        "action":"send-invite-msg",
+        "token":"token"
+    },
+    "body":{
+        "phones":[
+            {
+                "countrycode":"",
+                "cellphone":""
+            }
+        ],
+        "msg":""
+    }
+}

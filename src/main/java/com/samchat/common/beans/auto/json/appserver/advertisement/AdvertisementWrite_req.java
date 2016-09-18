@@ -1,7 +1,7 @@
 package com.samchat.common.beans.auto.json.appserver.advertisement;
 
 import com.samchat.common.exceptions.AppException;
-import com.samchat.common.Constant;
+import com.samchat.common.enums.Constant;
 public class AdvertisementWrite_req{
 
 	private Header header;
@@ -38,7 +38,7 @@ public class AdvertisementWrite_req{
 		}
 
 		public void setType(long type) {
-			if (type != 0 &&type != 1 ){
+			if (type != 0 &&type != 1 &&type != 2 ){
 				 throw new AppException(Constant.ERROR.PARAM_NONSUPPORT, "value:" + type);
 			}
 			this.type = type;

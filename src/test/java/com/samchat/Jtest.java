@@ -1,10 +1,10 @@
 package com.samchat;
 
-import com.amazonaws.auth.AnonymousAWSCredentials;
-import com.amazonaws.services.cognitoidentity.AmazonCognitoIdentity;
-import com.amazonaws.services.cognitoidentity.AmazonCognitoIdentityClient;
-import com.amazonaws.services.cognitoidentity.model.GetIdRequest;
-import com.amazonaws.services.cognitoidentity.model.GetIdResult;
+import org.apache.commons.beanutils.PropertyUtils;
+
+import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
+import com.samchat.common.beans.manual.json.redis.UserInfoRds;
+
 
 public class Jtest {
 
@@ -19,21 +19,11 @@ public class Jtest {
 	public void download(){}
 
 	public static void main(String[] args) throws Exception {
-		AmazonCognitoIdentity identityClient = new AmazonCognitoIdentityClient(new AnonymousAWSCredentials());
-		 
-		// send a get id request. This only needs to be executed the first time
-		// and the result should be cached.
-		GetIdRequest idRequest = new GetIdRequest();
-		idRequest.setAccountId("");
-		idRequest.setIdentityPoolId("us-west-2:083f7106-00ad-4b9e-8e1d-2214d30975ba");
-		// If you are authenticating your users through an identity provider
-		// then you can set the Map of tokens in the request
-		// Map providerTokens = new HashMap();
-		// providerTokens.put(“graph.facebook.com”, “facebook session key”);
-		// idRequest.setLogins(providerTokens);
-		 
-		GetIdResult idResp = identityClient.getId(idRequest);
-		 
-		String identityId = idResp.getIdentityId();
-	}
+		UserInfoRds p = new UserInfoRds();
+		p.setAvatar_origin("1111111111111111111");
+		TUserUsers t = new TUserUsers();
+		t.setUser_id(122L);
+		PropertyUtils.setProperty(p, "avatar_origin",);
+		PropertyUtils.copyProperties(p , t);
+ 	}
 }

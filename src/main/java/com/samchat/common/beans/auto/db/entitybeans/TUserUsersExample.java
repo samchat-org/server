@@ -1194,6 +1194,76 @@ public class TUserUsersExample {
             addCriterion("cur_token not between", value1, value2, "cur_token");
             return (Criteria) this;
         }
+
+        public Criteria andCur_client_idIsNull() {
+            addCriterion("cur_client_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_client_idIsNotNull() {
+            addCriterion("cur_client_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_client_idEqualTo(String value) {
+            addCriterion("cur_client_id =", value, "cur_client_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_client_idNotEqualTo(String value) {
+            addCriterion("cur_client_id <>", value, "cur_client_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_client_idGreaterThan(String value) {
+            addCriterion("cur_client_id >", value, "cur_client_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_client_idGreaterThanOrEqualTo(String value) {
+            addCriterion("cur_client_id >=", value, "cur_client_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_client_idLessThan(String value) {
+            addCriterion("cur_client_id <", value, "cur_client_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_client_idLessThanOrEqualTo(String value) {
+            addCriterion("cur_client_id <=", value, "cur_client_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_client_idLike(String value) {
+            addCriterion("cur_client_id like", value, "cur_client_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_client_idNotLike(String value) {
+            addCriterion("cur_client_id not like", value, "cur_client_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_client_idIn(List<String> values) {
+            addCriterion("cur_client_id in", values, "cur_client_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_client_idNotIn(List<String> values) {
+            addCriterion("cur_client_id not in", values, "cur_client_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_client_idBetween(String value1, String value2) {
+            addCriterion("cur_client_id between", value1, value2, "cur_client_id");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_client_idNotBetween(String value1, String value2) {
+            addCriterion("cur_client_id not between", value1, value2, "cur_client_id");
+            return (Criteria) this;
+        }
     }
 
     /**

@@ -3,22 +3,26 @@ package com.samchat.processor.AdvertisementDispatch;
 import java.sql.Timestamp;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementDispatch_req;
+import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
+import com.samchat.common.enums.AdsState;
+import com.samchat.common.enums.Constant;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.GetuiUtil;
 import com.samchat.common.utils.S3Util;
 import com.samchat.service.interfaces.IAdvertisementSrvs;
+import com.samchat.service.interfaces.ICommonSrvm;
 import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IOfficialAccountSrvs;
 import com.samchat.service.interfaces.IUsersSrvs;
@@ -29,6 +33,9 @@ public class Dispatcher extends Thread {
 
 	@Autowired
 	private ICommonSrvs commonSrv;
+
+	@Autowired
+	private ICommonSrvm commonSrvm;
 
 	@Autowired
 	private IAdvertisementSrvs advertisementSrv;
@@ -44,10 +51,13 @@ public class Dispatcher extends Thread {
 	private AmazonSQS asqs;
 
 	public void paramInit() {
-		String accessKey = CommonUtil.getSysConfigStr("aws_access_key");
-		String secretKey = CommonUtil.getSysConfigStr("aws_secret_key");
-		asqs = new AmazonSQSClient(new BasicAWSCredentials(accessKey, secretKey));
-		om = new ObjectMapper();
+		try {
+			asqs = new AmazonSQSClient();
+			om = new ObjectMapper();
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			throw new Error();
+		}
 	}
 
 	private AdvertisementDispatch_req getRequest(long testId, AdvertisementSqs reqSqs) {
@@ -91,13 +101,38 @@ public class Dispatcher extends Thread {
 					log.info("messages body:" + body);
 					try {
 						AdvertisementSqs req = om.readValue(body, AdvertisementSqs.class);
-						req.setContent_thumb(S3Util.getThumbObject(req.getContent()));
- 						advertisementSrv.saveAdvertisement(req.getUser_id(), (byte) req.getType(), req.getContent(),
-								req.getAds_id(), new Timestamp(req.getTime()));
- 						List<TOaFollow> followlst = officialAccountSrv.queryFollowListByAdserId(req.getUser_id());
+						long adsId = req.getAds_id();
+						long userIdPro = req.getUser_id();
+
+						if (req.getType() == Constant.ADS_TYPE.PIC) {
+							req.setContent_thumb(S3Util.getThumbObject(req.getContent()));
+						}
+						advertisementSrv.saveAdvertisementContent(adsId, userIdPro, (byte) req.getType(),
+								req.getContent(), req.getContent_thumb(), new Timestamp(req.getTime()));
+
+						List<TOaFollow> followlst = officialAccountSrv.queryFollowListByAdserId(userIdPro);
+						Timestamp senddate = commonSrv.querySysdate();
+
 						for (TOaFollow ff : followlst) {
-							String dispatchReq = om.writeValueAsString(getRequest(ff.getUser_id(), req));
-							GetuiUtil.push(ff.getUser_id().toString(), dispatchReq);
+							long userId = ff.getUser_id();
+							UserInfoRds uur = commonSrv.getUserInfoRedis(userId);
+							if (uur == null || StringUtils.trimToNull(uur.getCur_client_id()) == null) {
+								log.info("client_id is null");
+								continue;
+							}
+							byte state = AdsState.SEND_SUCCESS.getState();
+							String remark = AdsState.SEND_SUCCESS.name();
+							try {
+								String dispatchReq = om.writeValueAsString(getRequest(userId, req));
+								GetuiUtil.push(userId + "", dispatchReq);
+							} catch (Exception e) {
+								log.error(e.getMessage(), e);
+								state = AdsState.ERROR.getState();
+								remark = AdsState.ERROR.name();
+							} finally {
+								advertisementSrv.saveAdvertisementSendLog(adsId, userId, senddate, state,
+										uur.getCur_client_id(), remark);
+							}
 						}
 					} catch (Exception e) {
 						log.error("error message:" + body, e);

@@ -1,4 +1,4 @@
-package com.samchat.common;
+package com.samchat.common.enums;
 
 import java.text.SimpleDateFormat;
 import java.util.regex.Pattern;
@@ -52,10 +52,16 @@ public interface Constant {
 
 	int REGISTER_TYPE_PHONE = 0;
 	int REGISTER_TYPE_EMAIL = 1;
-	
-	interface DATA_SOURCE{
+
+	interface SYS_PARAM_STATE {
+		byte STATE_VALID_IN = 1;
+		byte STATE_VALID_OUT = 2;
+		byte STATE_INVALID = 0;
+	}
+
+	interface DATA_SOURCE {
 		String S_MAIN = "myDataSource";
- 		String S_SHARDING = "shardingDataSource";
+		String S_SHARDING = "shardingDataSource";
 	}
 
 	interface SEQUENCE {
@@ -67,9 +73,20 @@ public interface Constant {
 		String CN_NORTH_1 = "cn-north-1";
 	}
 
+	interface ADS_TYPE {
+		long TXT = 0;
+		long PIC = 1;
+		long VID = 2;
+	}
+	
+	interface ADS_SEND_TYPE{
+//		byte SERVICE
+	}
+
 	interface CACHE_NAME {
 		String LOGIN_ERR = "LOGIN_ERR";
 		String USER_INFO = "USER_INFO";
+		String USER_INFO_ID = "USER_INFO_ID";
 		String QUESTION_SEND_CONTROL = "QUESTION_SEND_CONTROL";
 		String TOKEN = "TOKEN";
 		String REGISTER_CODE = "REGISTER_CODE";
@@ -114,7 +131,7 @@ public interface Constant {
 		int SEND_QUESTION_FREQUENT = -509;
 		int CUSTORMER_ADD_CUSTORMER = -510;
 		int CUSTORMER_ADD_SERVIER_CONTACT_LIST = -511;
-		 
+
 	}
 
 }

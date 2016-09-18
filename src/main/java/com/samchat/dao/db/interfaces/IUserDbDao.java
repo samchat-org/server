@@ -18,9 +18,9 @@ public interface IUserDbDao extends IBaseDbDao {
 
 	public void insertUser(TUserUsers user, Timestamp sysdate);
 
-	public void insertProUser(TUserProUsers proUser, Timestamp sysdate);
+	public void insertProUser(TUserProUsers proUser);
 
-	public void updateUser(TUserUsers user, Timestamp sysdate);
+	public void updateUser(TUserUsers user);
 
 	public void updateProUser(TUserProUsers user, Timestamp sysdate);
 

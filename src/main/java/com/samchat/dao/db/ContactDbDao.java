@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TContactProUser;
 import com.samchat.common.beans.auto.db.entitybeans.TContactProUserExample;
 import com.samchat.common.beans.auto.db.entitybeans.TContactUser;
@@ -17,6 +16,7 @@ import com.samchat.common.beans.auto.db.entitybeans.TContactUserExample;
 import com.samchat.common.beans.auto.db.mapper.TContactProUserMapper;
 import com.samchat.common.beans.auto.db.mapper.TContactUserMapper;
 import com.samchat.common.beans.manual.db.QryContactVO;
+import com.samchat.common.enums.Constant;
 import com.samchat.dao.db.interfaces.IContactDbDao;
 
 @Repository

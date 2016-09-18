@@ -13,7 +13,7 @@ import com.samchat.common.beans.manual.db.QryUserInfoVO;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 
-public interface IUsersSrvs {
+public interface IUsersSrvs extends IBaseSrvs{
 	public TUserUsers queryUserInfoByPhone(String phoneNo, String countryCode);
 
 	public TUserUsers queryUserInfoByUserName(String userName);
@@ -31,16 +31,13 @@ public interface IUsersSrvs {
 	public void putFindpasswordVerificationCode(String countryCode, String cellPhone, String verificationCode,
 			long expireSec);
 
-	public String[] getAddedToken(String countryCode, String cellPhone, long time, String deviceId, long userId,
-			long userType) throws Exception;
-
-	public void resetToken(String userType, String countryCode, String cellPhone, String realToken);
+	public String[] getAddedToken(long userId, long time, String deviceId) throws Exception;
 
 	public void cancelUserInfoIntoRedis(String countryCode, String cellPhone);
 
-	public void setUserInfoIntoRedis(String countryCode, String cellPhone, String token);
+	public void setUserInfoRedis(long  userId, UserInfoRds uif);
 
-	public UserInfoRds getUserInfoIntoRedis(String countryCode, String cellPhone);
+	public UserInfoRds getUserInfoRedis(long userId);
 
 	public void niRegister(long userId, String userName, String token, Timestamp cur) throws Exception;
 
@@ -49,8 +46,10 @@ public interface IUsersSrvs {
 	public TokenRds getTokenObj(String token);
 
 	public void deleteToken(String token);
+	
+	public void updateToken(String token, TokenRds tokenObj);
 
-	public TUserProUsers saveProsUserInfo(CreateSamPros_req req, TUserUsers user, Timestamp sysdate);
+	public TUserProUsers saveProsUserInfo(CreateSamPros_req req, TUserUsers user, Timestamp sysdate) throws Exception;
 
 	public void updatePassword(long userId, String password, Timestamp sysdate);
 

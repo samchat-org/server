@@ -1,0 +1,18 @@
+{
+    "header":{
+        "action":"public-query",
+        "token":"token"
+    },
+    "body":{
+        "key":"",
+        "location":{
+            "location_info":{
+                "longitude":"",
+                "latitude":""
+            }
+            ,
+            "place_id":"",
+            "address":""
+        }
+    }
+}

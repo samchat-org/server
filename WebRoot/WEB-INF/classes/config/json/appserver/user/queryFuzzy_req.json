@@ -1,0 +1,12 @@
+{
+    "header":{
+        "action":"query-fuzzy",
+        "token":"token"
+    },
+    "body":{
+        "opt":1,
+        "param":{
+            "search_key":""
+        }
+    }
+}

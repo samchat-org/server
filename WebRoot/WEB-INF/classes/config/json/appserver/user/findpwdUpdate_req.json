@@ -1,0 +1,12 @@
+{
+    "header":{
+        "action":" findpwd-update"
+    },
+    "body":{
+        "countrycode":"86",
+        "cellphone":"13645719056",
+        "verifycode":"",
+        "pwd":"123123",
+        "deviceid":""
+    }
+}

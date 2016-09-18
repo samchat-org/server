@@ -1,7 +1,7 @@
 package com.samchat.common.beans.auto.json.appserver.contact;
 
 import com.samchat.common.exceptions.AppException;
-import com.samchat.common.Constant;
+import com.samchat.common.enums.Constant;
 public class Contact_req{
 
 	private Header header;

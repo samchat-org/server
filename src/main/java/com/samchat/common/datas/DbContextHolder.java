@@ -1,9 +1,14 @@
 package com.samchat.common.datas;
 
+import org.apache.log4j.Logger;
+
+import com.samchat.test.JedisTest;
+
 public class DbContextHolder {
 	private static final ThreadLocal<String> contextHolder = new ThreadLocal<String>();
-
+	private static Logger log = Logger.getLogger(DbContextHolder.class);
 	public static void setDbType(String dbType) {
+		log.info("dbType:" + dbType);
 		contextHolder.set(dbType);
 	}
 

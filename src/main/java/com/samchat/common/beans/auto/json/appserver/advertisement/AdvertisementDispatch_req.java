@@ -1,7 +1,7 @@
 package com.samchat.common.beans.auto.json.appserver.advertisement;
 
 import com.samchat.common.exceptions.AppException;
-import com.samchat.common.Constant;
+import com.samchat.common.enums.Constant;
 public class AdvertisementDispatch_req{
 
 	private Header header;

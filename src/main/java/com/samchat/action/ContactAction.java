@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.contact.ContactListQuery_req;
 import com.samchat.common.beans.auto.json.appserver.contact.ContactListQuery_res;
@@ -15,8 +14,11 @@ import com.samchat.common.beans.auto.json.appserver.contact.Contact_req;
 import com.samchat.common.beans.auto.json.appserver.contact.Contact_res;
 import com.samchat.common.beans.manual.db.QryContactVO;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.UserInfoRds;
+import com.samchat.common.enums.Constant;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.service.interfaces.ICommonSrvm;
+import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IContactSrvs;
 import com.samchat.service.interfaces.IUsersSrvs;
 
@@ -33,13 +35,18 @@ public class ContactAction extends BaseAction {
 	@Autowired
 	private ICommonSrvm commonSrvm;
 
+	@Autowired
+	private ICommonSrvs commonSrvs;
+
 	public Contact_res contact(Contact_req req, TokenRds token) {
+
+		UserInfoRds userInfo = usersSrv.getUserInfoRedis(token.getUserId());
 
 		Contact_req.Body body = req.getBody();
 		long userId = body.getId();
 		long opt = body.getOpt();
 		long type = body.getType();
-		Timestamp sysdate = commonSrvm.querySysdate();
+		Timestamp sysdate = commonSrvs.querySysdate();
 
 		TUserUsers user = usersSrv.queryUser(userId);
 		if (user == null) {
@@ -53,7 +60,7 @@ public class ContactAction extends BaseAction {
 				log.info("user_id:" + token.getUserId() + "--user_id_pro:" + userId);
 				contactSrv.addContactUser(token.getUserId(), userId, sysdate);
 			} else if (type == 1) {
-				if (token.getUserType() == Constant.USER_TYPE_CUSTOMER) {
+				if (userInfo.getUser_type() == Constant.USER_TYPE_CUSTOMER) {
 					throw new AppException(Constant.ERROR.CUSTORMER_ADD_SERVIER_CONTACT_LIST);
 				}
 				contactSrv.addContactProUser(token.getUserId(), userId, sysdate);

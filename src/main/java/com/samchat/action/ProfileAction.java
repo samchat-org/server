@@ -5,7 +5,6 @@ import java.sql.Timestamp;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.samchat.common.Constant;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.profile.AppkeyGet_req;
 import com.samchat.common.beans.auto.json.appserver.profile.AppkeyGet_res;
@@ -13,10 +12,14 @@ import com.samchat.common.beans.auto.json.appserver.profile.AvatarUpdate_req;
 import com.samchat.common.beans.auto.json.appserver.profile.AvatarUpdate_res;
 import com.samchat.common.beans.auto.json.appserver.profile.ProfileUpdate_req;
 import com.samchat.common.beans.auto.json.appserver.profile.ProfileUpdate_res;
+import com.samchat.common.beans.auto.json.appserver.profile.SendClientId_req;
+import com.samchat.common.beans.auto.json.appserver.profile.SendClientId_res;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.UserInfoRds;
+import com.samchat.common.enums.Constant;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
-import com.samchat.service.interfaces.ICommonSrvm;
+import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IProfileSrvs;
 import com.samchat.service.interfaces.IUsersSrvs;
 
@@ -30,7 +33,7 @@ public class ProfileAction extends BaseAction {
 	private IProfileSrvs profileSrv;
 
 	@Autowired
-	private ICommonSrvm commonSrvm;
+	private ICommonSrvs commonSrv;
 
 	public AppkeyGet_res appkeyGet(AppkeyGet_req req, TokenRds token) {
 		AppkeyGet_res res = new AppkeyGet_res();
@@ -51,24 +54,10 @@ public class ProfileAction extends BaseAction {
 	}
 
 	public ProfileUpdate_res profileUpdate(ProfileUpdate_req req, TokenRds token, TUserUsers updatedUser) {
-		String tokenStr = req.getHeader().getToken();
-		Timestamp sysdate = commonSrvm.querySysdate();
+
+		Timestamp sysdate = commonSrv.querySysdate();
 		long lastupdate = profileSrv.updateProfile(req, token.getUserId(), sysdate);
 
-		if (updatedUser.getCountry_code() != null) {
-
-			log.info("cancel userinfo : " + token.getCountryCode());
-			usersSrv.cancelUserInfoIntoRedis(token.getCountryCode(), token.getCellPhone());
-
-			String newcountrycode = updatedUser.getCountry_code();
-			String newcellphone = updatedUser.getPhone_no();
-
-			log.info("set userinfo : " + newcellphone);
-			usersSrv.setUserInfoIntoRedis(newcountrycode, newcellphone, tokenStr);
-
-			usersSrv.resetToken(null, newcountrycode, newcellphone, tokenStr);
-
-		}
 		ProfileUpdate_res res = new ProfileUpdate_res();
 		ProfileUpdate_res.User userRes = new ProfileUpdate_res.User();
 		res.setUser(userRes);
@@ -79,8 +68,9 @@ public class ProfileAction extends BaseAction {
 
 	public TUserUsers profileUpdateValidate(ProfileUpdate_req req, TokenRds token) {
 
-		String countrycode = token.getCountryCode();
-		String cellphone = token.getCellPhone();
+		UserInfoRds userInfo = usersSrv.getUserInfoRedis(token.getUserId());
+		String countrycode = userInfo.getCountry_code();
+		String cellphone = userInfo.getPhone_no();
 
 		ProfileUpdate_req.User user = req.getBody().getUser();
 		String countrycodeOpt = user.getCountrycode();
@@ -92,18 +82,18 @@ public class ProfileAction extends BaseAction {
 		if (cellphoneOpt == null) {
 			cellphoneOpt = cellphone;
 		}
-		TUserUsers u = new TUserUsers();
-		
 		if (countrycodeOpt != countrycode || cellphoneOpt != cellphone) {
-			u = usersSrv.queryUserInfoByPhone(cellphoneOpt, countrycodeOpt);
+			TUserUsers u = usersSrv.queryUserInfoByPhone(cellphoneOpt, countrycodeOpt);
 			if (u != null) {
 				throw new AppException(Constant.ERROR.PHONEorUSERNAME_EXIST, "countrycode:" + countrycodeOpt
 						+ "--cellphone:" + cellphoneOpt);
 			}
+			u = new TUserUsers();
 			u.setCountry_code(countrycodeOpt);
 			u.setPhone_no(cellphoneOpt);
+			return u;
 		}
-		return u;
+		return new TUserUsers();
 	}
 
 	public AvatarUpdate_res avatarUpdate(AvatarUpdate_req req, TokenRds token) throws Exception {
@@ -112,7 +102,7 @@ public class ProfileAction extends BaseAction {
 		String origin = avatar.getOrigin();
 		String thumb = avatar.getThumb();
 		long userId = token.getUserId();
-		Timestamp sysdate = commonSrvm.querySysdate();
+		Timestamp sysdate = commonSrv.querySysdate();
 
 		TUserUsers userdb = usersSrv.updateAvatar(origin, thumb, userId, sysdate);
 
@@ -120,11 +110,25 @@ public class ProfileAction extends BaseAction {
 		AvatarUpdate_res.User user = new AvatarUpdate_res.User();
 		res.setUser(user);
 		user.setThumb(userdb.getAvatar_thumb());
-		user.setLastupdate(userdb.getState_date().getTime());
+		user.setLastupdate(sysdate.getTime());
 
 		return res;
 	}
 
 	public void avatarUpdateValidate(AvatarUpdate_req req, TokenRds token) {
+	}
+
+	public SendClientId_res sendClientId(SendClientId_req req, TokenRds token) {
+
+		long userId = token.getUserId();
+		UserInfoRds uu = commonSrv.getUserInfoRedis(userId);
+		uu.setCur_client_id(req.getBody().getClent_id());
+		commonSrv.setUserInfoRedis(userId, uu);
+
+		return new SendClientId_res();
+	}
+
+	public void sendClientIdValidate() {
+
 	}
 }

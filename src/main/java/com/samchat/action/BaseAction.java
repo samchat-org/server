@@ -15,8 +15,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.samchat.common.Constant;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.enums.Constant;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.StrUtils;
