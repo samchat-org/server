@@ -1,19 +1,21 @@
 package com.samchat.service.interfaces;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.user.CreateSamPros_req;
+import com.samchat.common.beans.auto.json.appserver.user.QueryAccurate_res;
 import com.samchat.common.beans.auto.json.appserver.user.Register_req;
 import com.samchat.common.beans.auto.json.appserver.user.Register_res;
 import com.samchat.common.beans.manual.db.QryUserInfoVO;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 
-public interface IUsersSrvs extends IBaseSrvs{
+public interface IUsersSrvs extends IBaseSrvs {
 	public TUserUsers queryUserInfoByPhone(String phoneNo, String countryCode);
 
 	public TUserUsers queryUserInfoByUserName(String userName);
@@ -35,7 +37,7 @@ public interface IUsersSrvs extends IBaseSrvs{
 
 	public void cancelUserInfoIntoRedis(String countryCode, String cellPhone);
 
-	public void setUserInfoRedis(long  userId, UserInfoRds uif);
+	public void setUserInfoRedis(long userId, UserInfoRds uif);
 
 	public UserInfoRds getUserInfoRedis(long userId);
 
@@ -46,7 +48,7 @@ public interface IUsersSrvs extends IBaseSrvs{
 	public TokenRds getTokenObj(String token);
 
 	public void deleteToken(String token);
-	
+
 	public void updateToken(String token, TokenRds tokenObj);
 
 	public TUserProUsers saveProsUserInfo(CreateSamPros_req req, TUserUsers user, Timestamp sysdate) throws Exception;
@@ -63,7 +65,8 @@ public interface IUsersSrvs extends IBaseSrvs{
 
 	public List<QryUserInfoVO> queryUsersFuzzy(String key);
 
-	public List<QryUserInfoVO> queryUserAccurate(Long type, String cellphone, String userName, String userId);
+	public List<QryUserInfoVO> queryUserAccurate(Long type, String cellphone, String userName,
+			String userId);
 
 	public List<QryUserInfoVO> queryUsersGroup(List<Long> userIds);
 

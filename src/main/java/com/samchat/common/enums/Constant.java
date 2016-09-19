@@ -63,7 +63,7 @@ public interface Constant {
 		String S_MAIN = "myDataSource";
 		String S_SHARDING = "shardingDataSource";
 	}
-
+	
 	interface SEQUENCE {
 		String S_QUESTION = "s_question";
 		String S_ADVERTISEMENT = "s_advertisement";
@@ -80,7 +80,7 @@ public interface Constant {
 	}
 	
 	interface ADS_SEND_TYPE{
-//		byte SERVICE
+		
 	}
 
 	interface CACHE_NAME {

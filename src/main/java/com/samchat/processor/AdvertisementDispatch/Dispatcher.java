@@ -1,6 +1,9 @@
 package com.samchat.processor.AdvertisementDispatch;
 
 import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -12,6 +15,8 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
+import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementContent;
+import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementSendLog;
 import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementDispatch_req;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
@@ -60,6 +65,28 @@ public class Dispatcher extends Thread {
 		}
 	}
 
+	private AdvertisementDispatch_req getRequest(TAdvertisementSendLog sendlog, TAdvertisementContent content) {
+
+		AdvertisementDispatch_req req = new AdvertisementDispatch_req();
+		AdvertisementDispatch_req.Header header = new AdvertisementDispatch_req.Header();
+		AdvertisementDispatch_req.Body body = new AdvertisementDispatch_req.Body();
+
+		body.setId(content.getUser_id_pro());
+		body.setAdv_id(sendlog.getAds_id());
+		body.setContent(content.getContent());
+		body.setContent_thumb(content.getContent_thumb());
+		body.setDest_id(sendlog.getUser_id());
+		body.setPublish_timestamp(content.getCreate_date().getTime());
+		body.setType(content.getAds_type());
+
+		req.setHeader(header);
+		req.setBody(body);
+
+		header.setCategory("2");
+
+		return req;
+	}
+
 	private AdvertisementDispatch_req getRequest(long testId, AdvertisementSqs reqSqs) {
 
 		AdvertisementDispatch_req req = new AdvertisementDispatch_req();
@@ -82,6 +109,80 @@ public class Dispatcher extends Thread {
 		return req;
 	}
 
+	public void resendAdvertisement(AdvertisementSqs req) throws Exception {
+		long userId = req.getUser_id();
+		int offlinetime = CommonUtil.getSysConfigInt("getui_offline_time");
+		int validCycle = CommonUtil.getSysConfigInt("aws_sqs_advertisement_valid_cycle");
+
+		Timestamp sysdate = commonSrv.querySysdate();
+		GregorianCalendar gc = new GregorianCalendar();
+
+		gc.setTime(sysdate);
+		for (int i = 0; i < validCycle; i++) {
+			int shardingFlag = Integer.parseInt(Constant.SDF_YYYYMM.format(gc.getTime()));
+			List<TAdvertisementSendLog> sendLogs = advertisementSrv.queryAdvertisementSendLog(userId, shardingFlag);
+
+			for (TAdvertisementSendLog sendlog : sendLogs) {
+				long adsId = sendlog.getAds_id();
+				TAdvertisementContent content = advertisementSrv.queryAdvertisementCotentById(adsId, shardingFlag);
+				if (content == null) {
+					continue;
+				}
+				String clientId = sendlog.getClient_id();
+				Date senddate = sendlog.getSend_date();
+				UserInfoRds uur = commonSrv.getUserInfoRedis(userId);
+				String curClientId = uur.getCur_client_id();
+				Date lastDate = CommonUtil.operationHourForDate(senddate, offlinetime);
+
+				if (clientId.equals(curClientId) && lastDate.before(sysdate)) {
+					continue;
+				}
+				String dispatchReq = om.writeValueAsString(getRequest(sendlog, content));
+				GetuiUtil.push(userId + "", dispatchReq);
+			}
+			gc.add(Calendar.MONTH, -1);
+		}
+
+	}
+
+	public void sendAdvertisement(AdvertisementSqs req) throws Exception {
+
+		long adsId = req.getAds_id();
+		long userIdPro = req.getUser_id_pro();
+
+		if (req.getType() == Constant.ADS_TYPE.PIC) {
+			req.setContent_thumb(S3Util.getThumbObject(req.getContent()));
+		}
+		int shardingFlag = Integer.parseInt(Constant.SDF_YYYYMM.format(new Timestamp(req.getTime())));
+		advertisementSrv.saveAdvertisementContent(adsId, userIdPro, (byte) req.getType(), req.getContent(),
+				req.getContent_thumb(), new Timestamp(req.getTime()), shardingFlag);
+
+		List<TOaFollow> followlst = officialAccountSrv.queryFollowListByAdserId(userIdPro);
+		Timestamp senddate = commonSrv.querySysdate();
+
+		for (TOaFollow ff : followlst) {
+			long userId = ff.getUser_id();
+			UserInfoRds uur = commonSrv.getUserInfoRedis(userId);
+			if (uur == null || StringUtils.trimToNull(uur.getCur_client_id()) == null) {
+				log.info("client_id is null");
+				continue;
+			}
+			byte state = AdsState.SEND_SUCCESS.getState();
+			String remark = AdsState.SEND_SUCCESS.name();
+			try {
+				String dispatchReq = om.writeValueAsString(getRequest(userId, req));
+				GetuiUtil.push(userId + "", dispatchReq);
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+				state = AdsState.ERROR.getState();
+				remark = AdsState.ERROR.name();
+			} finally {
+				advertisementSrv.saveAdvertisementSendLog(adsId, userId, senddate, state, uur.getCur_client_id(),
+						remark, shardingFlag);
+			}
+		}
+	}
+
 	public void run() {
 		paramInit();
 		for (;;) {
@@ -101,38 +202,11 @@ public class Dispatcher extends Thread {
 					log.info("messages body:" + body);
 					try {
 						AdvertisementSqs req = om.readValue(body, AdvertisementSqs.class);
-						long adsId = req.getAds_id();
-						long userIdPro = req.getUser_id();
-
-						if (req.getType() == Constant.ADS_TYPE.PIC) {
-							req.setContent_thumb(S3Util.getThumbObject(req.getContent()));
-						}
-						advertisementSrv.saveAdvertisementContent(adsId, userIdPro, (byte) req.getType(),
-								req.getContent(), req.getContent_thumb(), new Timestamp(req.getTime()));
-
-						List<TOaFollow> followlst = officialAccountSrv.queryFollowListByAdserId(userIdPro);
-						Timestamp senddate = commonSrv.querySysdate();
-
-						for (TOaFollow ff : followlst) {
-							long userId = ff.getUser_id();
-							UserInfoRds uur = commonSrv.getUserInfoRedis(userId);
-							if (uur == null || StringUtils.trimToNull(uur.getCur_client_id()) == null) {
-								log.info("client_id is null");
-								continue;
-							}
-							byte state = AdsState.SEND_SUCCESS.getState();
-							String remark = AdsState.SEND_SUCCESS.name();
-							try {
-								String dispatchReq = om.writeValueAsString(getRequest(userId, req));
-								GetuiUtil.push(userId + "", dispatchReq);
-							} catch (Exception e) {
-								log.error(e.getMessage(), e);
-								state = AdsState.ERROR.getState();
-								remark = AdsState.ERROR.name();
-							} finally {
-								advertisementSrv.saveAdvertisementSendLog(adsId, userId, senddate, state,
-										uur.getCur_client_id(), remark);
-							}
+						long sendType = req.getSendType();
+						if (sendType == 2) {
+							sendAdvertisement(req);
+						} else if (sendType == 1) {
+							resendAdvertisement(req);
 						}
 					} catch (Exception e) {
 						log.error("error message:" + body, e);

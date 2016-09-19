@@ -6,12 +6,19 @@ public class AdvertisementSqs {
 	
 	private long ads_id;
 	private long user_id;
+	private long user_id_pro;
 	private long type;
 	private String content;
 	private String content_thumb;
 	private long time;
 	private byte sendType;
 	
+	public long getUser_id_pro() {
+		return user_id_pro;
+	}
+	public void setUser_id_pro(long user_id_pro) {
+		this.user_id_pro = user_id_pro;
+	}
 	public byte getSendType() {
 		return sendType;
 	}

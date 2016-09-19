@@ -694,6 +694,66 @@ public class TAdvertisementContentExample {
             addCriterion("create_date not between", value1, value2, "create_date");
             return (Criteria) this;
         }
+
+        public Criteria andSharding_flagIsNull() {
+            addCriterion("sharding_flag is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagIsNotNull() {
+            addCriterion("sharding_flag is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagEqualTo(Integer value) {
+            addCriterion("sharding_flag =", value, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagNotEqualTo(Integer value) {
+            addCriterion("sharding_flag <>", value, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagGreaterThan(Integer value) {
+            addCriterion("sharding_flag >", value, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagGreaterThanOrEqualTo(Integer value) {
+            addCriterion("sharding_flag >=", value, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagLessThan(Integer value) {
+            addCriterion("sharding_flag <", value, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagLessThanOrEqualTo(Integer value) {
+            addCriterion("sharding_flag <=", value, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagIn(List<Integer> values) {
+            addCriterion("sharding_flag in", values, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagNotIn(List<Integer> values) {
+            addCriterion("sharding_flag not in", values, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagBetween(Integer value1, Integer value2) {
+            addCriterion("sharding_flag between", value1, value2, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagNotBetween(Integer value1, Integer value2) {
+            addCriterion("sharding_flag not between", value1, value2, "sharding_flag");
+            return (Criteria) this;
+        }
     }
 
     /**

@@ -37,8 +37,10 @@
 
 	<rdb:strategy id="questionSDSY" sharding-columns="create_date"
 		algorithm-expression="t_question_questions_${create_date.toString('yyyyMM')}" />
-	<rdb:strategy id="advertisementSDSY" sharding-columns="create_date"
-		algorithm-expression="t_advertisement_advertisements_${create_date.toString('yyyyMM')}" />
+	<rdb:strategy id="advertisementContentSDSY" sharding-columns="sharding_flag"
+		algorithm-expression="t_advertisement_content_${sharding_flag.toString()}" />
+	<rdb:strategy id="advertisementSendLogSDSY" sharding-columns="sharding_flag"
+		algorithm-expression="t_advertisement_send_log_${sharding_flag.toString()}" />
 
 	<rdb:data-source id="shardingDataSource">
 		<rdb:sharding-rule data-sources="myDataSource">
@@ -47,9 +49,13 @@
 					actual-tables="t_question_questions_${201608..203001}"
 					table-strategy="questionSDSY" />
 
-				<rdb:table-rule logic-table="t_advertisement_advertisements"
-					actual-tables="t_advertisement_advertisements_${201608..203001}"
-					table-strategy="advertisementSDSY" />
+				<rdb:table-rule logic-table="t_advertisement_content"
+					actual-tables="t_advertisement_content_${201608..203001}"
+					table-strategy="advertisementContentSDSY" />
+				
+				<rdb:table-rule logic-table="t_advertisement_send_log"
+					actual-tables="t_advertisement_send_log_${201608..203001}"
+					table-strategy="advertisementSendLogSDSY" />
 
 			</rdb:table-rules>
 			<rdb:default-database-strategy

@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementContent;
+import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementSendLog;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementDelete_req;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementWrite_req;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
@@ -24,13 +26,13 @@ public class AdvertisementSrvs extends BaseSrvs implements IAdvertisementSrvs {
 	private IAdvertisementDbDao advertisementDbDao;
 
 	public void saveAdvertisementContent(long adsId, long userIdPro, byte type, String content, String thumb,
-			Timestamp recvdate) {
-		advertisementDbDao.saveAdvertisementContent(adsId, userIdPro, type, content, thumb, recvdate);
+			Timestamp recvdate, int shardingFlag) {
+		advertisementDbDao.saveAdvertisementContent(adsId, userIdPro, type, content, thumb, recvdate,  shardingFlag);
 	}
 
 	public void saveAdvertisementSendLog(long adsId, long userId, Timestamp senddate, byte state, String clientId,
-			String remark) {
-		advertisementDbDao.saveAdvertisementSendLog(adsId, userId, senddate, state, clientId, remark);
+			String remark, int shardingFlag) {
+		advertisementDbDao.saveAdvertisementSendLog(adsId, userId, senddate, state, clientId, remark, shardingFlag);
 	}
 
 	public void updateAdvertisementNotinuse(List<AdvertisementDelete_req.Advertisements> ads, long userId)
@@ -49,7 +51,7 @@ public class AdvertisementSrvs extends BaseSrvs implements IAdvertisementSrvs {
 
 		ads.setAds_id(adsId);
 		ads.setType(adsType);
-		ads.setUser_id(token.getUserId());
+		ads.setUser_id_pro(token.getUserId());
 		ads.setContent(body.getContent());
 		ads.setContent_thumb(body.getContent_thumb());
 		if (adsType == Constant.ADS_TYPE.PIC) {
@@ -57,9 +59,18 @@ public class AdvertisementSrvs extends BaseSrvs implements IAdvertisementSrvs {
 			ads.setContent_thumb(thumbpath);
 		}
 		Timestamp sysdate = this.querySysdate();
+		ads.setSendType((byte) 2);
 		ads.setTime(sysdate.getTime());
 		SqsUtil.pushMessage(ads, Constant.SYS_PARAM_KEY.SQS_ADVERTISEMENT);
 
 		return ads;
+	}
+
+	public List<TAdvertisementSendLog> queryAdvertisementSendLog(long userId, int shardingFlag) throws Exception {
+		return advertisementDbDao.queryAdvertisementSendLog(userId, shardingFlag);
+	}
+
+	public TAdvertisementContent queryAdvertisementCotentById(long adsId, int shardingFlag) throws Exception {
+		return advertisementDbDao.queryAdvertisementCotentById(adsId, shardingFlag);
 	}
 }

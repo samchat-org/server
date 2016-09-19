@@ -41,6 +41,7 @@ import com.samchat.common.beans.auto.json.appserver.user.SignupCodeVerify_req;
 import com.samchat.common.beans.auto.json.appserver.user.SignupCodeVerify_res;
 import com.samchat.common.beans.manual.db.QryUserInfoVO;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.exceptions.AppException;
@@ -165,19 +166,19 @@ public class UserAction extends BaseAction {
 	public Register_res register(Register_req req) throws Exception {
 		Timestamp sysdate = commonSrv.querySysdate();
 		Register_res res = usersSrv.saveRegisterUserInfo(req, sysdate);
-		
+
 		List<TSysConfigs> scslist = commonSrv.queryAllSysconfigsForApp();
 		ArrayList<Register_res.Sys_params> paramslist = new ArrayList<Register_res.Sys_params>();
-		
-		for(TSysConfigs scs:scslist){
+
+		for (TSysConfigs scs : scslist) {
 			Register_res.Sys_params param = new Register_res.Sys_params();
 			param.setParam_code(scs.getParam_code());
 			param.setParam_value(scs.getParam_value());
 			paramslist.add(param);
 		}
 		res.setSys_params(paramslist);
-		
-  		return res;
+
+		return res;
 
 	}
 
@@ -261,18 +262,18 @@ public class UserAction extends BaseAction {
 			}
 		}
 		res.setUser(userRes);
-		
+
 		List<TSysConfigs> scslist = commonSrv.queryAllSysconfigsForApp();
 		ArrayList<Login_res.Sys_params> paramslist = new ArrayList<Login_res.Sys_params>();
-		
-		for(TSysConfigs scs:scslist){
+
+		for (TSysConfigs scs : scslist) {
 			Login_res.Sys_params param = new Login_res.Sys_params();
 			param.setParam_code(scs.getParam_code());
 			param.setParam_value(scs.getParam_value());
 			paramslist.add(param);
 		}
 		res.setSys_params(paramslist);
-		
+
 		return res;
 	}
 
@@ -287,7 +288,7 @@ public class UserAction extends BaseAction {
 		String account = body.getAccount();
 		String countryCode = body.getCountrycode();
 		String pwd = Md5Util.getSign4String(body.getPwd(), "");
- 
+
 		TUserUsers user = usersSrv.queryUserInfoByPhone(account, countryCode);
 		if (user == null) {
 			user = usersSrv.queryUserInfoByUserName(account);
@@ -333,12 +334,12 @@ public class UserAction extends BaseAction {
 	 * @param req
 	 * @return
 	 */
-	public CreateSamPros_res createSamPros(CreateSamPros_req req, TokenRds token, TUserUsers user) throws Exception{
+	public CreateSamPros_res createSamPros(CreateSamPros_req req, TokenRds token, TUserUsers user) throws Exception {
 
 		Timestamp sysdate = commonSrv.querySysdate();
 		usersSrv.saveProsUserInfo(req, user, sysdate);
 
- 		CreateSamPros_res res = new CreateSamPros_res();
+		CreateSamPros_res res = new CreateSamPros_res();
 		CreateSamPros_res.User userRet = new CreateSamPros_res.User();
 		userRet.setId(user.getUser_id());
 		userRet.setUsername(user.getUser_name());
@@ -549,7 +550,7 @@ public class UserAction extends BaseAction {
 	public void queryFuzzyValidate(QueryFuzzy_req req, TokenRds token) {
 	}
 
-	public QueryAccurate_res queryAccurate(QueryAccurate_req req, TokenRds token) {
+	public QueryAccurate_res queryAccurate(QueryAccurate_req req, TokenRds token) throws Exception {
 
 		QueryAccurate_req.Param p = req.getBody().getParam();
 		String cellphone = null;
@@ -559,39 +560,73 @@ public class UserAction extends BaseAction {
 		String username = p.getUsername();
 		String id = p.getUnique_id();
 		Long type = p.getType();
-		List<QryUserInfoVO> userlist = usersSrv.queryUserAccurate(type, cellphone, username, id);
+
 		ArrayList<QueryAccurate_res.Users> users = new ArrayList<QueryAccurate_res.Users>();
+		if (type == 1) {
+			UserInfoRds uur = usersSrv.getUserInfoAndSetRedis(new Long(id));
+			if (uur != null) {
+				users = new ArrayList<QueryAccurate_res.Users>();
+				QueryAccurate_res.Users user = new QueryAccurate_res.Users();
+				user.setId(uur.getUser_id());
+				user.setUsername(uur.getUser_name());
+				user.setCountrycode(uur.getCountry_code());
+				user.setCellphone(uur.getPhone_no());
+				user.setEmail(uur.getEmail());
+				user.setAddress(uur.getAddress());
+				user.setType(uur.getUser_type());
+				user.setLastupdate(uur.getState_date().getTime());
 
-		for (QryUserInfoVO pq : userlist) {
+				QueryAccurate_res.Avatar avatar = new QueryAccurate_res.Avatar();
+				user.setAvatar(avatar);
+				avatar.setOrigin(uur.getAvatar_origin());
+				avatar.setThumb(uur.getAvatar_thumb());
 
-			QueryAccurate_res.Users user = new QueryAccurate_res.Users();
-			user.setId(pq.getUser_id());
-			user.setUsername(pq.getUser_name());
-			user.setCountrycode(pq.getCountrycode());
-			user.setCellphone(pq.getCellphone());
-			user.setEmail(pq.getEmail());
-			user.setAddress(pq.getAddress());
-			user.setType(pq.getType());
+				QueryAccurate_res.Sam_pros_info pros = new QueryAccurate_res.Sam_pros_info();
+				user.setSam_pros_info(pros);
+				
+				UserInfoProRds uupr = uur.getUserInfoProRds();
+				if (uupr != null) {
+					pros.setCompany_name(uupr.getCompany_name());
+					pros.setService_category(uupr.getService_category());
+					pros.setService_description(uupr.getService_description());
+					pros.setCountrycode(uupr.getCountry_code());
+					pros.setPhone(uupr.getPhone_no());
+					pros.setEmail(uupr.getEmail());
+					pros.setAddress(uupr.getAddress());
+				}
+				users.add(user);
+			}
+		} else {
+			List<QryUserInfoVO> userlist = usersSrv.queryUserAccurate(type, cellphone, username, id);
 
-			QueryAccurate_res.Avatar avatar = new QueryAccurate_res.Avatar();
-			user.setAvatar(avatar);
-			avatar.setOrigin(pq.getOrigin());
-			avatar.setThumb(pq.getThumb());
+			for (QryUserInfoVO pq : userlist) {
+				QueryAccurate_res.Users user = new QueryAccurate_res.Users();
+				user.setId(pq.getUser_id());
+				user.setUsername(pq.getUser_name());
+				user.setCountrycode(pq.getCountrycode());
+				user.setCellphone(pq.getCellphone());
+				user.setEmail(pq.getEmail());
+				user.setAddress(pq.getAddress());
+				user.setType(pq.getType());
+				user.setLastupdate(pq.getLastupdate().getTime());
 
-			user.setLastupdate(pq.getLastupdate().getTime());
+				QueryAccurate_res.Avatar avatar = new QueryAccurate_res.Avatar();
+				user.setAvatar(avatar);
+				avatar.setOrigin(pq.getOrigin());
+				avatar.setThumb(pq.getThumb());
 
-			QueryAccurate_res.Sam_pros_info pros = new QueryAccurate_res.Sam_pros_info();
-			user.setSam_pros_info(pros);
-			pros.setCompany_name(pq.getCompany_name());
-			pros.setService_category(pq.getService_category());
-			pros.setService_description(pq.getService_description());
-			pros.setCountrycode(pq.getCountrycode_pro());
-			pros.setPhone(pq.getPhone_pro());
-			pros.setEmail(pq.getEmail_pro());
-			pros.setAddress(pq.getAddress_pro());
+				QueryAccurate_res.Sam_pros_info pros = new QueryAccurate_res.Sam_pros_info();
+				user.setSam_pros_info(pros);
+				pros.setCompany_name(pq.getCompany_name());
+				pros.setService_category(pq.getService_category());
+				pros.setService_description(pq.getService_description());
+				pros.setCountrycode(pq.getCountrycode_pro());
+				pros.setPhone(pq.getPhone_pro());
+				pros.setEmail(pq.getEmail_pro());
+				pros.setAddress(pq.getAddress_pro());
 
-			users.add(user);
-
+				users.add(user);
+			}
 		}
 
 		QueryAccurate_res res = new QueryAccurate_res();
@@ -670,6 +705,5 @@ public class UserAction extends BaseAction {
 
 	public void queryWithoutTokenValidate(QueryWithoutToken_req req) {
 	}
-	
 
 }

@@ -45,6 +45,7 @@
  	<bean name="/api_1.0_profile_appkeyGet.do" class="com.samchat.action.ProfileAction" />
  	<bean name="/api_1.0_profile_profileUpdate.do" class="com.samchat.action.ProfileAction" />
  	<bean name="/api_1.0_profile_avatarUpdate.do" class="com.samchat.action.ProfileAction" />
+ 	<bean name="/api_1.0_profile_sendClientId.do" class="com.samchat.action.ProfileAction" />
  	
  	<bean name="/api_1.0_advertisement_advertisementWrite.do" class="com.samchat.action.AdvertisementAction" />
  	<bean name="/api_1.0_advertisement_advertisementDelete.do" class="com.samchat.action.AdvertisementAction" />

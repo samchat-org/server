@@ -16,9 +16,11 @@ import com.samchat.common.beans.auto.json.appserver.profile.SendClientId_req;
 import com.samchat.common.beans.auto.json.appserver.profile.SendClientId_res;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
+import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
+import com.samchat.common.utils.SqsUtil;
 import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IProfileSrvs;
 import com.samchat.service.interfaces.IUsersSrvs;
@@ -118,17 +120,22 @@ public class ProfileAction extends BaseAction {
 	public void avatarUpdateValidate(AvatarUpdate_req req, TokenRds token) {
 	}
 
-	public SendClientId_res sendClientId(SendClientId_req req, TokenRds token) {
+	public SendClientId_res sendClientId(SendClientId_req req, TokenRds token) throws Exception {
 
 		long userId = token.getUserId();
 		UserInfoRds uu = commonSrv.getUserInfoRedis(userId);
 		uu.setCur_client_id(req.getBody().getClent_id());
 		commonSrv.setUserInfoRedis(userId, uu);
 
+		AdvertisementSqs ads = new AdvertisementSqs();
+		ads.setUser_id(userId);
+		ads.setSendType((byte)1);
+		SqsUtil.pushMessage(ads, Constant.SYS_PARAM_KEY.SQS_ADVERTISEMENT);
+
 		return new SendClientId_res();
 	}
 
-	public void sendClientIdValidate() {
+	public void sendClientIdValidate(SendClientId_req req, TokenRds token) {
 
 	}
 }

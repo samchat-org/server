@@ -1,6 +1,9 @@
 package com.samchat.common.utils;
 
 import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -94,5 +97,12 @@ public class CommonUtil {
 	public static String getHashSharding(String tableName, long userId) {
 		int shardingMode = CommonUtil.getSysConfigInt(("sharding_" + tableName).toLowerCase());
 		return tableName + "_" + userId % shardingMode;
+	}
+	
+	public static Date operationHourForDate(Date orgin, int offset){
+		GregorianCalendar gc = new GregorianCalendar();
+		gc.setTime(orgin);
+		gc.set(Calendar.HOUR, offset);
+		return gc.getTime();
 	}
 }

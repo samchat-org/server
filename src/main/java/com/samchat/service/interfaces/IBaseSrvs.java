@@ -8,6 +8,8 @@ public interface IBaseSrvs {
 	public void setUserInfoRedis(long userId, UserInfoRds uif);
 
 	public UserInfoRds getUserInfoRedis(long userId);
-	
-	public Timestamp querySysdate() ;
+
+	public UserInfoRds getUserInfoAndSetRedis(long userId) throws Exception;
+
+	public Timestamp querySysdate();
 }
