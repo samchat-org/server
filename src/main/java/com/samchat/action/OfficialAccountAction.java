@@ -25,6 +25,9 @@ import com.samchat.common.beans.manual.db.QryFollowVO;
 import com.samchat.common.beans.manual.db.QryPublicQueryVO;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.app.FollowAppEnum;
+import com.samchat.common.enums.app.ResCodeAppEnum;
+import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.service.interfaces.ICommonSrvm;
 import com.samchat.service.interfaces.ICommonSrvs;
@@ -54,19 +57,23 @@ public class OfficialAccountAction extends BaseAction {
 
 		long userIdPro = req.getBody().getId();
 		long userId = token.getUserId();
+		Timestamp sysdate = commonSrv.querySysdate();
 
-		if (req.getBody().getOpt() == Constant.OA_FOLLOW) {
+		if (req.getBody().getOpt() ==  FollowAppEnum.Follow.FOLLOW.val()) {
 			if (follow == null) {
-				Timestamp sysdate = commonSrv.querySysdate();
 				officialAccountSrv.insertFollow(userId, userIdPro, sysdate);
+				commonSrv.hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.FOLLOW_LIST_DATE.val(), sysdate.getTime() + "");
 			}
 		} else {
 			officialAccountSrv.deleteFollow(userId, userIdPro);
+			commonSrv.hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.FOLLOW_LIST_DATE.val(), sysdate.getTime() + "");
 		}
 		Follow_res res = new Follow_res();
 		Follow_res.User user = new Follow_res.User();
 		res.setUser(user);
 		user.setLastupdate(userPro.getState_date().getTime());
+		
+		
 		return res;
 	}
 
@@ -76,16 +83,16 @@ public class OfficialAccountAction extends BaseAction {
 
 		TUserUsers tuser = usersSrv.queryUser(userIdPro);
 		if (tuser == null) {
-			throw new AppException(Constant.ERROR.USER_NOT_EXIST);
+			throw new AppException(ResCodeAppEnum.USER_NOT_EXIST.getCode());
 		}
 		if (tuser.getUser_type() != Constant.USER_TYPE_SERVICES) {
-			throw new AppException(Constant.ERROR.USER_PROS_NOT_EXIST);
+			throw new AppException(ResCodeAppEnum.USER_PROS_NOT_EXIST.getCode());
 		}
 		TOaFollow follow = officialAccountSrv.queryUserFollow(token.getUserId(), userIdPro);
 
-		if (req.getBody().getOpt() == Constant.OA_UNFOLLOW) {
+		if (req.getBody().getOpt() == FollowAppEnum.Follow.UNFOLLOW.val()) {
 			if (follow == null) {
-				throw new AppException(Constant.ERROR.OFFICIAL_ACCOUNT_UNFOLLOWED);
+				throw new AppException(ResCodeAppEnum.OFFICIAL_ACCOUNT_UNFOLLOWED.getCode());
 			}
 		}
 
@@ -107,11 +114,13 @@ public class OfficialAccountAction extends BaseAction {
 		long opt = req.getBody().getOpt();
 		if (follow.getBlock_tag() != opt) {
 			officialAccountSrv.updateBlock(userId, userIdPro, (byte) opt, sysdate);
+			officialAccountSrv.hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.FOLLOW_LIST_DATE.val(), sysdate.getTime() + "");
 		}
 		Block_res res = new Block_res();
 		Block_res.User user = new Block_res.User();
 		res.setUser(user);
 		user.setLastupdate(userPro.getState_date().getTime());
+		
 		return res;
 	}
 
@@ -121,14 +130,14 @@ public class OfficialAccountAction extends BaseAction {
 
 		TUserUsers tuser = usersSrv.queryUser(userIdPro);
 		if (tuser == null) {
-			throw new AppException(Constant.ERROR.USER_NOT_EXIST);
+			throw new AppException(ResCodeAppEnum.USER_NOT_EXIST.getCode());
 		}
 		if (tuser.getUser_type() != Constant.USER_TYPE_SERVICES) {
-			throw new AppException(Constant.ERROR.USER_PROS_NOT_EXIST);
+			throw new AppException(ResCodeAppEnum.USER_PROS_NOT_EXIST.getCode());
 		}
 		TOaFollow follow = officialAccountSrv.queryUserFollow(token.getUserId(), userIdPro);
 		if (follow == null) {
-			throw new AppException(Constant.ERROR.OFFICIAL_ACCOUNT_UNFOLLOWED);
+			throw new AppException(ResCodeAppEnum.OFFICIAL_ACCOUNT_UNFOLLOWED.getCode());
 		}
 
 		HashMap<String, Object> paramRet = new HashMap<String, Object>();
@@ -149,6 +158,7 @@ public class OfficialAccountAction extends BaseAction {
 		long opt = req.getBody().getOpt();
 		if (follow.getFavourite_tag() != opt) {
 			officialAccountSrv.updateFavourite(userId, userIdPro, (byte) opt, sysdate);
+			officialAccountSrv.hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.FOLLOW_LIST_DATE.val(), sysdate.getTime() + "");
 		}
 		Favourite_res res = new Favourite_res();
 		Favourite_res.User user = new Favourite_res.User();
@@ -163,14 +173,14 @@ public class OfficialAccountAction extends BaseAction {
 
 		TUserUsers tuser = usersSrv.queryUser(userIdPro);
 		if (tuser == null) {
-			throw new AppException(Constant.ERROR.USER_NOT_EXIST);
+			throw new AppException(ResCodeAppEnum.USER_NOT_EXIST.getCode());
 		}
 		if (tuser.getUser_type() != Constant.USER_TYPE_SERVICES) {
-			throw new AppException(Constant.ERROR.USER_PROS_NOT_EXIST);
+			throw new AppException(ResCodeAppEnum.USER_PROS_NOT_EXIST.getCode());
 		}
 		TOaFollow follow = officialAccountSrv.queryUserFollow(token.getUserId(), userIdPro);
 		if (follow == null) {
-			throw new AppException(Constant.ERROR.OFFICIAL_ACCOUNT_UNFOLLOWED);
+			throw new AppException(ResCodeAppEnum.OFFICIAL_ACCOUNT_UNFOLLOWED.getCode());
 		}
 
 		HashMap<String, Object> paramRet = new HashMap<String, Object>();

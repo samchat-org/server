@@ -35,94 +35,70 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 		return this.redisTemplate;
 	}
 
-	public void set(final String keyStr, final String valueStr, final long expireSec) {
+	private <T> void hset(final String key, final String field, final T value, final RedisSerializer<T> serializerRet) {
 		getRedisTemplate().execute(new RedisCallback<Boolean>() {
 			public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
 				RedisSerializer<String> serializer = getStrRedisSerializer();
-				byte[] key = serializer.serialize(keyStr);
-				byte[] value = serializer.serialize(valueStr);
-				log.info("keystr:" + keyStr + "--valueStr:" + valueStr + "--expireSec:" + expireSec);
-				if (expireSec == 0) {
-					connection.set(key, value);
-				} else {
-					connection.setEx(key, expireSec, value);
-				}
+				connection.hSet(serializer.serialize(key), serializer.serialize(field), serializerRet.serialize(value));
 				return true;
 			}
 		});
 	}
 
-	public void set(final String keyStr, final Object valueObj, final long expireSec) {
-		getRedisTemplate().execute(new RedisCallback<Boolean>() {
-			public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
-				byte[] key = getStrRedisSerializer().serialize(keyStr);
-				byte[] value = getJackson2JsonRedisSerializer().serialize(valueObj);
-				if (expireSec == 0) {
-					connection.set(key, value);
-				} else {
-					connection.setEx(key, expireSec, value);
-				}
-				return true;
-			}
-		});
-	}
-
-	public Boolean setNX(final String keyStr, final String valueStr, final long expireSec) {
-		Boolean result = getRedisTemplate().execute(new RedisCallback<Boolean>() {
-			public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+	private <T> T hget(final String key, final String field, final RedisSerializer<T> serializerRet) {
+		T result = getRedisTemplate().execute(new RedisCallback<T>() {
+			public T doInRedis(RedisConnection connection) throws DataAccessException {
 				RedisSerializer<String> serializer = getStrRedisSerializer();
-				byte[] key = serializer.serialize(keyStr);
-				byte[] value = serializer.serialize(valueStr);
-				log.info("keystr:" + keyStr + "--valueStr:" + valueStr + "--expireSec:" + expireSec);
-				Boolean dos = connection.setNX(key, value);
-				log.info("dos:" + dos);
-				if (dos == null || dos) {
-					connection.expire(key, expireSec);
-					return true;
-				}
-				return false;
-			}
-		});
-		return result;
-	}
-
-	public Boolean setNX(final String keyStr, final Object valueObj, final long expireSec) {
-
-		Boolean result = getRedisTemplate().execute(new RedisCallback<Boolean>() {
-			public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
-
-				byte[] key = getStrRedisSerializer().serialize(keyStr);
-				byte[] value = getJackson2JsonRedisSerializer().serialize(valueObj);
-				Boolean dos = connection.setNX(key, value);
-				log.info("dos:" + dos);
-				if (dos == null || dos) {
-					if (expireSec != 0) {
-						connection.expire(key, expireSec);
-					}
-					return true;
-				}
-				return false;
-			}
-		});
-		return result;
-	}
-
-	public String get(final String keyStr) {
-		String result = getRedisTemplate().execute(new RedisCallback<String>() {
-			public String doInRedis(RedisConnection connection) throws DataAccessException {
-				RedisSerializer<String> serializer = getStrRedisSerializer();
-				byte[] key = serializer.serialize(keyStr);
-				byte[] value = connection.get(key);
+				byte[] value = connection.hGet(serializer.serialize(key), serializer.serialize(field));
 				if (value == null) {
 					return null;
 				}
-				return serializer.deserialize(value);
+				return serializerRet.deserialize(value);
 			}
 		});
 		return result;
 	}
 
-	public <T> T getJsonObj(final String keyStr) {
+	public String hgetStr(String key, String field) {
+		return hget(key, field, getStrRedisSerializer());
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T hgetJsonObj(String key, String field) {
+		return (T) hget(key, field, getJackson2JsonRedisSerializer());
+	}
+
+	private void set(final byte[] key, final byte[] value, final long expireSec) {
+		getRedisTemplate().execute(new RedisCallback<Boolean>() {
+			public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+				if (expireSec == 0) {
+					connection.set(key, value);
+				} else {
+					connection.setEx(key, expireSec, value);
+				}
+				return true;
+			}
+		});
+	}
+
+	private Boolean setNX(final byte[] key, final byte[] value, final long expireSec) {
+		Boolean result = getRedisTemplate().execute(new RedisCallback<Boolean>() {
+			public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+				Boolean dos = connection.setNX(key, value);
+				log.info("dos:" + dos);
+				if (dos == null || dos) {
+					if(expireSec != 0){
+						connection.expire(key, expireSec);
+					}
+ 					return true;
+				}
+				return false;
+			}
+		});
+		return result;
+	}
+
+	private <T> T get(final String keyStr, final RedisSerializer<T> serializerRet) {
 		T result = getRedisTemplate().execute(new RedisCallback<T>() {
 			public T doInRedis(RedisConnection connection) throws DataAccessException {
 				byte[] key = getStrRedisSerializer().serialize(keyStr);
@@ -130,11 +106,56 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 				if (value == null) {
 					return null;
 				}
-				return (T) getJackson2JsonRedisSerializer().deserialize(value);
+				return serializerRet.deserialize(value);
 			}
 		});
 		return result;
 
+	}
+
+	public void setStr(final String keyStr, final String valueStr, final long expireSec) {
+		RedisSerializer<String> serializer = getStrRedisSerializer();
+		byte[] key = serializer.serialize(keyStr);
+		byte[] value = serializer.serialize(valueStr);
+		set(key, value, expireSec);
+	}
+
+	public void setJsonObj(final String keyStr, final Object valueObj, final long expireSec) {
+		byte[] key = getStrRedisSerializer().serialize(keyStr);
+		byte[] value = getJackson2JsonRedisSerializer().serialize(valueObj);
+		set(key, value, expireSec);
+	}
+
+	public Boolean setStrNX(final String keyStr, final String valueStr, final long expireSec) {
+		RedisSerializer<String> serializer = getStrRedisSerializer();
+		byte[] key = serializer.serialize(keyStr);
+		byte[] value = serializer.serialize(valueStr);
+		return setNX(key, value, expireSec);
+	}
+
+	public Boolean setJsonObjNX(final String keyStr, final Object valueObj, final long expireSec) {
+		byte[] key = getStrRedisSerializer().serialize(keyStr);
+		byte[] value = getJackson2JsonRedisSerializer().serialize(valueObj);
+		return setNX(key, value, expireSec);
+	}
+
+	public String getStr(final String keyStr) {
+		RedisSerializer<String> serializer = getStrRedisSerializer();
+		return get(keyStr, serializer);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T getJsonObj(final String keyStr) {
+		RedisSerializer<Object> serializer = getJackson2JsonRedisSerializer();
+		return (T) get(keyStr, serializer);
+	}
+
+	public void hsetStr(String key, String field, String value) {
+		hset(key, field, value, getStrRedisSerializer());
+	}
+
+	public void hsetJsonObj(String key, String field, Object value) {
+		hset(key, field, value, getJackson2JsonRedisSerializer());
 	}
 
 	public void delete(K keyStr) {
@@ -144,5 +165,5 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 	public void delete(List<K> keyStr) {
 		getRedisTemplate().delete(keyStr);
 	}
-	
+
 }

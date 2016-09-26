@@ -14,6 +14,7 @@ import com.samchat.common.beans.auto.db.mapper.TOaFollowMapper;
 import com.samchat.common.beans.manual.db.QryFollowVO;
 import com.samchat.common.beans.manual.db.QryPublicQueryVO;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.db.FollowDbEnum;
 import com.samchat.dao.db.interfaces.IOfficialAccountDbDao;
 
 @Repository
@@ -41,7 +42,7 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 		TOaFollow tf = new TOaFollow();
 		tf.setUser_id(userId);
 		tf.setUser_id_pro(userIdPros);
-		tf.setBlock_tag(Constant.ADS_UNBLOCK);
+		tf.setBlock_tag(FollowDbEnum.Block.UNBLOCK.val());
 		tf.setFavourite_tag(Constant.OA_UNFAVOURITE);
 		tf.setState(Constant.STATE_IN_USE);
 		tf.setState_date(sysdate);
@@ -95,7 +96,7 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 
 	public List<TOaFollow> queryFollowListByAdserId(long userId) {
 		TOaFollowExample ttx = new TOaFollowExample();
-		ttx.createCriteria().andUser_id_proEqualTo(userId).andBlock_tagEqualTo(Constant.ADS_UNBLOCK)
+		ttx.createCriteria().andUser_id_proEqualTo(userId).andBlock_tagEqualTo(FollowDbEnum.Block.UNBLOCK.val())
 				.andStateEqualTo(Constant.STATE_IN_USE);
 		return oaFollowMapper.selectByExample(ttx);
 

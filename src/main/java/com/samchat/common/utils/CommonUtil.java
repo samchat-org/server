@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.cache.CacheNameCacheEnum;
 
 public class CommonUtil {
 
@@ -64,12 +65,12 @@ public class CommonUtil {
 	}
 
 	public static String getRegisterCode(String countryCode, String phoneNo) {
-		return CacheUtil.get(Constant.CACHE_NAME.REGISTER_CODE, countryCode + "_" + phoneNo);
+		return CacheUtil.get(CacheNameCacheEnum.RDS_REGISTER_CODE.val(), countryCode + "_" + phoneNo);
 	}
 
 	public static void putRegisterCode(String countryCode, String phoneNo, String registerCode, int timeToIdleSeconds,
 			int timeToLiveSeconds) {
-		CacheUtil.put(Constant.CACHE_NAME.REGISTER_CODE, countryCode + "_" + phoneNo, registerCode, timeToIdleSeconds,
+		CacheUtil.put(CacheNameCacheEnum.RDS_REGISTER_CODE.val(), countryCode + "_" + phoneNo, registerCode, timeToIdleSeconds,
 				timeToLiveSeconds);
 	}
 
@@ -78,7 +79,7 @@ public class CommonUtil {
 	}
 
 	public static String getSysConfigStr(String paramCode) {
-		return (String) CacheUtil.getSysconfigOnKey(Constant.CACHE_NAME.SYS_CONFIG, paramCode);
+		return (String) CacheUtil.getSysconfigOnKey(CacheNameCacheEnum.ECH_SYS_CONFIG.val(), paramCode);
 	}
 
 	public static int getSysConfigInt(String paramCode) {

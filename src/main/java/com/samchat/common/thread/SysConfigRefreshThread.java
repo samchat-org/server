@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
 import com.samchat.common.beans.manual.common.SecurityAccessBean;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.cache.CacheNameCacheEnum;
 import com.samchat.common.utils.CacheUtil;
 import com.samchat.service.interfaces.ICommonSrvs;
 
@@ -35,16 +36,16 @@ public class SysConfigRefreshThread extends Thread {
 		for (TSysConfigs cfg : cfgs) {
 			String paramCode = cfg.getParam_code();
 			String paramValue = cfg.getParam_value();
-			SecurityAccessBean<String> cfgCur = CacheUtil.get(Constant.CACHE_NAME.SYS_CONFIG, paramCode);
+			SecurityAccessBean<String> cfgCur = CacheUtil.get(CacheNameCacheEnum.ECH_SYS_CONFIG.val(), paramCode);
 
 			if (cfgCur == null) {
 				SecurityAccessBean<String> sab = new SecurityAccessBean<String>();
 				sab.setState(Constant.SYS_UNLOCK);
 				sab.setValue(paramValue);
-				CacheUtil.put(Constant.CACHE_NAME.SYS_CONFIG, paramCode, sab);
+				CacheUtil.put(CacheNameCacheEnum.ECH_SYS_CONFIG.val(), paramCode, sab);
 
 			} else if (!cfgCur.getValue().equals(paramValue)) {
-				Cache cache = CacheUtil.getCache(Constant.CACHE_NAME.SYS_CONFIG);
+				Cache cache = CacheUtil.getCache(CacheNameCacheEnum.ECH_SYS_CONFIG.val());
 				try {
 					cfgCur.setState(Constant.SYS_LOCK);
 					log.info("sleep 5s, old value:" + cfgCur.getValue() + "---" + "new value:" + paramValue);

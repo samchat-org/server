@@ -46,16 +46,17 @@
  	<bean name="/api_1.0_profile_profileUpdate.do" class="com.samchat.action.ProfileAction" />
  	<bean name="/api_1.0_profile_avatarUpdate.do" class="com.samchat.action.ProfileAction" />
  	<bean name="/api_1.0_profile_sendClientId.do" class="com.samchat.action.ProfileAction" />
+ 	<bean name="/api_1.0_profile_queryStateDate.do " class="com.samchat.action.ProfileAction" />
  	
  	<bean name="/api_1.0_advertisement_advertisementWrite.do" class="com.samchat.action.AdvertisementAction" />
  	<bean name="/api_1.0_advertisement_advertisementDelete.do" class="com.samchat.action.AdvertisementAction" />
  	
  	<bean name="/api_1.0_contact_contact.do" class="com.samchat.action.ContactAction" />
  	<bean name="/api_1.0_contact_contactListQuery.do" class="com.samchat.action.ContactAction" />
- 	
- 	
- 	
- 
+
  	<bean name="/api_1.0_common_sendInviteMsg.do" class="com.samchat.action.CommonAction" />
  	<bean name="/api_1.0_question_question.do" class="com.samchat.action.QuestionAction" />
-</beans>
+ 	
+ 	<bean name="/api_1.0_profile_getPlacesInfoRequest.do" class="com.samchat.action.TestAction" />
+ 
+ </beans>

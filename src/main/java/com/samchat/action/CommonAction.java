@@ -10,6 +10,8 @@ import com.samchat.common.beans.auto.json.appserver.common.SendInviteMsg_res;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.TwilioUtil;
 import com.samchat.service.interfaces.IUsersSrvs;
@@ -23,11 +25,11 @@ public class CommonAction extends BaseAction {
 
 	public SendInviteMsg_res sendInviteMsg(SendInviteMsg_req req, TokenRds token) throws Exception {
 
-		UserInfoRds userInfo = usersSrv.getUserInfoRedis(token.getUserId());
+		UserInfoRds userInfo = usersSrv.hgetUserInfoJsonObjRedis(token.getUserId(), UserInfoFieldRdsEnum.BASE_INFO.val());
 		String countrycode = userInfo.getCountry_code();
 		String cellphone = userInfo.getPhone_no();
 
-		String smstpl = CommonUtil.getSysConfigStr(Constant.SYS_PARAM_KEY.TWILIO_SEND_INVITE_SMS_TEMPLETE);
+		String smstpl = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.TWILIO_SEND_INVITE_SMS_TEMPLETE.getParamCode());
 		String smsContent = smstpl.replaceAll(Constant.TWILLO_INVITE_USER,
 				CommonUtil.getE164PhoneNo(countrycode, cellphone));
 

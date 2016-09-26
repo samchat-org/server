@@ -17,6 +17,9 @@ public interface IAdvertisementSrvs extends IBaseSrvs {
 
 	public void saveAdvertisementSendLog(long adsId, long userId, Timestamp senddate, byte state, String clientId,
 			String remark, int shardingFlag);
+	
+	public void updateAdvertisementSendLog(long logId, Timestamp senddate, byte state, String clientId, String remark,
+			int shardingFlag, int sendcount);
 
 	public void updateAdvertisementNotinuse(List<AdvertisementDelete_req.Advertisements> ads, long userId)
 			throws Exception;

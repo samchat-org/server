@@ -8,10 +8,11 @@ import org.springframework.stereotype.Service;
 
 import com.samchat.common.beans.manual.db.QryContactVO;
 import com.samchat.dao.db.interfaces.IContactDbDao;
+import com.samchat.service.interfaces.BaseSrvs;
 import com.samchat.service.interfaces.IContactSrvs;
 
 @Service
-public class ContactSrvs implements IContactSrvs {
+public class ContactSrvs  extends BaseSrvs implements IContactSrvs {
 
 	@Autowired
 	private IContactDbDao contactDbDao;

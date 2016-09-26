@@ -7,7 +7,7 @@ import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
 import com.samchat.common.beans.manual.db.QryFollowVO;
 import com.samchat.common.beans.manual.db.QryPublicQueryVO;
 
-public interface IOfficialAccountSrvs {
+public interface IOfficialAccountSrvs extends IBaseSrvs{
 
 	public TOaFollow queryUserFollow(long userId, long userIdPros);
 

@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServlet;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.samchat.common.beans.manual.json.redis.TokenRds;
-import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.service.interfaces.IUsersSrvs;
 
@@ -33,7 +33,7 @@ public class ToolAction extends HttpServlet {
 	protected TokenRds tokenIdentify(String token){
 		TokenRds tokenObj = usersSrv.getTokenObj(token);
 		if(tokenObj == null){
-			throw new AppException(Constant.ERROR.TOKEN_ILLEGAL);
+			throw new AppException(ResCodeAppEnum.TOKEN_ILLEGAL.getCode());
 		}
 		return tokenObj;
 	}

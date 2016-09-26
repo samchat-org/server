@@ -22,8 +22,8 @@ public class GetuiUtil {
 
 	private static String host = "http://sdk.open.api.igexin.com/apiex.htm";
 
-	public static void push(String id, String msg) throws Exception {
-
+	public static String push(String id, String msg) throws Exception {
+		log.info("send message:" + msg);
 		String appId = CommonUtil.getSysConfigStr("getui_app_id");
 		String appKey = CommonUtil.getSysConfigStr("getui_app_key");
 		String masterSecret = CommonUtil.getSysConfigStr("getui_app_master_secret");
@@ -57,7 +57,9 @@ public class GetuiUtil {
  		String taskId = push.getContentId(message);
 		
  		IPushResult ret = push.pushMessageToList(taskId, targets);
-		log.info("IPushResult : " + ret.getResponse());
+ 	
+ 		log.info(ret.getResponse());
+		return ret.getResponse().toString();
 	}
 
 	public static void main(String args[]) throws Exception {

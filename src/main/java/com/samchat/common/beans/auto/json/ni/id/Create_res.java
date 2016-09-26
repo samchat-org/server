@@ -2,20 +2,20 @@ package com.samchat.common.beans.auto.json.ni.id;
 
 public class Create_res{
 
-	private String code;
+	private long code;
 	private Info info;
 
 	public static class Info {
-		private String token;
-		private String accid;
-		private String name;
+		private String token = "";
+		private String accid = "";
+		private String name = "";
 
 		public String getToken() {
 			return token;
 		}
 
 		public void setToken(String token) {
-			this.token = token;
+			this.token = (token == null? "" : token.trim());
 		}
 
 		public String getAccid() {
@@ -23,7 +23,7 @@ public class Create_res{
 		}
 
 		public void setAccid(String accid) {
-			this.accid = accid;
+			this.accid = (accid == null? "" : accid.trim());
 		}
 
 		public String getName() {
@@ -31,15 +31,15 @@ public class Create_res{
 		}
 
 		public void setName(String name) {
-			this.name = name;
+			this.name = (name == null? "" : name.trim());
 		}
 	}
 
-	public String getCode() {
+	public long getCode() {
 		return code;
 	}
 
-	public void setCode(String code) {
+	public void setCode(long code) {
 		this.code = code;
 	}
 

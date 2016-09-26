@@ -13,6 +13,9 @@ import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.beans.manual.json.sqs.QuestionSqs;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.app.ResCodeAppEnum;
+import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CacheUtil;
 import com.samchat.common.utils.CommonUtil;
@@ -55,7 +58,7 @@ public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 
 		QuestionSqs sqs = new QuestionSqs();
 		Question_req.Body body = req.getBody();
-		UserInfoRds uu = getUserInfoRedis(token.getUserId());
+		UserInfoRds uu = hgetUserInfoJsonObjRedis(token.getUserId(), UserInfoFieldRdsEnum.BASE_INFO.val());
  		questionSendControl(sysdate.getTime(), uu.getCountry_code(), uu.getPhone_no());
 
 		sqs.setQuestion_id(qstId);
@@ -73,7 +76,7 @@ public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 				sqs.setLongitude(info.getLongitude());
 			}
 		}
-		SqsUtil.pushMessage(sqs, Constant.SYS_PARAM_KEY.SQS_QUESTION);
+		SqsUtil.pushMessage(sqs, SysParamCodeDbEnum.SQS_QUESTION.getParamCode());
 
 		return sqs;
 	}
@@ -88,7 +91,7 @@ public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 				int blocktime = CommonUtil.getSysConfigInt("question_send_block_time");
 				if (sysdate - ctl.getLast() < blocktime * 60 * 1000) {
 					log.info("sysdate:" + sysdate + "--last:" + ctl.getLast() + "--blocktime:" + blocktime);
-					throw new AppException(Constant.ERROR.SEND_QUESTION_FREQUENT);
+					throw new AppException(ResCodeAppEnum.SEND_QUESTION_FREQUENT.getCode());
 				} else {
 					ctl.setBlock(Constant.QUESTION_SEND_UNBLOCK);
 					ctl.setFirst(sysdate);
@@ -106,7 +109,7 @@ public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 		if (ctl.getLast() - ctl.getFirst() < limit * 60 * 1000 && ctl.getCount() > count) {
 			ctl.setBlock(Constant.QUESTION_SEND_BLOCK);
 		}
-		userRedisDao.set(key, ctl, 0);
+		userRedisDao.setJsonObj(key, ctl, 0);
 	}
 
 }

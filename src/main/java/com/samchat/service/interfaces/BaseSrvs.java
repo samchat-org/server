@@ -3,18 +3,25 @@ package com.samchat.service.interfaces;
 import java.sql.Timestamp;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.samchat.action.UserAction;
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
+import com.samchat.common.enums.app.ResCodeAppEnum;
+import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
+import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CacheUtil;
 import com.samchat.dao.db.interfaces.ICommonDbDao;
 import com.samchat.dao.db.interfaces.IUserDbDao;
 import com.samchat.dao.redis.interfaces.IUserRedisDao;
 
 public class BaseSrvs implements IBaseSrvs {
+	
+	private static Logger log = Logger.getLogger(BaseSrvs.class);
 
 	@Autowired
 	protected IUserRedisDao<String, Object> userRedisDao;
@@ -25,23 +32,35 @@ public class BaseSrvs implements IBaseSrvs {
 	@Autowired
 	private IUserDbDao userDbDao;
 
-	public void setUserInfoRedis(long userId, UserInfoRds uif) {
+	public void hsetUserInfoJsonObjRedis(long userId, String filed, Object uif) {
 		String key = CacheUtil.getUserInfoIdCacheKey(userId);
-		userRedisDao.set(key, uif, 0);
+		userRedisDao.hsetJsonObj(key, filed, uif);
 	}
 
-	public UserInfoRds getUserInfoRedis(long userId) {
+	public void hsetUserInfoStrRedis(long userId, String field, String value) {
 		String key = CacheUtil.getUserInfoIdCacheKey(userId);
-		return (UserInfoRds) userRedisDao.getJsonObj(key);
+		log.info("key:" + key + "--field:" + field + "--value:" + value);
+		userRedisDao.hsetStr(key, field, value);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T hgetUserInfoJsonObjRedis(long userId, String field) {
+		String key = CacheUtil.getUserInfoIdCacheKey(userId);
+		return (T) userRedisDao.hgetJsonObj(key, field);
+	}
+
+	public String hgetUserInfoStrRedis(long userId, String field) {
+		String key = CacheUtil.getUserInfoIdCacheKey(userId);
+		return userRedisDao.hgetStr(key, field);
 	}
 
 	public UserInfoRds getUserInfoAndSetRedis(long userId) throws Exception {
-		UserInfoRds uur = getUserInfoRedis(userId);
+		UserInfoRds uur = hgetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.BASE_INFO.val());
 		if (uur == null) {
 			TUserUsers uu = userDbDao.queryUser(userId);
 			if (uu == null) {
-				return null;
-			} else {
+				throw new AppException(ResCodeAppEnum.USER_NOT_EXIST.getCode());
+ 			} else {
 				uur = new UserInfoRds();
 				PropertyUtils.copyProperties(uur, uu);
 				TUserProUsers uup = userDbDao.queryProUser(userId);
@@ -50,7 +69,7 @@ public class BaseSrvs implements IBaseSrvs {
 					uur.setUserInfoProRds(uupr);
 					PropertyUtils.copyProperties(uupr, uup);
 				}
-				setUserInfoRedis(userId, uur);
+ 				hsetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.BASE_INFO.val(), uur);
 			}
 		}
 		return uur;

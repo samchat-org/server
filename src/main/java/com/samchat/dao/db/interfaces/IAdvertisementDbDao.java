@@ -12,10 +12,14 @@ public interface IAdvertisementDbDao extends IBaseDbDao {
 
 	public void saveAdvertisementSendLog(long adsId, long userId, Timestamp senddate, byte state, String clientId,
 			String remark, int shardingFlag);
+	
+	public void updateAdvertisementSendLog(long logId, Timestamp senddate, byte state, String clientId,
+			String remark, int shardingFlag, int sendcount);
 
 	public void delAdvertisementContent(long adsId, long userId, Timestamp timestamp);
 
 	public List<TAdvertisementSendLog> queryAdvertisementSendLog(long userId, int shardingFlag) throws Exception;
 
 	public TAdvertisementContent queryAdvertisementCotentById(long adsId, int shardingFlag) throws Exception;
+
 }

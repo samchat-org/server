@@ -10,9 +10,9 @@ import net.sf.ehcache.Element;
 
 import org.apache.log4j.Logger;
 
-import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
 import com.samchat.common.beans.manual.common.SecurityAccessBean;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.cache.CacheNameCacheEnum;
 
 /**
  * 
@@ -40,16 +40,16 @@ public class CacheUtil {
 
 		SingletonCache() {
 			cacheManager = CacheManager.create(getClass().getResource(path));
-			Class clazz = Constant.CACHE_NAME.class;
-			Field[] fields = clazz.getDeclaredFields();
-			for (Field field : fields) {
+			CacheNameCacheEnum[] cns = CacheNameCacheEnum.values();
+			for (CacheNameCacheEnum cn : cns) {
 				try {
-					String cacheName = field.get(clazz) + "";
-					cacheManager.addCache(cacheName);
-					cacheNames.add(cacheName);
+					if (cn.name().startsWith("ECH")) {
+						cacheManager.addCache(cn.val());
+						cacheNames.add(cn.val());
+					}
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
-					throw new Error("cache " + field.getName() + ",error");
+					throw new Error("cache " + cn.name() + ",error");
 				}
 			}
 		}
@@ -105,10 +105,10 @@ public class CacheUtil {
 		if (el == null) {
 			throw new RuntimeException("getSysconfigOnKey, value is null , cacheName:" + cacheName + "--key:" + key);
 		}
-		
+
 		byte state = ((SecurityAccessBean<String>) el.getObjectValue()).getState();
 		log.debug("getSysconfigOnKey, key:" + key + "---state :" + state);
-		
+
 		if (state == Constant.SYS_LOCK) {
 			try {
 				cache.acquireReadLockOnKey(key);
@@ -138,44 +138,44 @@ public class CacheUtil {
 	public static void removeAll(String cacheName) {
 		getCache(cacheName).removeAll();
 	}
-	
-	public static String getSystemId(){
+
+	public static String getSystemId() {
 		int systemId = CommonUtil.getSysConfigInt("system_id");
-		if(systemId == 0){
+		if (systemId == 0) {
 			return "";
 		}
 		return systemId + ":";
 	}
-	
-	public static String getRegiserCodeCacheKey(String countryCode, String cellPhone){
-		return  getSystemId() + Constant.CACHE_NAME.REGISTER_CODE + ":" + countryCode + "_" + cellPhone;
+
+	public static String getRegiserCodeCacheKey(String countryCode, String cellPhone) {
+		return getSystemId() + CacheNameCacheEnum.RDS_REGISTER_CODE.val() + ":" + countryCode + "_" + cellPhone;
 	}
-	
-	public static String getTokenCacheKey(String token){
- 		return  getSystemId() + Constant.CACHE_NAME.TOKEN + ":" + token;
+
+	public static String getTokenCacheKey(String token) {
+		return getSystemId() + CacheNameCacheEnum.RDS_TOKEN.val() + ":" + token;
 	}
-	
-	public static String getFindpasswordCacheKey(String countryCode, String cellPhone){
-		return  getSystemId() + Constant.CACHE_NAME.FIND_PASSWORD_CODE + ":" + countryCode + "_" + cellPhone;
+
+	public static String getFindpasswordCacheKey(String countryCode, String cellPhone) {
+		return getSystemId() + CacheNameCacheEnum.RDS_FIND_PASSWORD_CODE.val() + ":" + countryCode + "_" + cellPhone;
 	}
-	
-	public static String getUserInfoCacheKey(String countryCode, String cellPhone ){
-		return  getSystemId() + Constant.CACHE_NAME.USER_INFO + ":" + countryCode + "_" + cellPhone;
-		
+
+	public static String getUserInfoCacheKey(String countryCode, String cellPhone) {
+		return getSystemId() + CacheNameCacheEnum.RDS_USER_INFO.val() + ":" + countryCode + "_" + cellPhone;
+
 	}
-	
-	public static String getUserInfoIdCacheKey(long userId){
-		return  getSystemId() + Constant.CACHE_NAME.USER_INFO_ID + ":" + userId;
-		
+
+	public static String getUserInfoIdCacheKey(long userId) {
+		return getSystemId() + CacheNameCacheEnum.RDS_USER_INFO_ID.val() + ":" + userId;
+
 	}
-	
-	public static String getQuestSendCtlCacheKey(String countryCode, String cellPhone ){
-		return Constant.CACHE_NAME.QUESTION_SEND_CONTROL + ":" + countryCode + "_" + cellPhone;
-		
+
+	public static String getQuestSendCtlCacheKey(String countryCode, String cellPhone) {
+		return CacheNameCacheEnum.RDS_QUESTION_SEND_CONTROL.val() + ":" + countryCode + "_" + cellPhone;
+
 	}
-	
-	public static String getRealToken(String retToken, String deviceId){
+
+	public static String getRealToken(String retToken, String deviceId) {
 		return retToken + deviceId;
 	}
-  
+
 }

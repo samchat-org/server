@@ -11,6 +11,7 @@ import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.profile.ProfileUpdate_req;
 import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
+import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
 import com.samchat.dao.db.interfaces.IUserDbDao;
 import com.samchat.service.interfaces.BaseSrvs;
 import com.samchat.service.interfaces.IProfileSrvs;
@@ -25,9 +26,9 @@ public class ProfileSrvs extends BaseSrvs implements IProfileSrvs {
 
 	public long updateProfile(ProfileUpdate_req req, long userId, Timestamp sysdate) {
 
-		UserInfoRds uur = getUserInfoRedis(userId);
+		UserInfoRds uur = hgetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.BASE_INFO.val());
 		UserInfoProRds uupr = uur.getUserInfoProRds();
-		
+
 		ProfileUpdate_req.User user = req.getBody().getUser();
 
 		TUserUsers u = new TUserUsers();
@@ -37,7 +38,7 @@ public class ProfileSrvs extends BaseSrvs implements IProfileSrvs {
 		u.setEmail(user.getEmail());
 		u.setAddress(user.getAddress());
 		u.setState_date(sysdate);
-		
+
 		uur.setUser_id(userId);
 		uur.setCountry_code(user.getCountrycode());
 		uur.setPhone_no(user.getCellphone());
@@ -46,7 +47,7 @@ public class ProfileSrvs extends BaseSrvs implements IProfileSrvs {
 		uur.setState_date(sysdate);
 
 		ProfileUpdate_req.Sam_pros_info proInfo = user.getSam_pros_info();
-		if(proInfo != null){
+		if (proInfo != null) {
 			TUserProUsers uo = new TUserProUsers();
 			uo.setUser_id(userId);
 			uo.setCompany_name(proInfo.getCompany_name());
@@ -57,7 +58,7 @@ public class ProfileSrvs extends BaseSrvs implements IProfileSrvs {
 			uo.setEmail(proInfo.getEmail());
 			uo.setAddress(proInfo.getAddress());
 			uo.setState_date(sysdate);
-			
+
 			uupr.setUser_id(userId);
 			uupr.setCompany_name(proInfo.getCompany_name());
 			uupr.setService_category(proInfo.getService_category());
@@ -67,12 +68,15 @@ public class ProfileSrvs extends BaseSrvs implements IProfileSrvs {
 			uupr.setEmail(proInfo.getEmail());
 			uupr.setAddress(proInfo.getAddress());
 			uupr.setState_date(sysdate);
-			
+
 			userDbDao.updateProUser(uo, sysdate);
 		}
 		userDbDao.updateUser(u);
-		
-		this.setUserInfoRedis(userId, uur);
+		hsetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.BASE_INFO.val(), uur);
 		return u.getState_date().getTime();
+	}
+
+	public void niSendMessage() {
+
 	}
 }

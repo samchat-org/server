@@ -17,6 +17,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.StrUtils;
@@ -75,14 +76,14 @@ public abstract class BaseAction extends ToolAction {
 				classpath = tplClassPrefix + "req";
 				tplclazzReq = Class.forName(classpath);
 			} catch (ClassNotFoundException e1) {
-				throw new AppException(Constant.ERROR.ACTION_NONSUPPORT, "reqClass is not found:" + classpath);
+				throw new AppException(ResCodeAppEnum.ACTION_NONSUPPORT.getCode(), "reqClass is not found:" + classpath);
 			}
 
 			try {
 				classpath = tplClassPrefix + "res";
 				tplclazzRes = Class.forName(classpath);
 			} catch (ClassNotFoundException e1) {
-				throw new AppException(Constant.ERROR.ACTION_NONSUPPORT, "resClass is not found:" + classpath);
+				throw new AppException(ResCodeAppEnum.ACTION_NONSUPPORT.getCode(), "resClass is not found:" + classpath);
 			}
 
 			// json转化成object
@@ -91,7 +92,7 @@ public abstract class BaseAction extends ToolAction {
 				dataObj = om.readValue(data, tplclazzReq);
 			} catch (Exception e) {
 				log.error("read error (json object), data:" + data);
-				throw new AppException(Constant.ERROR.PARAM_NONSUPPORT, e);
+				throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), e);
 			}
 			// 获取action
 			Object head = null;
@@ -100,7 +101,7 @@ public abstract class BaseAction extends ToolAction {
 				head = CommonUtil.methodInvoke(dataObj, "getHeader");
 				action = CommonUtil.methodInvoke(head, "getAction") + "";
 			} catch (Exception e) {
-				throw new AppException(Constant.ERROR.PARAM_NONSUPPORT);
+				throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode());
 			}
 			action = StrUtils.firstToUpperCase(action, "-");
 
@@ -119,16 +120,18 @@ public abstract class BaseAction extends ToolAction {
 					TokenRds tokenrds = identifyToken(head);
 					if (tokenrds != null) {
 						objlist.add(tokenrds);
+						log.info("tokenrds user_id:" + tokenrds.getUserId());
 					}
+					
 					Object vaildRetObj = CommonUtil.methodInvoke(this, action + "Validate", objlist);
 					if (vaildRetObj != null) {
 						objlist.add(vaildRetObj);
 					}
 					retObj = CommonUtil.methodInvoke(this, action, objlist);
-					CommonUtil.methodInvoke(retObj, "setRet", new Object[]{new Long(Constant.SUCCESS)}, new Class[]{long.class});
+					CommonUtil.methodInvoke(retObj, "setRet", new Object[]{new Long(ResCodeAppEnum.SUCCESS.getCode())}, new Class[]{long.class});
 
 				} catch (NoSuchMethodException e) {
-					throw new AppException(Constant.ERROR.ACTION_NONSUPPORT);
+					throw new AppException(ResCodeAppEnum.ACTION_NONSUPPORT.getCode());
 				}
 
 				try {
@@ -150,12 +153,12 @@ public abstract class BaseAction extends ToolAction {
 				retJson = sysErrorRet(((AppException) cause).getErrorCode());
 			} else {
 				log.error(cause.getMessage(), cause);
-				retJson = sysErrorRet(Constant.ERROR.INNER);
+				retJson = sysErrorRet(ResCodeAppEnum.INNER.getCode());
 			}
 
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			retJson = sysErrorRet(Constant.ERROR.INNER);
+			retJson = sysErrorRet(ResCodeAppEnum.INNER.getCode());
 
 		} finally {
 			try {
@@ -182,7 +185,7 @@ public abstract class BaseAction extends ToolAction {
 				log.info("get token:" + token);
 				tokenObj = usersSrv.getTokenObj(token);
 				if (tokenObj == null) {
-					throw new AppException(Constant.ERROR.TOKEN_ILLEGAL);
+					throw new AppException(ResCodeAppEnum.TOKEN_ILLEGAL.getCode());
 				}
 			}
 		}

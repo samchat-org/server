@@ -21,8 +21,9 @@ import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementDispatch_req;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
-import com.samchat.common.enums.AdsState;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
+import com.samchat.common.enums.db.AdsDbEnum;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.GetuiUtil;
 import com.samchat.common.utils.S3Util;
@@ -93,7 +94,7 @@ public class Dispatcher extends Thread {
 		AdvertisementDispatch_req.Header header = new AdvertisementDispatch_req.Header();
 		AdvertisementDispatch_req.Body body = new AdvertisementDispatch_req.Body();
 
-		body.setId(reqSqs.getUser_id());
+		body.setId(reqSqs.getUser_id_pro());
 		body.setAdv_id(reqSqs.getAds_id());
 		body.setContent(reqSqs.getContent());
 		body.setContent_thumb(reqSqs.getContent_thumb());
@@ -111,13 +112,12 @@ public class Dispatcher extends Thread {
 
 	public void resendAdvertisement(AdvertisementSqs req) throws Exception {
 		long userId = req.getUser_id();
-		int offlinetime = CommonUtil.getSysConfigInt("getui_offline_time");
-		int validCycle = CommonUtil.getSysConfigInt("aws_sqs_advertisement_valid_cycle");
+ 		int validCycle = CommonUtil.getSysConfigInt("aws_sqs_advertisement_valid_cycle");
 
 		Timestamp sysdate = commonSrv.querySysdate();
 		GregorianCalendar gc = new GregorianCalendar();
-
 		gc.setTime(sysdate);
+		
 		for (int i = 0; i < validCycle; i++) {
 			int shardingFlag = Integer.parseInt(Constant.SDF_YYYYMM.format(gc.getTime()));
 			List<TAdvertisementSendLog> sendLogs = advertisementSrv.queryAdvertisementSendLog(userId, shardingFlag);
@@ -128,17 +128,27 @@ public class Dispatcher extends Thread {
 				if (content == null) {
 					continue;
 				}
+				log.info("content:" + content.getContent());
 				String clientId = sendlog.getClient_id();
-				Date senddate = sendlog.getSend_date();
-				UserInfoRds uur = commonSrv.getUserInfoRedis(userId);
-				String curClientId = uur.getCur_client_id();
-				Date lastDate = CommonUtil.operationHourForDate(senddate, offlinetime);
-
-				if (clientId.equals(curClientId) && lastDate.before(sysdate)) {
-					continue;
+ 				int sendcount = sendlog.getSend_count();
+				
+ 				String curClientId = commonSrv.hgetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.CLIENT_ID.val());
+		
+				log.info("old clientId:" + clientId + "--new clientId:" + curClientId + "--sysdate:" + sysdate);
+				byte state = AdsDbEnum.SendLogState.SEND_SUCCESS.val();
+				String remark = AdsDbEnum.SendLogState.SEND_SUCCESS.name();
+				String pushRst = "";
+				try {
+					String dispatchReq = om.writeValueAsString(getRequest(sendlog, content));
+					pushRst = GetuiUtil.push(userId + "", dispatchReq);
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+					state = AdsDbEnum.SendLogState.ERROR.val();
+					remark = AdsDbEnum.SendLogState.ERROR.name();
+				} finally {
+					advertisementSrv.updateAdvertisementSendLog(sendlog.getLog_id(), new Timestamp(sysdate.getTime()),
+							state, curClientId, remark + "," + pushRst, shardingFlag, sendcount + 1);
 				}
-				String dispatchReq = om.writeValueAsString(getRequest(sendlog, content));
-				GetuiUtil.push(userId + "", dispatchReq);
 			}
 			gc.add(Calendar.MONTH, -1);
 		}
@@ -162,23 +172,20 @@ public class Dispatcher extends Thread {
 
 		for (TOaFollow ff : followlst) {
 			long userId = ff.getUser_id();
-			UserInfoRds uur = commonSrv.getUserInfoRedis(userId);
-			if (uur == null || StringUtils.trimToNull(uur.getCur_client_id()) == null) {
-				log.info("client_id is null");
-				continue;
-			}
-			byte state = AdsState.SEND_SUCCESS.getState();
-			String remark = AdsState.SEND_SUCCESS.name();
+			String curClientId = commonSrv.hgetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.CLIENT_ID.val());
+			byte state = AdsDbEnum.SendLogState.SEND_SUCCESS.val();
+			String remark = AdsDbEnum.SendLogState.SEND_SUCCESS.name();
+			String pushRst = "";
 			try {
 				String dispatchReq = om.writeValueAsString(getRequest(userId, req));
-				GetuiUtil.push(userId + "", dispatchReq);
+				pushRst = GetuiUtil.push(userId + "", dispatchReq);
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
-				state = AdsState.ERROR.getState();
-				remark = AdsState.ERROR.name();
+				state = AdsDbEnum.SendLogState.ERROR.val();
+				remark = AdsDbEnum.SendLogState.ERROR.name();
 			} finally {
-				advertisementSrv.saveAdvertisementSendLog(adsId, userId, senddate, state, uur.getCur_client_id(),
-						remark, shardingFlag);
+				advertisementSrv.saveAdvertisementSendLog(adsId, userId, senddate, state, curClientId, remark + ","
+						+ pushRst, shardingFlag);
 			}
 		}
 	}

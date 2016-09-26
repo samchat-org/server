@@ -7,12 +7,10 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 
-import com.samchat.action.BaseAction;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.twilio.sdk.TwilioRestClient;
-import com.twilio.sdk.TwilioRestException;
 import com.twilio.sdk.resource.factory.MessageFactory;
-import com.twilio.sdk.resource.instance.Message;
 
 public class TwilioUtil {
 	
@@ -20,7 +18,7 @@ public class TwilioUtil {
 
 	public static void sendSms(String countrycode, String cellphone, String content) throws Exception {
 		
-		String twilloPhoneNo = CommonUtil.getSysConfigStr(Constant.SYS_PARAM_KEY.TWILIO_PHONE_NO);
+		String twilloPhoneNo = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.TWILIO_PHONE_NO.getParamCode());
 		String account = CommonUtil.getSysConfigStr("twilio_account");
 		String authToken = CommonUtil.getSysConfigStr("twilio_auth_token");
 		byte enable = CommonUtil.getSysConfigByte("twilio_enable");

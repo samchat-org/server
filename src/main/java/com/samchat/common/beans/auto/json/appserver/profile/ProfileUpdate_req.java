@@ -1,7 +1,7 @@
 package com.samchat.common.beans.auto.json.appserver.profile;
 
 import com.samchat.common.exceptions.AppException;
-import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.app.ResCodeAppEnum;
 public class ProfileUpdate_req{
 
 	private Header header;
@@ -53,7 +53,7 @@ public class ProfileUpdate_req{
 
 		public void setCountrycode(String countrycode) {
 			if ("".equals(countrycode) || countrycode== null){
-				 throw new AppException(Constant.ERROR.PARAM_NONSUPPORT, "value:" + countrycode);
+				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + countrycode);
 			}
 			this.countrycode = (countrycode == null? null : countrycode.trim());
 		}
@@ -64,7 +64,7 @@ public class ProfileUpdate_req{
 
 		public void setCellphone(String cellphone) {
 			if ("".equals(cellphone) || cellphone== null){
-				 throw new AppException(Constant.ERROR.PARAM_NONSUPPORT, "value:" + cellphone);
+				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + cellphone);
 			}
 			this.cellphone = (cellphone == null? null : cellphone.trim());
 		}

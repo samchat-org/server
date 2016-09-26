@@ -1,4 +1,8 @@
 {
-  "code":"200",
-  "info":{"token":"xx","accid":"xx","name":"xx"} 
+    "code":200,
+    "info":{
+        "token":"xx",
+        "accid":"xx",
+        "name":"xx"
+    }
 }

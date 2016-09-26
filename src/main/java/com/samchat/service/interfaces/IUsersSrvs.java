@@ -37,10 +37,6 @@ public interface IUsersSrvs extends IBaseSrvs {
 
 	public void cancelUserInfoIntoRedis(String countryCode, String cellPhone);
 
-	public void setUserInfoRedis(long userId, UserInfoRds uif);
-
-	public UserInfoRds getUserInfoRedis(long userId);
-
 	public void niRegister(long userId, String userName, String token, Timestamp cur) throws Exception;
 
 	public void niTokenUpdate(long userId, String token, Timestamp cur) throws Exception;

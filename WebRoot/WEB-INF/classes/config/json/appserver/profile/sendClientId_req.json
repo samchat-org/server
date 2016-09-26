@@ -4,6 +4,6 @@
         "token":"token"
     },
     "body":{
-        "clent_id":"1231"
+        "client_id":"1231"
     }
 }

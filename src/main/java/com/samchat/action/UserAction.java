@@ -44,6 +44,9 @@ import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.app.ResCodeAppEnum;
+import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.Md5Util;
@@ -88,18 +91,18 @@ public class UserAction extends BaseAction {
 		String cellphone = body.getCellphone();
 
 		if (!CommonUtil.phoneNoFormatValidate(cellphone)) {
-			throw new AppException(Constant.ERROR.PHONE_FORMAT_ILLEGAL);
+			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
 		}
 		TUserUsers userUsers = usersSrv.queryUserInfoByPhone(cellphone, countryCode);
 		if (userUsers != null) {
-			throw new AppException(Constant.ERROR.PHONEorUSERNAME_EXIST);
+			throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
 		}
 		String registerCode = usersSrv.getRegisterCode(countryCode, cellphone);
 		if (registerCode == null) {
-			throw new AppException(Constant.ERROR.REGISTER_CODE_EXPIRED);
+			throw new AppException(ResCodeAppEnum.REGISTER_CODE_EXPIRED.getCode());
 		}
 		if (!registerCode.equals(body.getVerifycode())) {
-			throw new AppException(Constant.ERROR.VERIFICATION_CODE);
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE.getCode());
 		}
 	}
 
@@ -118,14 +121,14 @@ public class UserAction extends BaseAction {
 		String registerCode = CommonUtil.getRadom(4);
 		log.info("countryCode:" + countrycode + "--" + "cellphone:" + cellphone + "--registerCode:" + registerCode);
 
-		int timeToIdle = CommonUtil.getSysConfigInt(Constant.SYS_PARAM_KEY.REGISTER_CODE_TIME_TO_IDLE);
+		int timeToIdle = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.USER_REGISTER_CODE_TIME_TO_IDLE.getParamCode());
 
 		registerCode = "1234";// dev_m
 		String smstpl = CommonUtil
-				.getSysConfigStr(Constant.SYS_PARAM_KEY.TWILIO_VERIFICATION_REGISTER_CODE_SMS_TEMPLETE);
+				.getSysConfigStr(SysParamCodeDbEnum.TWILIO_VERIFICATION_REGISTER_CODE_SMS_TEMPLETE.getParamCode());
 		String smsContent = smstpl.replaceAll(Constant.TWILLO_VERIFICATION_CODE, registerCode);
 
-		String twilloPhoneNo = CommonUtil.getSysConfigStr(Constant.SYS_PARAM_KEY.TWILIO_PHONE_NO);
+		String twilloPhoneNo = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.TWILIO_PHONE_NO.getParamCode());
 		TwilioUtil.sendSms(CommonUtil.getE164PhoneNo(countrycode, cellphone), twilloPhoneNo, smsContent);
 		usersSrv.putRegisterCode(countrycode, cellphone, registerCode, timeToIdle);
 		return new RegisterCodeRequest_res();
@@ -145,14 +148,14 @@ public class UserAction extends BaseAction {
 		String cellphone = body.getCellphone();
 
 		if (!CommonUtil.phoneNoFormatValidate(body.getCellphone())) {
-			throw new AppException(Constant.ERROR.PHONE_FORMAT_ILLEGAL);
+			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
 		}
 		TUserUsers userUsers = usersSrv.queryUserInfoByPhone(cellphone, countryCode);
 		if (userUsers != null) {
-			throw new AppException(Constant.ERROR.PHONEorUSERNAME_EXIST);
+			throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
 		}
 		if (usersSrv.getRegisterCode(countryCode, cellphone) != null) {
-			throw new AppException(Constant.ERROR.VERIFICATION_CODE_FREQUENT);
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE_FREQUENT.getCode());
 		}
 	}
 
@@ -192,14 +195,14 @@ public class UserAction extends BaseAction {
 		Register_req.Body body = req.getBody();
 
 		if (!CommonUtil.phoneNoFormatValidate(body.getCellphone())) {
-			throw new AppException(Constant.ERROR.PHONE_FORMAT_ILLEGAL);
+			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
 		}
 		TUserUsers userUsers = usersSrv.queryUserInfoByPhone(body.getCellphone(), body.getCountrycode());
 		if (userUsers == null) {
 			userUsers = usersSrv.queryUserInfoByUserName(body.getUsername());
 		}
 		if (userUsers != null) {
-			throw new AppException(Constant.ERROR.PHONEorUSERNAME_EXIST);
+			throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
 		}
 	}
 
@@ -215,9 +218,11 @@ public class UserAction extends BaseAction {
 		String deviceId = body.getDeviceid();
 		long userId = user.getUser_id();
 
-		UserInfoRds userfo = usersSrv.getUserInfoRedis(userId);
-		if (userfo != null) {
-			usersSrv.deleteToken(userfo.getCur_token());
+		usersSrv.getUserInfoAndSetRedis(userId);
+		String tokenCur = usersSrv.hgetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.TOKEN.val());
+		log.info("login old token:" + tokenCur);
+		if (tokenCur != null) {
+			usersSrv.deleteToken(tokenCur);
 		}
 
 		Login_res res = new Login_res();
@@ -227,7 +232,11 @@ public class UserAction extends BaseAction {
 
 		String retToken = token[0];
 		String realToken = token[1];
+		
+		TokenRds t = usersSrv.getTokenObj(realToken);
+		log.info("TokenRds user_id:" + t.getUserId() );
 
+		usersSrv.hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.TOKEN.val(), realToken);
 		usersSrv.niTokenUpdate(userId, realToken, cur);
 		res.setToken(retToken);
 
@@ -294,10 +303,10 @@ public class UserAction extends BaseAction {
 			user = usersSrv.queryUserInfoByUserName(account);
 		}
 		if (user == null) {
-			throw new AppException(Constant.ERROR.USER_NOT_EXIST);
+			throw new AppException(ResCodeAppEnum.USER_NOT_EXIST.getCode());
 		}
 		if (!user.getUser_pwd().equals(pwd)) {
-			throw new AppException(Constant.ERROR.USER_PWD);
+			throw new AppException(ResCodeAppEnum.USER_PWD.getCode());
 		}
 		return user;
 	}
@@ -365,7 +374,7 @@ public class UserAction extends BaseAction {
 
 		TUserUsers user = usersSrv.queryUser(token.getUserId());
 		if (Constant.USER_TYPE_SERVICES == user.getUser_type()) {
-			throw new AppException(Constant.ERROR.USER_PROS_EXIST);
+			throw new AppException(ResCodeAppEnum.USER_PROS_EXIST.getCode());
 		}
 		return user;
 	}
@@ -383,11 +392,11 @@ public class UserAction extends BaseAction {
 		String cellPhone = req.getBody().getCellphone();
 		String verificationCode = CommonUtil.getRadom(4);
 		verificationCode = "1234";
-		int timeToIdle = CommonUtil.getSysConfigInt(Constant.SYS_PARAM_KEY.FIND_PASSWORD_CODE_TIME_TO_IDLE);
+		int timeToIdle = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.USER_FIND_PASSWORD_CODE_TIME_TO_IDLE.getParamCode());
 		usersSrv.putFindpasswordVerificationCode(countryCode, cellPhone, verificationCode, timeToIdle);
 
 		String smstpl = CommonUtil
-				.getSysConfigStr(Constant.SYS_PARAM_KEY.TWILIO_VERIFICATION_FINDPWD_CODE_SMS_TEMPLETE);
+				.getSysConfigStr(SysParamCodeDbEnum.TWILIO_VERIFICATION_FINDPWD_CODE_SMS_TEMPLETE.getParamCode());
 		String smsContent = smstpl.replaceAll(Constant.TWILLO_VERIFICATION_CODE, verificationCode);
 
 		TwilioUtil.sendSms(countryCode, cellPhone, smsContent);
@@ -401,15 +410,15 @@ public class UserAction extends BaseAction {
 		String cellPhone = req.getBody().getCellphone();
 
 		if (!CommonUtil.phoneNoFormatValidate(cellPhone)) {
-			throw new AppException(Constant.ERROR.PHONE_FORMAT_ILLEGAL);
+			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
 		}
 		TUserUsers user = usersSrv.queryUserInfoByPhone(cellPhone, countryCode);
 		if (user == null) {
-			throw new AppException(Constant.ERROR.PHONE_NOT_EXIST);
+			throw new AppException(ResCodeAppEnum.PHONE_NOT_EXIST.getCode());
 		}
 		String code = usersSrv.getFindpasswordVerificationCode(countryCode, cellPhone);
 		if (code != null) {
-			throw new AppException(Constant.ERROR.VERIFICATION_CODE_FREQUENT);
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE_FREQUENT.getCode());
 		}
 	}
 
@@ -429,15 +438,15 @@ public class UserAction extends BaseAction {
 		String cellPhone = req.getBody().getCellphone();
 
 		if (!CommonUtil.phoneNoFormatValidate(cellPhone)) {
-			throw new AppException(Constant.ERROR.PHONE_FORMAT_ILLEGAL);
+			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
 		}
 		TUserUsers user = usersSrv.queryUserInfoByPhone(cellPhone, countryCode);
 		if (user == null) {
-			throw new AppException(Constant.ERROR.PHONE_NOT_EXIST);
+			throw new AppException(ResCodeAppEnum.PHONE_NOT_EXIST.getCode());
 		}
 		String code = usersSrv.getFindpasswordVerificationCode(countryCode, cellPhone);
 		if (!req.getBody().getVerifycode().equals(code)) {
-			throw new AppException(Constant.ERROR.VERIFICATION_CODE);
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE.getCode());
 		}
 	}
 
@@ -463,15 +472,15 @@ public class UserAction extends BaseAction {
 		String cellPhone = req.getBody().getCellphone();
 
 		if (!CommonUtil.phoneNoFormatValidate(cellPhone)) {
-			throw new AppException(Constant.ERROR.PHONE_FORMAT_ILLEGAL);
+			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
 		}
 		TUserUsers user = usersSrv.queryUserInfoByPhone(cellPhone, countryCode);
 		if (user == null) {
-			throw new AppException(Constant.ERROR.PHONE_NOT_EXIST);
+			throw new AppException(ResCodeAppEnum.PHONE_NOT_EXIST.getCode());
 		}
 		String code = usersSrv.getFindpasswordVerificationCode(countryCode, cellPhone);
 		if (!req.getBody().getVerifycode().equals(code)) {
-			throw new AppException(Constant.ERROR.VERIFICATION_CODE);
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE.getCode());
 		}
 		return user;
 	}
@@ -496,7 +505,7 @@ public class UserAction extends BaseAction {
 
 		TUserUsers user = usersSrv.queryUser(token.getUserId());
 		if (req.getBody().getOld_pwd().equals(user.getUser_pwd())) {
-			throw new AppException(Constant.ERROR.USER_OLD_PWD);
+			throw new AppException(ResCodeAppEnum.USER_OLD_PWD.getCode());
 		}
 		return user;
 	}

@@ -15,8 +15,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import com.samchat.common.enums.Constant;
-import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.StrUtils;
 import com.samchat.common.utils.jsonUtils.jsonObjConvertUtil.entity.ArrayType;
 import com.samchat.common.utils.jsonUtils.jsonObjConvertUtil.entity.Json2JavaElement;
@@ -172,8 +170,8 @@ public class JsonObjUtil {
 		if(sb.indexOf("AppException") > 0){
 			init.append("import com.samchat.common.exceptions.AppException;\r\n");
 		}
-		if(sb.indexOf("Constant") > 0){
-			init.append("import com.samchat.common.enums.Constant;\r\n");
+		if(sb.indexOf("ResCodeAppEnum") > 0){
+			init.append("import com.samchat.common.enums.app.ResCodeAppEnum;\r\n");
 		}
 		
 		
@@ -218,7 +216,7 @@ public class JsonObjUtil {
 				j2j.setName(j2jName.substring(0,start));				
 				if("Y".equals(j2jName.substring(start + 1, end))){
 					validate = new StringBuffer("if (\"\".equals(").append(j2j.getName()).append(") || ").append(j2j.getName()).append( "== null){\r\n");
-					validate.append("\t\t\t\t throw new AppException(Constant.ERROR.PARAM_NONSUPPORT, \"value:\" + " + j2j.getName() +");\r\n\t\t\t}");
+					validate.append("\t\t\t\t throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), \"value:\" + " + j2j.getName() +");\r\n\t\t\t}");
 				}
  			}
 			if(className.endsWith("res")){
@@ -242,7 +240,7 @@ public class JsonObjUtil {
 						validate.append(j2j.getName() + " != " + value + " &&");
 					}
 					validate = new StringBuffer(validate.substring(0, validate.length() - 2)).append("){\r\n");
-					validate.append("\t\t\t\t throw new AppException(Constant.ERROR.PARAM_NONSUPPORT, \"value:\" + " + j2j.getName() +");\r\n\t\t\t}");
+					validate.append("\t\t\t\t throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), \"value:\" + " + j2j.getName() +");\r\n\t\t\t}");
 					
 				}
 			}

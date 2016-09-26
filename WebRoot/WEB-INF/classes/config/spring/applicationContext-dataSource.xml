@@ -37,24 +37,25 @@
 
 	<rdb:strategy id="questionSDSY" sharding-columns="create_date"
 		algorithm-expression="t_question_questions_${create_date.toString('yyyyMM')}" />
-	<rdb:strategy id="advertisementContentSDSY" sharding-columns="sharding_flag"
-		algorithm-expression="t_advertisement_content_${sharding_flag.toString()}" />
-	<rdb:strategy id="advertisementSendLogSDSY" sharding-columns="sharding_flag"
+	<rdb:strategy id="advertisementContentSDSY"
+		sharding-columns="sharding_flag" algorithm-expression="t_advertisement_content_${sharding_flag.toString()}" />
+	<rdb:strategy id="advertisementSendLogSDSY"
+		sharding-columns="sharding_flag"
 		algorithm-expression="t_advertisement_send_log_${sharding_flag.toString()}" />
-
+	
 	<rdb:data-source id="shardingDataSource">
 		<rdb:sharding-rule data-sources="myDataSource">
 			<rdb:table-rules>
 				<rdb:table-rule logic-table="t_question_questions"
-					actual-tables="t_question_questions_${201608..203001}"
+					actual-tables="t_question_questions_${201601..201612}"
 					table-strategy="questionSDSY" />
 
 				<rdb:table-rule logic-table="t_advertisement_content"
-					actual-tables="t_advertisement_content_${201608..203001}"
+					actual-tables="t_advertisement_content_${201601..201612}"
 					table-strategy="advertisementContentSDSY" />
-				
+
 				<rdb:table-rule logic-table="t_advertisement_send_log"
-					actual-tables="t_advertisement_send_log_${201608..203001}"
+					actual-tables="t_advertisement_send_log_${201601..201612}"
 					table-strategy="advertisementSendLogSDSY" />
 
 			</rdb:table-rules>
@@ -114,7 +115,7 @@
 
 	<tx:annotation-driven transaction-manager="myTransactionManager"
 		order="2" />
-		
+
 	<aop:aspectj-autoproxy />
 	<!-- 配置事务传播特性 -->
 	<tx:advice id="myWebAdvice" transaction-manager="myTransactionManager">

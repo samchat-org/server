@@ -3,13 +3,13 @@ package com.samchat.common.utils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 import net.coobird.thumbnailator.Thumbnails;
 
 import org.apache.log4j.Logger;
 
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectListing;
@@ -21,18 +21,27 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 public class S3Util {
 
 	private static Logger log = Logger.getLogger(S3Util.class);
+	
+	private static String getBucketMapping(String name){
+		String bucketMapping = CommonUtil.getSysConfigStr("aws_s3_bucket_mapping");
+		String[] mappings = bucketMapping.split(",");
+		
+		HashMap<String, String> hs = new HashMap<String, String>();
+		for(String mapping : mappings){
+			String [] kv = mapping.split(":");
+			hs.put(kv[0].trim(), kv[1].trim());
+		}
+		return hs.get(name);
+	}
 
 	public static String getThumbObject(String s3url) throws Exception {
 
 		AmazonS3 s3c = new AmazonS3Client();
-
 		java.net.URL url = new java.net.URL(s3url);
-		String endpoint = url.getProtocol() + "://" + url.getHost();
-		String curl = url.getPath().substring(1);
-		int idx = curl.indexOf("/");
-		String bucket = curl.substring(0, idx);
-		String key = curl.substring(idx + 1);
+		String bucket = getBucketMapping(url.getHost());
+		String key = url.getPath().substring(1);
 
+		String endpoint = CommonUtil.getSysConfigStr("aws_s3_endpoint");
 		s3c.setEndpoint(endpoint);
 
 		ObjectListing ol = s3c.listObjects(bucket, key);
@@ -69,7 +78,7 @@ public class S3Util {
 			} finally {
 				in.close();
 			}
-			return endpoint + "/" + bucket + "/" + thumbPath;
+			return url.getProtocol() + "://" + url.getHost() + "/" + thumbPath;
 		} else {
 			throw new Exception("bucket:" + bucket + "--key:" + key + " not exists");
 		}
@@ -77,21 +86,23 @@ public class S3Util {
 
 	public static String getThumbPath(String s3url) throws Exception {
 		java.net.URL url = new java.net.URL(s3url);
-		String endpoint = url.getProtocol() + "://" + url.getHost();
-		String curl = url.getPath().substring(1);
-		int idx = curl.indexOf("/");
-		String bucket = curl.substring(0, idx);
-		String key = curl.substring(idx + 1);
+ 		String key = url.getPath().substring(1);
+		
 		File keyfile = new File(key);
 		String origin = keyfile.getName();
 		String thumb = "thumb_" + origin.substring(origin.indexOf("_") + 1);
 		String thumbPath = keyfile.getParentFile().getParent() + "/thumb/" + thumb;
-		return endpoint + "/" + bucket + "/" + thumbPath;
+		return url.getProtocol() + "://" + url.getHost() + "/" + thumbPath;
+		
 	}
 
 	public static void main(String args[]) throws Exception {
-		getThumbObject("https://s3.cn-north-1.amazonaws.com.cn/samchat1/advertisement/origin/orig_1000029_1473588067039.JPG");
 
+		java.net.URL url = new java.net.URL(
+				"http://storage-test.samchat.com/advertisement/origin/org_10000000012_1474457758155.jpg.jpg");
+		String bucket = url.getHost();
+		String key = url.getPath().substring(1);
+		
 	}
 
 }

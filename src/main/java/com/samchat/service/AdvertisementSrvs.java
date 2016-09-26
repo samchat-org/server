@@ -13,6 +13,7 @@ import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementW
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.utils.S3Util;
 import com.samchat.common.utils.SqsUtil;
 import com.samchat.dao.db.interfaces.IAdvertisementDbDao;
@@ -33,6 +34,11 @@ public class AdvertisementSrvs extends BaseSrvs implements IAdvertisementSrvs {
 	public void saveAdvertisementSendLog(long adsId, long userId, Timestamp senddate, byte state, String clientId,
 			String remark, int shardingFlag) {
 		advertisementDbDao.saveAdvertisementSendLog(adsId, userId, senddate, state, clientId, remark, shardingFlag);
+	}
+	
+	public void updateAdvertisementSendLog(long logId, Timestamp senddate, byte state, String clientId, String remark,
+			int shardingFlag, int sendcount) {
+		advertisementDbDao.updateAdvertisementSendLog(logId, senddate, state, clientId, remark, shardingFlag, sendcount);
 	}
 
 	public void updateAdvertisementNotinuse(List<AdvertisementDelete_req.Advertisements> ads, long userId)
@@ -61,7 +67,7 @@ public class AdvertisementSrvs extends BaseSrvs implements IAdvertisementSrvs {
 		Timestamp sysdate = this.querySysdate();
 		ads.setSendType((byte) 2);
 		ads.setTime(sysdate.getTime());
-		SqsUtil.pushMessage(ads, Constant.SYS_PARAM_KEY.SQS_ADVERTISEMENT);
+		SqsUtil.pushMessage(ads, SysParamCodeDbEnum.SQS_ADVERTISEMENT.getParamCode());
 
 		return ads;
 	}

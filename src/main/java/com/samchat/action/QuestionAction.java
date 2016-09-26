@@ -30,7 +30,6 @@ public class QuestionAction extends BaseAction {
 		
 		QuestionSqs qs = questionSrv.sendQuestion(req, token, qstId, sysdate);
 		Question_res res = new Question_res();
-		res.setRet(Constant.SUCCESS);
 		res.setQuestion_id(qs.getQuestion_id());
 		res.setDatetime(qs.getTime());
 		return res;
