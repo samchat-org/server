@@ -51,8 +51,8 @@ public interface Constant {
 	}
 
 	interface DATA_SOURCE {
-		String S_MAIN = "myDataSource";
-		String S_SHARDING = "shardingDataSource";
+		String DS_MASTER_0 = "ds_master_0";
+		String DS_SHARDING = "ds_sharding";
 	}
 	
 	interface SEQUENCE {

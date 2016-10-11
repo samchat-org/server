@@ -100,7 +100,9 @@ public class UserDbDao extends BaseDbDao implements IUserDbDao {
 	}
 
 	public List<TUserUsers> queryUsers() {
-		return userUsersMapper.selectByExample(new TUserUsersExample());
+		TUserUsersExample uue = new TUserUsersExample();
+		uue.createCriteria().andUser_typeEqualTo(Constant.USER_TYPE_SERVICES).andStateEqualTo(Constant.STATE_IN_USE);
+		return userUsersMapper.selectByExample(uue);
 	}
 
 	public List<QryUserInfoVO> queryUsersFuzzy(String key) {

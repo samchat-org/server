@@ -32,6 +32,7 @@ public class AdvertisementWrite_req{
 		private long type;
 		private String content;
 		private String content_thumb;
+		private String message_id;
 
 		public long getType() {
 			return type;
@@ -58,6 +59,14 @@ public class AdvertisementWrite_req{
 
 		public void setContent_thumb(String content_thumb) {
 			this.content_thumb = (content_thumb == null? null : content_thumb.trim());
+		}
+
+		public String getMessage_id() {
+			return message_id;
+		}
+
+		public void setMessage_id(String message_id) {
+			this.message_id = (message_id == null? null : message_id.trim());
 		}
 	}
 

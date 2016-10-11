@@ -31,7 +31,6 @@ import com.samchat.common.utils.niUtils.NiUtil;
 import com.samchat.dao.db.interfaces.ICommonDbDao;
 import com.samchat.dao.db.interfaces.IUserDbDao;
 import com.samchat.dao.redis.interfaces.IUserRedisDao;
-import com.samchat.service.interfaces.BaseSrvs;
 import com.samchat.service.interfaces.IUsersSrvs;
 
 @Service
@@ -190,15 +189,15 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 
 		CreateSamPros_req.Location location = body.getLocation();
 		if (location != null) {
+			CreateSamPros_req.Location_info info = location.getLocation_info();
+			if (info != null) {
+				proUsers.setLongitude(info.getLongitude());
+				proUsers.setLatitude(info.getLatitude());
+			}
+			proUsers.setPlace_id(location.getPlace_id());
+			proUsers.setAddress(location.getAddress());
+		}
 
-		}
-		CreateSamPros_req.Location_info info = location.getLocation_info();
-		if (info != null) {
-			proUsers.setLongitude(info.getLongitude());
-			proUsers.setLatitude(info.getLatitude());
-		}
-		proUsers.setPlace_id(location.getPlace_id());
-		proUsers.setAddress(location.getAddress());
 		proUsers.setState(Constant.STATE_IN_USE);
 
 		proUsers.setState_date(sysdate);

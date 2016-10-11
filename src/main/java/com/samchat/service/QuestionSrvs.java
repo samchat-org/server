@@ -23,7 +23,6 @@ import com.samchat.common.utils.SqsUtil;
 import com.samchat.dao.db.interfaces.IQuestionDbDao;
 import com.samchat.dao.db.interfaces.IUserDbDao;
 import com.samchat.dao.redis.interfaces.IUserRedisDao;
-import com.samchat.service.interfaces.BaseSrvs;
 import com.samchat.service.interfaces.IQuestionSrvs;
 
 @Service

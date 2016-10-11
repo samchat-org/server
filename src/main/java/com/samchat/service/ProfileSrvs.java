@@ -13,7 +13,6 @@ import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
 import com.samchat.dao.db.interfaces.IUserDbDao;
-import com.samchat.service.interfaces.BaseSrvs;
 import com.samchat.service.interfaces.IProfileSrvs;
 
 @Service

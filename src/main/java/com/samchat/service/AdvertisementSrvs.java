@@ -17,7 +17,6 @@ import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.utils.S3Util;
 import com.samchat.common.utils.SqsUtil;
 import com.samchat.dao.db.interfaces.IAdvertisementDbDao;
-import com.samchat.service.interfaces.BaseSrvs;
 import com.samchat.service.interfaces.IAdvertisementSrvs;
 
 @Service

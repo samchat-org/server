@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
 import com.samchat.common.enums.Constant;
 import com.samchat.dao.db.interfaces.ICommonDbDao;
-import com.samchat.service.interfaces.BaseSrvs;
 import com.samchat.service.interfaces.ICommonSrvs;
 
 @Service

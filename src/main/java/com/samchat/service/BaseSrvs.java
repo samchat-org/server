@@ -1,4 +1,4 @@
-package com.samchat.service.interfaces;
+package com.samchat.service;
 
 import java.sql.Timestamp;
 
@@ -18,6 +18,7 @@ import com.samchat.common.utils.CacheUtil;
 import com.samchat.dao.db.interfaces.ICommonDbDao;
 import com.samchat.dao.db.interfaces.IUserDbDao;
 import com.samchat.dao.redis.interfaces.IUserRedisDao;
+import com.samchat.service.interfaces.IBaseSrvs;
 
 public class BaseSrvs implements IBaseSrvs {
 	
@@ -78,4 +79,5 @@ public class BaseSrvs implements IBaseSrvs {
 	public Timestamp querySysdate() {
 		return commonDbDao.querySysdate();
 	}
+	
 }

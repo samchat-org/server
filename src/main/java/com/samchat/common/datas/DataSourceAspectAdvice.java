@@ -16,12 +16,12 @@ public class DataSourceAspectAdvice implements Ordered {
 
 	@Before("execution(* com.samchat.service.*Srvs.*(..))")
 	public void switchShardingSource() throws Throwable {
-		DbContextHolder.setDbType(Constant.DATA_SOURCE.S_SHARDING);
+		DbContextHolder.setDbType(Constant.DATA_SOURCE.DS_SHARDING);
 	}
 
 	@Before("execution(* com.samchat.service.*Srvm.*(..))")
 	public void switchMainSource() throws Throwable {
-		DbContextHolder.setDbType(Constant.DATA_SOURCE.S_MAIN);
+		DbContextHolder.setDbType(Constant.DATA_SOURCE.DS_MASTER_0);
 	}
 
 	@Override

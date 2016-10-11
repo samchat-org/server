@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.samchat.common.beans.manual.db.QryContactVO;
 import com.samchat.dao.db.interfaces.IContactDbDao;
-import com.samchat.service.interfaces.BaseSrvs;
 import com.samchat.service.interfaces.IContactSrvs;
 
 @Service

@@ -10,7 +10,6 @@ import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
 import com.samchat.common.beans.manual.db.QryFollowVO;
 import com.samchat.common.beans.manual.db.QryPublicQueryVO;
 import com.samchat.dao.db.interfaces.IOfficialAccountDbDao;
-import com.samchat.service.interfaces.BaseSrvs;
 import com.samchat.service.interfaces.IOfficialAccountSrvs;
 
 @Service

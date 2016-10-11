@@ -41,8 +41,8 @@ public class ContactAction extends BaseAction {
 	private ICommonSrvs commonSrvs;
 
 	public Contact_res contact(Contact_req req, TokenRds token) {
-
-		UserInfoRds userInfo = usersSrv.hgetUserInfoJsonObjRedis(token.getUserId(),
+		long senderId = token.getUserId();
+		UserInfoRds userInfo = usersSrv.hgetUserInfoJsonObjRedis(senderId,
 				UserInfoFieldRdsEnum.BASE_INFO.val());
 
 		Contact_req.Body body = req.getBody();
@@ -60,25 +60,28 @@ public class ContactAction extends BaseAction {
 				if (user.getUser_type() == Constant.USER_TYPE_CUSTOMER) {
 					throw new AppException(ResCodeAppEnum.CUSTORMER_ADD_CUSTORMER.getCode());
 				}
-				log.info("user_id:" + token.getUserId() + "--user_id_pro:" + userId);
-				contactSrv.addContactUser(token.getUserId(), userId, sysdate);
-
+				log.info("user_id:" + senderId + "--user_id_pro:" + userId);
+				contactSrv.addContactUser(senderId, userId, sysdate);
+				fieldCode = UserInfoFieldRdsEnum.SERVICER_LIST_DATE.val();
 			} else if (type == 1) {
 				if (userInfo.getUser_type() == Constant.USER_TYPE_CUSTOMER) {
 					throw new AppException(ResCodeAppEnum.CUSTORMER_ADD_SERVIER_CONTACT_LIST.getCode());
 				}
-				contactSrv.addContactProUser(token.getUserId(), userId, sysdate);
+				contactSrv.addContactProUser(senderId, userId, sysdate);
+				fieldCode = UserInfoFieldRdsEnum.CUSTOMER_LIST_DATE.val();
 			}
-			fieldCode = UserInfoFieldRdsEnum.CUSTOMER_LIST_DATE.val();
+			
 		} else if (opt == 1) {
 			if (type == 0) {
-				contactSrv.deleteContactUser(token.getUserId(), userId);
+				contactSrv.deleteContactUser(senderId, userId);
+				fieldCode = UserInfoFieldRdsEnum.SERVICER_LIST_DATE.val();
 			} else if (type == 1) {
-				contactSrv.deleteContactProUser(token.getUserId(), userId);
+				contactSrv.deleteContactProUser(senderId, userId);
+				fieldCode = UserInfoFieldRdsEnum.CUSTOMER_LIST_DATE.val();
 			}
-			fieldCode = UserInfoFieldRdsEnum.SERVICER_LIST_DATE.val();
+			
 		}
-		contactSrv.hsetUserInfoStrRedis(userId, fieldCode, sysdate.getTime() + "");
+		contactSrv.hsetUserInfoStrRedis(senderId, fieldCode, sysdate.getTime() + "");
 		return new Contact_res();
 	}
 
