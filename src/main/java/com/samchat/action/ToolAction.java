@@ -30,7 +30,7 @@ public class ToolAction extends HttpServlet {
 		return tplclazz;
 	}
 	
-	protected TokenRds tokenIdentify(String token){
+	protected TokenRds tokenIdentify(String token) throws Exception{
 		TokenRds tokenObj = usersSrv.getTokenObj(token);
 		if(tokenObj == null){
 			throw new AppException(ResCodeAppEnum.TOKEN_ILLEGAL.getCode());

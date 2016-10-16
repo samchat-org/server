@@ -94,6 +94,10 @@
 		<table tableName="t_sys_dict_info" domainObjectName="TSysDictInfo">
 			<property name="useActualColumnNames" value="true" />
 		</table>
+		<table tableName="t_question_popular_requests" domainObjectName="TQuestionPopularRequests">
+			<property name="useActualColumnNames" value="true" />
+		</table>
+		
 		
 	</context>
 

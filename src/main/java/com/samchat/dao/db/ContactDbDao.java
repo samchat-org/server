@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.samchat.common.beans.auto.db.entitybeans.TContactProUser;
 import com.samchat.common.beans.auto.db.entitybeans.TContactProUserExample;
 import com.samchat.common.beans.auto.db.entitybeans.TContactUser;
@@ -35,6 +36,9 @@ public class ContactDbDao extends BaseDbDao implements IContactDbDao {
 	}
 
 	public void addContactUser(long userId, long proUserId, Timestamp sysdate) {
+		HintManager hm = HintManager.getInstance();
+		hm.setMasterRouteOnly();
+		log.info("setMasterRouteOnly");
 		TContactUserExample cue = new TContactUserExample();
 		cue.createCriteria().andUser_idEqualTo(userId).andUser_id_proEqualTo(proUserId)
 				.andStateEqualTo(Constant.STATE_IN_USE);

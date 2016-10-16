@@ -33,7 +33,7 @@ public class BaseSrvs implements IBaseSrvs {
 	@Autowired
 	private IUserDbDao userDbDao;
 
-	public void hsetUserInfoJsonObjRedis(long userId, String filed, Object uif) {
+	public void hsetUserInfoJsonObjRedis(long userId, String filed, Object uif) throws Exception{
 		String key = CacheUtil.getUserInfoIdCacheKey(userId);
 		userRedisDao.hsetJsonObj(key, filed, uif);
 	}
@@ -41,18 +41,18 @@ public class BaseSrvs implements IBaseSrvs {
 	public void hsetUserInfoStrRedis(long userId, String field, String value) {
 		String key = CacheUtil.getUserInfoIdCacheKey(userId);
 		log.info("key:" + key + "--field:" + field + "--value:" + value);
-		userRedisDao.hsetStr(key, field, value);
+		userRedisDao.hset(key, field, value);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T hgetUserInfoJsonObjRedis(long userId, String field) {
+	public <T> T hgetUserInfoJsonObjRedis(long userId, String field) throws Exception{
 		String key = CacheUtil.getUserInfoIdCacheKey(userId);
 		return (T) userRedisDao.hgetJsonObj(key, field);
 	}
 
 	public String hgetUserInfoStrRedis(long userId, String field) {
 		String key = CacheUtil.getUserInfoIdCacheKey(userId);
-		return userRedisDao.hgetStr(key, field);
+		return userRedisDao.hget(key, field);
 	}
 
 	public UserInfoRds getUserInfoAndSetRedis(long userId) throws Exception {

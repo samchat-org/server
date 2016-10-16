@@ -3,31 +3,24 @@ package com.samchat.dao.redis.interfaces;
 import java.util.List;
 
 public interface IBaseRedisDao<K, V> {
-
-	public String hgetStr(String key, String field);
-
-	@SuppressWarnings("unchecked")
-	public <T> T hgetJsonObj(String key, String field);
-
-	public void setStr(final String keyStr, final String valueStr, final long expireSec);
-
-	public void setJsonObj(final String keyStr, final Object valueObj, final long expireSec);
-
-	public Boolean setStrNX(final String keyStr, final String valueStr, final long expireSec);
-
-	public Boolean setJsonObjNX(final String keyStr, final Object valueObj, final long expireSec);
-
-	public String getStr(final String keyStr);
-
-	@SuppressWarnings("unchecked")
-	public <T> T getJsonObj(final String keyStr);
-
-	public void hsetStr(String key, String field, String value);
-
-	public void hsetJsonObj(String key, String field, Object value);
-
-	public void delete(K keyStr);
-
-	public void delete(List<K> keyStr);
-
+	 
+		public void hset(String key, String field, String value) ;                                                    
+		public void hsetJsonObj(String key, String field, Object value) throws Exception ;                            
+		public void set(String key, String value) ;                                                                   
+		public void set(String key, String value, int expire) ;                                                       
+		public boolean setNX(String key, String value) ;                                                              
+		public boolean setNX(String key, String value, int expire) ;                                                  
+		public void setJsonObj(String key, Object valueObj) throws Exception ;                                        
+		public void setJsonObj(String key, Object valueObj, int expire) throws Exception ;                            
+		public boolean setJsonObjNX(String key, Object valueObj) throws Exception ;                                   
+		public boolean setJsonObjNX(String key, Object valueObj, int expire) throws Exception ;                       
+		public String getFromMaster(String key) ;                                                                     
+		public String get(String key) ;                                                                               
+		public <T> T getJsonObj(String key) throws Exception ;                                                        
+		public String hgetFromMaster(String key,  String field) ;                                                
+		public String hgetFromSlave(String key,  String field) ;                                                 
+		public String hget(String key,  String field) ;                                                          
+		public <T> T hgetJsonObj(String key, String field) throws Exception ;                                         
+		public void delete(String key) ;                                                                              
+		public void delete(List<String> keyls) ;                                                                      
 }

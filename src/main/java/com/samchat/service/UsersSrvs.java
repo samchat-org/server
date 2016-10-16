@@ -100,25 +100,25 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		return res;
 	}
 
-	public void putRegisterCode(String countryCode, String cellPhone, String registerCode, long expireSec) {
+	public void putRegisterCode(String countryCode, String cellPhone, String registerCode, int expireSec) {
 		String keystr = CacheUtil.getRegiserCodeCacheKey(countryCode, cellPhone);
-		userRedisDao.setStr(keystr, registerCode, expireSec);
+		userRedisDao.set(keystr, registerCode, expireSec);
 	}
 
 	public String getRegisterCode(String countryCode, String cellPhone) {
 		String keystr = CacheUtil.getRegiserCodeCacheKey(countryCode, cellPhone);
-		return userRedisDao.getStr(keystr);
+		return userRedisDao.get(keystr);
 	}
 
 	public String getFindpasswordVerificationCode(String countryCode, String cellPhone) {
 		String keystr = CacheUtil.getFindpasswordCacheKey(countryCode, cellPhone);
-		return userRedisDao.getStr(keystr);
+		return userRedisDao.get(keystr);
 	}
 
 	public void putFindpasswordVerificationCode(String countryCode, String cellPhone, String verificationCode,
-			long expireSec) {
+			int expireSec) {
 		String keystr = CacheUtil.getFindpasswordCacheKey(countryCode, cellPhone);
-		userRedisDao.setStr(keystr, verificationCode, expireSec);
+		userRedisDao.set(keystr, verificationCode, expireSec);
 	}
 
 	public String[] getAddedToken(long userId, long time, String deviceId) throws Exception {
@@ -129,7 +129,7 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 			String retToken = Md5Util.getSign4String(userId + "_" + time + "_" + deviceId + i);
 			String realToken = CacheUtil.getRealToken(retToken, deviceId);
 			String realTokenKey = CacheUtil.getTokenCacheKey(realToken);
-			if (userRedisDao.setJsonObjNX(realTokenKey, tk, 0)) {
+			if (userRedisDao.setJsonObjNX(realTokenKey, tk)) {
   				String[] ret = new String[2];
 				ret[0] = retToken;
 				ret[1] = realToken;
@@ -159,7 +159,7 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		NiUtil.updateTokenAction(update, cur);
 	}
 
-	public TokenRds getTokenObj(String token) {
+	public TokenRds getTokenObj(String token) throws Exception {
 		String key = CacheUtil.getTokenCacheKey(token);
 		return userRedisDao.getJsonObj(key);
 	}
@@ -169,9 +169,9 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		userRedisDao.delete(key);
 	}
 
-	public void updateToken(String token, TokenRds tokenObj) {
+	public void updateToken(String token, TokenRds tokenObj) throws Exception{
 		String key = CacheUtil.getTokenCacheKey(token);
-		userRedisDao.setJsonObj(key, tokenObj, 0);
+		userRedisDao.setJsonObj(key, tokenObj);
 	}
 
 	public TUserProUsers saveProsUserInfo(CreateSamPros_req req, TUserUsers user, Timestamp sysdate) throws Exception {
@@ -236,7 +236,7 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		return userDbDao.queryProUser(userId);
 	}
 
-	public void loginPwderrorCheck(String countryCode, String cellphone, Timestamp sysdate) {
+	public void loginPwderrorCheck(String countryCode, String cellphone, Timestamp sysdate) throws Exception {
 		LoginErrRds loginerr = this.userRedisDao.getJsonObj(CacheNameCacheEnum.RDS_LOGIN_ERR.val() + ":" + countryCode
 				+ "_" + cellphone);
 		if (loginerr == null) {

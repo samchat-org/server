@@ -41,7 +41,7 @@ public class AdvertisementDbDao extends BaseDbDao implements IAdvertisementDbDao
 		ads.setUser_id_pro(userIdPro);
 		ads.setAds_type(type);
 		ads.setContent(content);
-		ads.setContent_thumb(thumb);
+ 		ads.setContent_thumb(thumb);
 		ads.setCreate_date(recvdate);
 		ads.setState_date(recvdate);
 		ads.setState(Constant.STATE_IN_USE);
@@ -100,10 +100,16 @@ public class AdvertisementDbDao extends BaseDbDao implements IAdvertisementDbDao
 			int shardingFlag, int sendcount) {
 		log.info("log_id:" + logId + "--client_id:" + clientId + "--shardingFlag:" + shardingFlag);
 		TAdvertisementSendLog ass = new TAdvertisementSendLog();
-		ass.setSend_date(senddate);
-		ass.setSend_count(sendcount);
+		if(senddate != null){
+			ass.setSend_date(senddate);
+		}
+		if(sendcount != 0){
+			ass.setSend_count(sendcount);
+		}
+		if(clientId != null){
+			ass.setClient_id(clientId);
+		}
 		ass.setState(state);
-		ass.setClient_id(clientId);
 		ass.setRemark(remark);
  		
 		TAdvertisementSendLogExample ase = new TAdvertisementSendLogExample();

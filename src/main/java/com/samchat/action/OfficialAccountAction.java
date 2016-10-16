@@ -254,9 +254,13 @@ public class OfficialAccountAction extends BaseAction {
 		res.setUsers(users);
 
 		for (QryPublicQueryVO pq : oalist) {
-
+			
+			long userId = pq.getUser_id();
+			if(userId == token.getUserId()){
+				continue;
+			}
 			PublicQuery_res.Users user = new PublicQuery_res.Users();
-			user.setId(pq.getUser_id());
+			user.setId(userId);
 			user.setUsername(pq.getUser_name());
 			user.setCountrycode(pq.getCountrycode());
 			user.setCellphone(pq.getCellphone());

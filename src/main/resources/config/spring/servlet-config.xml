@@ -55,7 +55,9 @@
  	<bean name="/api_1.0_contact_contact.do" class="com.samchat.action.ContactAction" />
  	<bean name="/api_1.0_contact_contactListQuery.do" class="com.samchat.action.ContactAction" />
 
- 	<bean name="/api_1.0_common_sendInviteMsg.do" class="com.samchat.action.CommonAction" />
  	<bean name="/api_1.0_question_question.do" class="com.samchat.action.QuestionAction" />
+ 	<bean name="/api_1.0_question_queryPopularRequest.do" class="com.samchat.action.QuestionAction" />
+ 
+ 	<bean name="/api_1.0_common_sendInviteMsg.do" class="com.samchat.action.CommonAction" />
  
  </beans>

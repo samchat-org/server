@@ -1,10 +1,9 @@
 package com.samchat.action;
 
-import java.sql.Timestamp;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementDelete_req;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementDelete_res;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementWrite_req;
@@ -12,13 +11,19 @@ import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementW
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.app.ResCodeAppEnum;
+import com.samchat.common.exceptions.AppException;
 import com.samchat.service.interfaces.IAdvertisementSrvs;
 import com.samchat.service.interfaces.ICommonSrvm;
 import com.samchat.service.interfaces.ICommonSrvs;
+import com.samchat.service.interfaces.IUsersSrvs;
 
 public class AdvertisementAction extends BaseAction {
 
 	private static Logger log = Logger.getLogger(AdvertisementAction.class);
+	
+	@Autowired
+	private IUsersSrvs usersSrv;
 
 	@Autowired
 	private IAdvertisementSrvs advertisementSrv;
@@ -42,7 +47,10 @@ public class AdvertisementAction extends BaseAction {
 	}
 
 	public void advertisementWriteValidate(AdvertisementWrite_req req, TokenRds token) {
-
+		TUserUsers user = usersSrv.queryUser(token.getUserId());
+		if (user.getUser_type() != Constant.USER_TYPE_SERVICES) {
+			throw new AppException(ResCodeAppEnum.USER_PROS_NOT_EXIST.getCode());
+		}
 	}
 
 	public AdvertisementDelete_res advertisementDelete(AdvertisementDelete_req req, TokenRds token) throws Exception {

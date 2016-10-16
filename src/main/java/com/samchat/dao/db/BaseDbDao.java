@@ -64,7 +64,7 @@ public abstract class BaseDbDao implements IBaseDbDao {
 
 		// 设置分页参数
 		setPageConfig(currentPage, pageSize);
-		List resList = executeSqlList(getNamespace() + "." + sqlName, paramMap);
+		List resList = executeSqlList(sqlName, paramMap);
 		return getPageInfo(resList);
 	}
 

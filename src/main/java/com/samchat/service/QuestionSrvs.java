@@ -1,13 +1,16 @@
 package com.samchat.service;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageInfo;
 import com.samchat.common.beans.auto.db.entitybeans.TQuestionQuestions;
 import com.samchat.common.beans.auto.json.appserver.question.Question_req;
+import com.samchat.common.beans.manual.db.QryPopularRequests;
 import com.samchat.common.beans.manual.json.redis.QuSendCtlRds;
 import com.samchat.common.beans.manual.json.redis.TokenRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
@@ -80,7 +83,7 @@ public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 		return sqs;
 	}
 
-	private void questionSendControl(long sysdate, String countryCode, String cellphone) {
+	private void questionSendControl(long sysdate, String countryCode, String cellphone) throws Exception{
 		String key = CacheUtil.getQuestSendCtlCacheKey(countryCode, cellphone);
 		QuSendCtlRds ctl = userRedisDao.getJsonObj(key);
 		if (ctl == null) {
@@ -109,6 +112,10 @@ public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 			ctl.setBlock(Constant.QUESTION_SEND_BLOCK);
 		}
 		userRedisDao.setJsonObj(key, ctl, 0);
+	}
+	
+	public List<QryPopularRequests> queryPopularRequests(int count){
+		return questionDbDao.queryPopularRequests(count);
 	}
 
 }

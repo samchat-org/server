@@ -23,7 +23,7 @@ public class ProfileSrvs extends BaseSrvs implements IProfileSrvs {
 	@Autowired
 	private IUserDbDao userDbDao;
 
-	public long updateProfile(ProfileUpdate_req req, long userId, Timestamp sysdate) {
+	public long updateProfile(ProfileUpdate_req req, long userId, Timestamp sysdate) throws Exception{
 
 		UserInfoRds uur = hgetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.BASE_INFO.val());
 		UserInfoProRds uupr = uur.getUserInfoProRds();

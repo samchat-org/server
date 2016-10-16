@@ -40,7 +40,7 @@ public class ContactAction extends BaseAction {
 	@Autowired
 	private ICommonSrvs commonSrvs;
 
-	public Contact_res contact(Contact_req req, TokenRds token) {
+	public Contact_res contact(Contact_req req, TokenRds token) throws Exception {
 		long senderId = token.getUserId();
 		UserInfoRds userInfo = usersSrv.hgetUserInfoJsonObjRedis(senderId,
 				UserInfoFieldRdsEnum.BASE_INFO.val());

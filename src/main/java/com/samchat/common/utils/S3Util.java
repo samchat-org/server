@@ -3,6 +3,7 @@ package com.samchat.common.utils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class S3Util {
 
 		AmazonS3 s3c = new AmazonS3Client();
 		java.net.URL url = new java.net.URL(s3url);
-		String bucket = getBucketMapping(url.getHost());
+		String bucket = url.getHost();
 		String key = url.getPath().substring(1);
 
 		String endpoint = CommonUtil.getSysConfigStr("aws_s3_endpoint");
@@ -54,8 +55,10 @@ public class S3Util {
 
 			int width = CommonUtil.getSysConfigInt("aws_s3_avatar_thumb_width");
 			int height = CommonUtil.getSysConfigInt("aws_s3_avatar_thumb_height");
+			int quality = CommonUtil.getSysConfigInt("aws_s3_avatar_thumb_quality");
+			
 			try {
-				Thumbnails.of(s3ois).size(width, height).toOutputStream(out);
+				Thumbnails.of(s3ois).size(width, height).outputQuality(new BigDecimal(quality).divide(new BigDecimal(100)).doubleValue()).toOutputStream(out);
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			} finally {
@@ -98,10 +101,7 @@ public class S3Util {
 
 	public static void main(String args[]) throws Exception {
 
-		java.net.URL url = new java.net.URL(
-				"http://storage-test.samchat.com/advertisement/origin/org_10000000012_1474457758155.jpg.jpg");
-		String bucket = url.getHost();
-		String key = url.getPath().substring(1);
+		Thumbnails.of(new File("d:/346099232071353208.jpg")).size(1280, 960).outputQuality(new BigDecimal(50).divide(new BigDecimal(100)).doubleValue()).toFile(new File("d:/346099232071353208_t.jpg"));
 		
 	}
 

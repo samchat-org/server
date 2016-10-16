@@ -10,8 +10,13 @@
             "location_info":{
                 "longitude":"",
                 "latitude":""
-            }
-            ,
+            },
+            "scell":{
+                "mcc":"1",
+                "mnc":"2",
+                "lac":"3",
+                "cellid":"4"
+            },
             "place_id":"",
             "address":""
         }

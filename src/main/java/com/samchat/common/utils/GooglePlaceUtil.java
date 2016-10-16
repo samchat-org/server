@@ -11,11 +11,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.samchat.common.beans.auto.json.appserver.profile.GoogleplaceAutocomplete_res;
 import com.samchat.common.enums.Constant;
-
+ 
 public class GooglePlaceUtil {
 
 	private static Log log = LogFactory.getLog(GooglePlaceUtil.class);
@@ -23,16 +23,16 @@ public class GooglePlaceUtil {
 	private static String AUTO_COMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/json?";
 
 	private static String getBaseUrl() {
-		String key = CommonUtil.getSysConfigStr("google_places_key");
+		String key = "AIzaSyC3foMjnnjQaVbiKPkuXdfGllzRqo9CUa8";//CommonUtil.getSysConfigStr("google_places_key");
 		return AUTO_COMPLETE_URL + "key=" + key;
 	}
 
 	public static GoogleplaceAutocomplete_res autocomplete(String keyCotent) throws Exception {
-		String url = getBaseUrl() + "&input=" + keyCotent;
-		CloseableHttpClient httpClient = HttpClients.createDefault();
+ 		String url = HttpclientUrlUtil.encodeQuery(getBaseUrl() + "&input=" + keyCotent);
+  		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(url);
 		httpPost.addHeader("Content-Type", "application/json;charset=utf-8;");
-
+		
 		String body = null;
 		CloseableHttpResponse response = null;
 		try {
@@ -45,7 +45,7 @@ public class GooglePlaceUtil {
 			if (entity != null) {
 				body = EntityUtils.toString(entity, Constant.CHARSET);
 				log.info("google res body:" + body);
-			}
+ 			}
 			EntityUtils.consume(entity);
 
 		} finally {
@@ -53,7 +53,7 @@ public class GooglePlaceUtil {
 				response.close();
 			}
 		}
-		ObjectMapper om = new ObjectMapper();
+		ObjectMapper om = ThreadLocalUtil.getAppObjectMapper();
 		GoogleplaceAutocomplete_res gac = om.readValue(body, GoogleplaceAutocomplete_res.class);
 		if (!"OK".equals(gac.getStatus())) {
 			throw new Exception("google status:" + gac.getStatus());
@@ -64,7 +64,7 @@ public class GooglePlaceUtil {
 	public static void main(String args[]) throws Exception {
 		HashMap<String, String> hs = new HashMap<String, String>();
 		hs.put("input", "new york");
-		GoogleplaceAutocomplete_res res = GooglePlaceUtil.autocomplete("123");
+		GoogleplaceAutocomplete_res res = GooglePlaceUtil.autocomplete("北京");
 		System.out.print(123);
 	}
 }

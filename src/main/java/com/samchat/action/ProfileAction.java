@@ -64,7 +64,7 @@ public class ProfileAction extends BaseAction {
 	public void appkeyGetValidate(AppkeyGet_req req, TokenRds token) {
 	}
 
-	public ProfileUpdate_res profileUpdate(ProfileUpdate_req req, TokenRds token, TUserUsers updatedUser) {
+	public ProfileUpdate_res profileUpdate(ProfileUpdate_req req, TokenRds token, TUserUsers updatedUser) throws Exception{
 
 		Timestamp sysdate = commonSrv.querySysdate();
 		long lastupdate = profileSrv.updateProfile(req, token.getUserId(), sysdate);
@@ -77,7 +77,7 @@ public class ProfileAction extends BaseAction {
 		return res;
 	}
 
-	public TUserUsers profileUpdateValidate(ProfileUpdate_req req, TokenRds token) {
+	public TUserUsers profileUpdateValidate(ProfileUpdate_req req, TokenRds token) throws Exception{
 
 		UserInfoRds userInfo = usersSrv.hgetUserInfoJsonObjRedis(token.getUserId(),
 				UserInfoFieldRdsEnum.BASE_INFO.val());

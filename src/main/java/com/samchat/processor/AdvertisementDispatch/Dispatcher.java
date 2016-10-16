@@ -24,6 +24,7 @@ import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
 import com.samchat.common.enums.db.AdsDbEnum;
+import com.samchat.common.enums.db.FollowDbEnum;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.GetuiUtil;
 import com.samchat.common.utils.S3Util;
@@ -124,8 +125,12 @@ public class Dispatcher extends Thread {
 
 			for (TAdvertisementSendLog sendlog : sendLogs) {
 				long adsId = sendlog.getAds_id();
+				long logId = sendlog.getLog_id();
 				TAdvertisementContent content = advertisementSrv.queryAdvertisementCotentById(adsId, shardingFlag);
-				if (content == null) {
+				TOaFollow follow = officialAccountSrv.queryUserFollow(userId, content.getUser_id_pro());
+				
+				if(follow == null || content == null || follow.getBlock_tag() == FollowDbEnum.Block.BLOCK.val()){
+					advertisementSrv.updateAdvertisementSendLog(logId, null, AdsDbEnum.SendLogState.CANCEL.val(), null, "cancel", shardingFlag, 0);
 					continue;
 				}
 				log.info("content:" + content.getContent());
@@ -146,7 +151,7 @@ public class Dispatcher extends Thread {
 					state = AdsDbEnum.SendLogState.ERROR.val();
 					remark = AdsDbEnum.SendLogState.ERROR.name();
 				} finally {
-					advertisementSrv.updateAdvertisementSendLog(sendlog.getLog_id(), new Timestamp(sysdate.getTime()),
+					advertisementSrv.updateAdvertisementSendLog(logId, new Timestamp(sysdate.getTime()),
 							state, curClientId, remark + "," + pushRst, shardingFlag, sendcount + 1);
 				}
 			}
@@ -209,7 +214,7 @@ public class Dispatcher extends Thread {
 					log.info("messages body:" + body);
 					try {
 						AdvertisementSqs req = om.readValue(body, AdvertisementSqs.class);
-						long sendType = req.getSendType();
+ 						long sendType = req.getSendType();
 						if (sendType == 2) {
 							sendAdvertisement(req);
 						} else if (sendType == 1) {

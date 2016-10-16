@@ -1,0 +1,9 @@
+{
+    "push":false,
+    "roam":true,
+    "history":false,
+    "sendersync":true,
+    "route":false,
+    "badge":false,
+    "needPushNick":true
+}

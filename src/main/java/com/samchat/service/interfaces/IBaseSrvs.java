@@ -12,12 +12,12 @@ import com.samchat.common.utils.CacheUtil;
 
 public interface IBaseSrvs {
 
-	public void hsetUserInfoJsonObjRedis(long userId, String filed, Object uif);
+	public void hsetUserInfoJsonObjRedis(long userId, String filed, Object uif)  throws Exception;
 
 	public void hsetUserInfoStrRedis(long userId, String field, String value);
 
 	@SuppressWarnings("unchecked")
-	public <T> T hgetUserInfoJsonObjRedis(long userId, String field);
+	public <T> T hgetUserInfoJsonObjRedis(long userId, String field) throws Exception;
 
 	public String hgetUserInfoStrRedis(long userId, String field);
 
