@@ -23,7 +23,7 @@ import com.samchat.common.beans.auto.json.appserver.officialAccount.PublicQuery_
 import com.samchat.common.beans.auto.json.appserver.officialAccount.PublicQuery_res;
 import com.samchat.common.beans.manual.db.QryFollowVO;
 import com.samchat.common.beans.manual.db.QryPublicQueryVO;
-import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.FollowAppEnum;
 import com.samchat.common.enums.app.ResCodeAppEnum;
@@ -50,7 +50,7 @@ public class OfficialAccountAction extends BaseAction {
 	@Autowired
 	private ICommonSrvs commonSrv;
 
-	public Follow_res follow(Follow_req req, TokenRds token, HashMap<String, Object> paramRet) {
+	public Follow_res follow(Follow_req req, TokenMappingRds token, HashMap<String, Object> paramRet) {
 		
 		TUserUsers userPro = (TUserUsers) paramRet.get("userPro");
 		TOaFollow follow = (TOaFollow) paramRet.get("follow");
@@ -58,16 +58,16 @@ public class OfficialAccountAction extends BaseAction {
 		long userIdPro = req.getBody().getId();
 		long userId = token.getUserId();
 		Timestamp sysdate = commonSrv.querySysdate();
-
+		String sysdateStr = String.valueOf(sysdate.getTime());
 		if (req.getBody().getOpt() ==  FollowAppEnum.Follow.FOLLOW.val()) {
 			if (follow == null) {
 				officialAccountSrv.insertFollow(userId, userIdPro, sysdate);
-				commonSrv.hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.FOLLOW_LIST_DATE.val(), sysdate.getTime() + "");
+ 				commonSrv.hsetUserInfoFollowListDate(userId, sysdateStr);
 			}
 		} else {
 			officialAccountSrv.deleteFollow(userId, userIdPro);
-			commonSrv.hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.FOLLOW_LIST_DATE.val(), sysdate.getTime() + "");
-		}
+			commonSrv.hsetUserInfoFollowListDate(userId, sysdateStr);
+ 		}
 		Follow_res res = new Follow_res();
 		Follow_res.User user = new Follow_res.User();
 		res.setUser(user);
@@ -77,7 +77,7 @@ public class OfficialAccountAction extends BaseAction {
 		return res;
 	}
 
-	public HashMap<String, Object> followValidate(Follow_req req, TokenRds token) {
+	public HashMap<String, Object> followValidate(Follow_req req, TokenMappingRds token) {
 
 		long userIdPro = req.getBody().getId();
 
@@ -102,7 +102,7 @@ public class OfficialAccountAction extends BaseAction {
 		return paramRet;
 	}
 
-	public Block_res block(Block_req req, TokenRds token, HashMap<String, Object> paramRet) {
+	public Block_res block(Block_req req, TokenMappingRds token, HashMap<String, Object> paramRet) {
 
 		TUserUsers userPro = (TUserUsers) paramRet.get("userPro");
 		TOaFollow follow = (TOaFollow) paramRet.get("follow");
@@ -114,8 +114,8 @@ public class OfficialAccountAction extends BaseAction {
 		long opt = req.getBody().getOpt();
 		if (follow.getBlock_tag() != opt) {
 			officialAccountSrv.updateBlock(userId, userIdPro, (byte) opt, sysdate);
-			officialAccountSrv.hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.FOLLOW_LIST_DATE.val(), sysdate.getTime() + "");
-		}
+			commonSrv.hsetUserInfoFollowListDate(userId, sysdate.getTime() + "");
+ 		}
 		Block_res res = new Block_res();
 		Block_res.User user = new Block_res.User();
 		res.setUser(user);
@@ -124,7 +124,7 @@ public class OfficialAccountAction extends BaseAction {
 		return res;
 	}
 
-	public HashMap<String, Object> blockValidate(Block_req req, TokenRds token) {
+	public HashMap<String, Object> blockValidate(Block_req req, TokenMappingRds token) {
 
 		long userIdPro = req.getBody().getId();
 
@@ -146,7 +146,7 @@ public class OfficialAccountAction extends BaseAction {
 		return paramRet;
 	}
 
-	public Favourite_res favourite(Favourite_req req, TokenRds token, HashMap<String, Object> paramRet) {
+	public Favourite_res favourite(Favourite_req req, TokenMappingRds token, HashMap<String, Object> paramRet) {
 
 		TUserUsers userPro = (TUserUsers) paramRet.get("userPro");
 		TOaFollow follow = (TOaFollow) paramRet.get("follow");
@@ -158,8 +158,8 @@ public class OfficialAccountAction extends BaseAction {
 		long opt = req.getBody().getOpt();
 		if (follow.getFavourite_tag() != opt) {
 			officialAccountSrv.updateFavourite(userId, userIdPro, (byte) opt, sysdate);
-			officialAccountSrv.hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.FOLLOW_LIST_DATE.val(), sysdate.getTime() + "");
-		}
+			commonSrv.hsetUserInfoFollowListDate(userId, sysdate.getTime() + "");
+ 		}
 		Favourite_res res = new Favourite_res();
 		Favourite_res.User user = new Favourite_res.User();
 		res.setUser(user);
@@ -167,7 +167,7 @@ public class OfficialAccountAction extends BaseAction {
 		return res;
 	}
 
-	public HashMap<String, Object> favouriteValidate(Favourite_req req, TokenRds token) {
+	public HashMap<String, Object> favouriteValidate(Favourite_req req, TokenMappingRds token) {
 
 		long userIdPro = req.getBody().getId();
 
@@ -190,7 +190,7 @@ public class OfficialAccountAction extends BaseAction {
 		return paramRet;
 	}
 
-	public FollowListQuery_res followListQuery(FollowListQuery_req req, TokenRds token) {
+	public FollowListQuery_res followListQuery(FollowListQuery_req req, TokenMappingRds token) {
 
 		long userId = token.getUserId();
 
@@ -223,10 +223,10 @@ public class OfficialAccountAction extends BaseAction {
 		return res;
 	}
 
-	public void followListQueryValidate(FollowListQuery_req req, TokenRds token) {
+	public void followListQueryValidate(FollowListQuery_req req, TokenMappingRds token) {
 	}
 
-	public PublicQuery_res publicQuery(PublicQuery_req req, TokenRds token) {
+	public PublicQuery_res publicQuery(PublicQuery_req req, TokenMappingRds token) {
 		PublicQuery_req.Body body = req.getBody();
 		String key = body.getKey();
 		String address = "";
@@ -292,7 +292,7 @@ public class OfficialAccountAction extends BaseAction {
 		return res;
 	}
 
-	public void publicQueryValidate(PublicQuery_req req, TokenRds token) {
+	public void publicQueryValidate(PublicQuery_req req, TokenMappingRds token) {
 
 	}
 }

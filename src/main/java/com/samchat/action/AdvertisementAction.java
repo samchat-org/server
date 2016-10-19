@@ -8,7 +8,7 @@ import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementD
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementDelete_res;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementWrite_req;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementWrite_res;
-import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.ResCodeAppEnum;
@@ -34,7 +34,7 @@ public class AdvertisementAction extends BaseAction {
 	@Autowired
 	private ICommonSrvm commonSrvm;
 
-	public AdvertisementWrite_res advertisementWrite(AdvertisementWrite_req req, TokenRds token) throws Exception {
+	public AdvertisementWrite_res advertisementWrite(AdvertisementWrite_req req, TokenMappingRds token) throws Exception {
 
 		long qstId = commonSrvm.querySeqId(Constant.SEQUENCE.S_ADVERTISEMENT);
 		log.info("qst_id:" + qstId);
@@ -46,19 +46,19 @@ public class AdvertisementAction extends BaseAction {
 		return res;
 	}
 
-	public void advertisementWriteValidate(AdvertisementWrite_req req, TokenRds token) {
+	public void advertisementWriteValidate(AdvertisementWrite_req req, TokenMappingRds token) {
 		TUserUsers user = usersSrv.queryUser(token.getUserId());
 		if (user.getUser_type() != Constant.USER_TYPE_SERVICES) {
 			throw new AppException(ResCodeAppEnum.USER_PROS_NOT_EXIST.getCode());
 		}
 	}
 
-	public AdvertisementDelete_res advertisementDelete(AdvertisementDelete_req req, TokenRds token) throws Exception {
+	public AdvertisementDelete_res advertisementDelete(AdvertisementDelete_req req, TokenMappingRds token) throws Exception {
 		advertisementSrv.updateAdvertisementNotinuse(req.getBody().getAdvertisements(), token.getUserId());
 		return new AdvertisementDelete_res();
 	}
 
-	public void advertisementDeleteValidate(AdvertisementDelete_req req, TokenRds token) {
+	public void advertisementDeleteValidate(AdvertisementDelete_req req, TokenMappingRds token) {
 
 	}
 

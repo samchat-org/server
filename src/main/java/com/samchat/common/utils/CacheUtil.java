@@ -178,4 +178,9 @@ public class CacheUtil {
 		return retToken + deviceId;
 	}
 
+	public static String getToken(String countryCode, String phoneNo, long nowVersion, String deviceId)
+			throws Exception {
+		return Md5Util.getSign4String(countryCode + "_" + phoneNo + "_" + nowVersion + "_" + deviceId);
+	}
+
 }

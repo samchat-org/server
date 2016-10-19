@@ -7,7 +7,7 @@ import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementContent;
 import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementSendLog;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementDelete_req;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementWrite_req;
-import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 
 public interface IAdvertisementSrvs extends IBaseSrvs {
@@ -24,7 +24,7 @@ public interface IAdvertisementSrvs extends IBaseSrvs {
 	public void updateAdvertisementNotinuse(List<AdvertisementDelete_req.Advertisements> ads, long userId)
 			throws Exception;
 
-	public AdvertisementSqs advertisementSend(AdvertisementWrite_req req, TokenRds token, long adsId) throws Exception;
+	public AdvertisementSqs advertisementSend(AdvertisementWrite_req req, TokenMappingRds token, long adsId) throws Exception;
 
 	public List<TAdvertisementSendLog> queryAdvertisementSendLog(long userId, int shardingFlag) throws Exception;
 	

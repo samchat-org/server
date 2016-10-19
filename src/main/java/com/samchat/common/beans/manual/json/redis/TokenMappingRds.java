@@ -1,9 +1,9 @@
 package com.samchat.common.beans.manual.json.redis;
 
-import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
+public class TokenMappingRds {
 
-public class UserInfoRds extends TUserUsers {
-
+	private long userId;
+	
 	private long nowVersion;
 
 	public long getNowVersion() {
@@ -12,6 +12,14 @@ public class UserInfoRds extends TUserUsers {
 
 	public void setNowVersion(long nowVersion) {
 		this.nowVersion = nowVersion;
+	}
+
+	public long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
 	}
 
 }

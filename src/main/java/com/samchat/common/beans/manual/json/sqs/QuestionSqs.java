@@ -1,5 +1,7 @@
 package com.samchat.common.beans.manual.json.sqs;
 
+import org.apache.commons.lang.StringUtils;
+
 public class QuestionSqs {
 	
 	private long question_id;
@@ -41,7 +43,7 @@ public class QuestionSqs {
 	}
 
 	public void setQuestion(String question) {
-		this.question = question;
+		this.question = StringUtils.trimToEmpty(question);
 	}
 
 	public String getPlace_id() {
@@ -49,7 +51,7 @@ public class QuestionSqs {
 	}
 
 	public void setPlace_id(String place_id) {
-		this.place_id = place_id;
+		this.place_id = StringUtils.trimToEmpty(place_id);
 	}
 
 	public String getAddress() {
@@ -57,7 +59,7 @@ public class QuestionSqs {
 	}
 
 	public void setAddress(String address) {
-		this.address = address;
+		this.address = StringUtils.trimToEmpty(address);
 	}
 
 	public String getLongitude() {
@@ -65,7 +67,7 @@ public class QuestionSqs {
 	}
 
 	public void setLongitude(String longitude) {
-		this.longitude = longitude;
+		this.longitude = StringUtils.trimToEmpty(longitude);
 	}
 
 	public String getLatitude() {
@@ -73,7 +75,7 @@ public class QuestionSqs {
 	}
 
 	public void setLatitude(String latitude) {
-		this.latitude = latitude;
+		this.latitude = StringUtils.trimToEmpty(latitude);
 	}
 
 	public long getTime() {

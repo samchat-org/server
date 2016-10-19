@@ -6,6 +6,8 @@ import java.util.regex.Pattern;
 public interface Constant {
 
 	SimpleDateFormat SDF_YYYYMM = new SimpleDateFormat("yyyyMM");
+	
+	SimpleDateFormat SDF_YYYYMMDDHHmmss = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	int DEV_MODE = 1;
 

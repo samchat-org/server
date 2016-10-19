@@ -21,7 +21,8 @@ import com.samchat.common.beans.auto.json.appserver.profile.QueryStateDate_req;
 import com.samchat.common.beans.auto.json.appserver.profile.QueryStateDate_res;
 import com.samchat.common.beans.auto.json.appserver.profile.SendClientId_req;
 import com.samchat.common.beans.auto.json.appserver.profile.SendClientId_res;
-import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.common.SysdateObjBean;
+import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.enums.app.ResCodeAppEnum;
@@ -43,11 +44,10 @@ public class ProfileAction extends BaseAction {
 	private IUsersSrvs usersSrv;
 	@Autowired
 	private IProfileSrvs profileSrv;
-
 	@Autowired
 	private ICommonSrvs commonSrv;
 
-	public AppkeyGet_res appkeyGet(AppkeyGet_req req, TokenRds token) {
+	public AppkeyGet_res appkeyGet(AppkeyGet_req req, TokenMappingRds token) {
 		AppkeyGet_res res = new AppkeyGet_res();
 
 		String appI = CommonUtil.getSysConfigStr("getui_appI");
@@ -61,26 +61,25 @@ public class ProfileAction extends BaseAction {
 		return res;
 	}
 
-	public void appkeyGetValidate(AppkeyGet_req req, TokenRds token) {
+	public void appkeyGetValidate(AppkeyGet_req req, TokenMappingRds token) {
 	}
 
-	public ProfileUpdate_res profileUpdate(ProfileUpdate_req req, TokenRds token, TUserUsers updatedUser) throws Exception{
+	public ProfileUpdate_res profileUpdate(ProfileUpdate_req req, TokenMappingRds token, TUserUsers updatedUser) throws Exception{
 
-		Timestamp sysdate = commonSrv.querySysdate();
-		long lastupdate = profileSrv.updateProfile(req, token.getUserId(), sysdate);
+		SysdateObjBean sysdate = commonSrv.querySysdateObj();
+		profileSrv.updateProfile(req, token.getUserId(), sysdate);
 
 		ProfileUpdate_res res = new ProfileUpdate_res();
 		ProfileUpdate_res.User userRes = new ProfileUpdate_res.User();
 		res.setUser(userRes);
-		userRes.setLastupdate(lastupdate);
+		userRes.setLastupdate(sysdate.getNow().getTime());
 
 		return res;
 	}
 
-	public TUserUsers profileUpdateValidate(ProfileUpdate_req req, TokenRds token) throws Exception{
+	public TUserUsers profileUpdateValidate(ProfileUpdate_req req, TokenMappingRds token) throws Exception{
 
-		UserInfoRds userInfo = usersSrv.hgetUserInfoJsonObjRedis(token.getUserId(),
-				UserInfoFieldRdsEnum.BASE_INFO.val());
+		TUserUsers userInfo = usersSrv.queryUser(token.getUserId());
 
 		String countrycode = userInfo.getCountry_code();
 		String cellphone = userInfo.getPhone_no();
@@ -109,7 +108,7 @@ public class ProfileAction extends BaseAction {
 		return new TUserUsers();
 	}
 
-	public AvatarUpdate_res avatarUpdate(AvatarUpdate_req req, TokenRds token) throws Exception {
+	public AvatarUpdate_res avatarUpdate(AvatarUpdate_req req, TokenMappingRds token) throws Exception {
 
 		AvatarUpdate_req.Avatar avatar = req.getBody().getAvatar();
 		String origin = avatar.getOrigin();
@@ -128,15 +127,14 @@ public class ProfileAction extends BaseAction {
 		return res;
 	}
 
-	public void avatarUpdateValidate(AvatarUpdate_req req, TokenRds token) {
+	public void avatarUpdateValidate(AvatarUpdate_req req, TokenMappingRds token) {
 	}
 
-	public SendClientId_res sendClientId(SendClientId_req req, TokenRds token) throws Exception {
+	public SendClientId_res sendClientId(SendClientId_req req, TokenMappingRds token) throws Exception {
 
 		long userId = token.getUserId();
 		String clientId = req.getBody().getClient_id();
-		commonSrv.hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.CLIENT_ID.val(), clientId);
-
+		usersSrv.hsetUserInfoClientId(userId, clientId);
 		AdvertisementSqs ads = new AdvertisementSqs();
 		ads.setUser_id(userId);
 		ads.setSendType((byte) 1);
@@ -145,11 +143,11 @@ public class ProfileAction extends BaseAction {
 		return new SendClientId_res();
 	}
 
-	public void sendClientIdValidate(SendClientId_req req, TokenRds token) {
+	public void sendClientIdValidate(SendClientId_req req, TokenMappingRds token) {
 
 	}
 
-	public GetPlacesInfoRequest_res getPlacesInfoRequest(GetPlacesInfoRequest_req req, TokenRds token) throws Exception {
+	public GetPlacesInfoRequest_res getPlacesInfoRequest(GetPlacesInfoRequest_req req, TokenMappingRds token) throws Exception {
 
 		String key = req.getBody().getKey();
 		GoogleplaceAutocomplete_res gac = GooglePlaceUtil.autocomplete(key);
@@ -169,15 +167,15 @@ public class ProfileAction extends BaseAction {
 		return res;
 	}
 
-	public void getPlacesInfoRequestValidate(GetPlacesInfoRequest_req req, TokenRds token) {
+	public void getPlacesInfoRequestValidate(GetPlacesInfoRequest_req req, TokenMappingRds token) {
 
 	}
 
-	public QueryStateDate_res queryStateDate(QueryStateDate_req req, TokenRds token) {
+	public QueryStateDate_res queryStateDate(QueryStateDate_req req, TokenMappingRds token) {
 		long userId = token.getUserId();
-		String cld = usersSrv.hgetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.CUSTOMER_LIST_DATE.val());
-		String sld = usersSrv.hgetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.SERVICER_LIST_DATE.val());
-		String fld = usersSrv.hgetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.FOLLOW_LIST_DATE.val());
+		String cld = usersSrv.hgetUserInfoCustomerListDate(userId);
+		String sld = usersSrv.hgetUserInfoServicerListDate(userId);
+		String fld = usersSrv.hgetUserInfoFollowListDate(userId);
 
 		QueryStateDate_res res = new QueryStateDate_res();
 		QueryStateDate_res.State_date_info sdi = new QueryStateDate_res.State_date_info();
@@ -194,7 +192,7 @@ public class ProfileAction extends BaseAction {
 		return res;
 	}
 
-	public void queryStateDateValidate(QueryStateDate_req req, TokenRds token) {
+	public void queryStateDateValidate(QueryStateDate_req req, TokenMappingRds token) {
 
 	}
 }

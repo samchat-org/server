@@ -7,12 +7,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.github.pagehelper.PageInfo;
 import com.samchat.common.beans.auto.db.entitybeans.TQuestionQuestions;
+import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.question.Question_req;
 import com.samchat.common.beans.manual.db.QryPopularRequests;
 import com.samchat.common.beans.manual.json.redis.QuSendCtlRds;
-import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.beans.manual.json.sqs.QuestionSqs;
 import com.samchat.common.enums.Constant;
@@ -56,12 +56,12 @@ public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 		return questionDbDao.saveQuestion(qq);
 	}
 
-	public QuestionSqs sendQuestion(Question_req req, TokenRds token, long qstId, Timestamp sysdate) throws Exception {
+	public QuestionSqs sendQuestion(Question_req req, TokenMappingRds token, long qstId, Timestamp sysdate) throws Exception {
 
 		QuestionSqs sqs = new QuestionSqs();
 		Question_req.Body body = req.getBody();
-		UserInfoRds uu = hgetUserInfoJsonObjRedis(token.getUserId(), UserInfoFieldRdsEnum.BASE_INFO.val());
- 		questionSendControl(sysdate.getTime(), uu.getCountry_code(), uu.getPhone_no());
+ 		UserInfoRds user = hgetUserInfoJsonObj(token.getUserId());
+  		questionSendControl(sysdate.getTime(), user.getCountry_code(), user.getPhone_no());
 
 		sqs.setQuestion_id(qstId);
 		sqs.setUser_id(token.getUserId());

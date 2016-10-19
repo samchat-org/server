@@ -15,7 +15,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.exceptions.AppException;
@@ -117,7 +117,7 @@ public abstract class BaseAction extends ToolAction {
 					List<Object> objlist = new ArrayList<Object>();
 					objlist.add(dataObj);
 
-					TokenRds tokenrds = identifyToken(head);
+					TokenMappingRds tokenrds = identifyToken(head);
 					if (tokenrds != null) {
 						objlist.add(tokenrds);
 						log.info("tokenrds user_id:" + tokenrds.getUserId());
@@ -176,9 +176,9 @@ public abstract class BaseAction extends ToolAction {
 		}
 	}
 
-	protected TokenRds identifyToken(Object head) throws Exception {
+	protected TokenMappingRds identifyToken(Object head) throws Exception {
 		Field[] fields = head.getClass().getDeclaredFields();
-		TokenRds tokenObj = null;
+		TokenMappingRds tokenObj = null;
 		for (Field field : fields) {
 			if ("token".equals(field.getName())) {
 				String token = CommonUtil.methodInvoke(head, "getToken") + "";

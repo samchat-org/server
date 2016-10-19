@@ -36,10 +36,9 @@ public class ContactDbDao extends BaseDbDao implements IContactDbDao {
 	}
 
 	public void addContactUser(long userId, long proUserId, Timestamp sysdate) {
-		HintManager hm = HintManager.getInstance();
-		hm.setMasterRouteOnly();
-		log.info("setMasterRouteOnly");
-		TContactUserExample cue = new TContactUserExample();
+ 		
+		HintManager.getInstance().setMasterRouteOnly();
+ 		TContactUserExample cue = new TContactUserExample();
 		cue.createCriteria().andUser_idEqualTo(userId).andUser_id_proEqualTo(proUserId)
 				.andStateEqualTo(Constant.STATE_IN_USE);
 		List<TContactUser> lst = contactUserMapper.selectByExample(cue);

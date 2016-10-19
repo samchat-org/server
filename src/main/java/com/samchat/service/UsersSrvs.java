@@ -12,18 +12,22 @@ import org.springframework.stereotype.Service;
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.user.CreateSamPros_req;
+import com.samchat.common.beans.auto.json.appserver.user.Login_req;
+import com.samchat.common.beans.auto.json.appserver.user.Login_res;
+import com.samchat.common.beans.auto.json.appserver.user.Login_res.Sam_pros_info;
 import com.samchat.common.beans.auto.json.appserver.user.Register_req;
 import com.samchat.common.beans.auto.json.appserver.user.Register_res;
 import com.samchat.common.beans.auto.json.ni.id.Create_req;
 import com.samchat.common.beans.auto.json.ni.id.Update_req;
+import com.samchat.common.beans.manual.common.SysdateObjBean;
 import com.samchat.common.beans.manual.db.QryUserInfoVO;
 import com.samchat.common.beans.manual.json.redis.LoginErrRds;
-import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
+import com.samchat.common.beans.manual.json.redis.TokenValRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.cache.CacheNameCacheEnum;
-import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
 import com.samchat.common.utils.CacheUtil;
 import com.samchat.common.utils.Md5Util;
 import com.samchat.common.utils.S3Util;
@@ -57,9 +61,105 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		return userDbDao.queryUserInfoByEmail(email);
 	}
 
-	public Register_res saveRegisterUserInfo(Register_req req, Timestamp sysdate) throws Exception {
+	public TUserProUsers updateTokenInfo(TUserUsers user, SysdateObjBean sysdate, String realToken) throws Exception {
 
-		long time = sysdate.getTime();
+		long nowVersion = sysdate.getNowVersion();
+		long userId = user.getUser_id();
+
+		TokenValRds token = hgetUserInfoTokenJsonObj(userId);
+		if (token != null) {
+			deleteToken(token.getToken());
+		}
+
+		TokenMappingRds tk = new TokenMappingRds();
+		tk.setUserId(userId);
+		tk.setNowVersion(nowVersion);
+		setTokenJsonObj(realToken, tk);
+
+		UserInfoRds uur = new UserInfoRds();
+		uur.setNowVersion(nowVersion);
+		PropertyUtils.copyProperties(uur, user);
+		hsetUserInfoJsonObj(userId, uur);
+
+		TokenValRds tvr = new TokenValRds();
+		tvr.setToken(realToken);
+		tvr.setNowVersion(nowVersion);
+		hsetUserInfoTokenJsonObj(userId, tvr);
+
+		TUserProUsers uup = userDbDao.queryProUser(userId);
+		if (uup != null) {
+			UserInfoProRds uupr = new UserInfoProRds();
+			uupr.setNowVersion(nowVersion);
+			PropertyUtils.copyProperties(uupr, uup);
+			hsetUserInfoProsJsonObj(userId, uupr);
+		}
+
+		niTokenUpdate(userId, realToken, sysdate.getNow());
+
+		return uup;
+
+	}
+
+	private void setTokenJsonObj(String realTokenKey, TokenMappingRds tk) {
+		try {
+			userRedisDao.setJsonObj(CacheUtil.getTokenCacheKey(realTokenKey), tk);
+		} catch (Exception e) {
+		}
+	}
+
+	public Login_res saveLoginUserInfo(Login_req req, TUserUsers user, SysdateObjBean sysdate) throws Exception {
+
+		Login_req.Body body = req.getBody();
+		String deviceId = body.getDeviceid();
+		long userId = user.getUser_id();
+
+		String retToken = CacheUtil.getToken(user.getCountry_code(), user.getPhone_no(), sysdate.getNowVersion(),
+				deviceId);
+		String realToken = CacheUtil.getRealToken(retToken, deviceId);
+
+		TUserProUsers proUser = updateTokenInfo(user, sysdate, realToken);
+
+		Login_res res = new Login_res();
+		res.setToken(retToken);
+
+		Login_res.User userRes = new Login_res.User();
+
+		userRes.setId(userId);
+		userRes.setUsername(user.getUser_name());
+		userRes.setType(user.getUser_type());
+		userRes.setCountrycode(user.getCountry_code());
+		userRes.setCellphone(user.getPhone_no());
+		userRes.setAddress(user.getAddress());
+		userRes.setEmail(user.getEmail());
+		userRes.setLastupdate(user.getState_date().getTime());
+
+		Login_res.Avatar avatar = new Login_res.Avatar();
+		avatar.setOrigin(user.getAvatar_origin());
+		avatar.setThumb(user.getAvatar_thumb());
+		userRes.setAvatar(avatar);
+
+		Sam_pros_info info = new Login_res.Sam_pros_info();
+		userRes.setSam_pros_info(info);
+		if (user.getUser_type() == Constant.USER_TYPE_SERVICES) {
+			if (proUser != null) {
+				info.setCompany_name(proUser.getCompany_name());
+				info.setService_category(proUser.getService_category());
+				info.setService_description(proUser.getService_description());
+				info.setCountrycode(proUser.getCountry_code());
+				info.setPhone(proUser.getPhone_no());
+				info.setEmail(proUser.getEmail());
+				info.setAddress(proUser.getAddress());
+			}
+		}
+		res.setUser(userRes);
+		return null;
+	}
+
+	public Register_res saveRegisterUserInfo(Register_req req, SysdateObjBean sysdate) throws Exception {
+
+		Timestamp now = sysdate.getNow();
+		long nowVersion = sysdate.getNowVersion();
+
 		Register_req.Body body = req.getBody();
 		String cellPhone = body.getCellphone();
 		String countryCode = body.getCountrycode();
@@ -74,28 +174,24 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		uu.setUser_name(userName);
 		uu.setUser_pwd(pwd);
 		uu.setState(Constant.STATE_IN_USE);
-		uu.setState_date(sysdate);
-		uu.setCreate_date(sysdate);
+		uu.setState_date(now);
+		uu.setCreate_date(now);
 
-		userDbDao.insertUser(uu, sysdate);
+		String retToken = CacheUtil.getToken(countryCode, cellPhone, nowVersion, deviceId);
+		String realToken = CacheUtil.getRealToken(retToken, deviceId);
+		uu.setCur_token(realToken);
+
+		userDbDao.insertUser(uu, now);
 		long userId = uu.getUser_id();
 
-		String[] token = getAddedToken(userId, time, deviceId);
-		String retToken = token[0];
-		String realToken = token[1];
-
-		UserInfoRds uur = new UserInfoRds();
-		PropertyUtils.copyProperties(uur, uu);
-		hsetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.BASE_INFO.val(), uur);
-		hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.TOKEN.val(), realToken);
-
-		niRegister(userId, userName, realToken, sysdate);
+		updateTokenInfo(uu, sysdate, realToken);
+		niRegister(userId, userName, realToken, now);
 
 		Register_res res = new Register_res();
 		res.setToken(retToken);
 		Register_res.User user = new Register_res.User();
 		user.setId(userId);
-		user.setLastupdate(time);
+		user.setLastupdate(now.getTime());
 		res.setUser(user);
 		return res;
 	}
@@ -121,23 +217,6 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		userRedisDao.set(keystr, verificationCode, expireSec);
 	}
 
-	public String[] getAddedToken(long userId, long time, String deviceId) throws Exception {
-
-		TokenRds tk = new TokenRds();
-		tk.setUserId(userId);
-		for (int i = 0;; i++) {
-			String retToken = Md5Util.getSign4String(userId + "_" + time + "_" + deviceId + i);
-			String realToken = CacheUtil.getRealToken(retToken, deviceId);
-			String realTokenKey = CacheUtil.getTokenCacheKey(realToken);
-			if (userRedisDao.setJsonObjNX(realTokenKey, tk)) {
-  				String[] ret = new String[2];
-				ret[0] = retToken;
-				ret[1] = realToken;
-				return ret;
-			}
-		}
-	}
-
 	public void cancelUserInfoIntoRedis(String countryCode, String cellPhone) {
 		String key = CacheUtil.getUserInfoCacheKey(countryCode, cellPhone);
 		userRedisDao.delete(key);
@@ -159,25 +238,30 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		NiUtil.updateTokenAction(update, cur);
 	}
 
-	public TokenRds getTokenObj(String token) throws Exception {
+	public TokenMappingRds getTokenObj(String token) throws Exception {
 		String key = CacheUtil.getTokenCacheKey(token);
 		return userRedisDao.getJsonObj(key);
 	}
 
 	public void deleteToken(String token) {
-		String key = CacheUtil.getTokenCacheKey(token);
-		userRedisDao.delete(key);
+		try {
+			String key = CacheUtil.getTokenCacheKey(token);
+			userRedisDao.delete(key);
+		} catch (Exception e) {
+		}
 	}
 
-	public void updateToken(String token, TokenRds tokenObj) throws Exception{
+	public void updateToken(String token, TokenMappingRds tokenObj) throws Exception {
 		String key = CacheUtil.getTokenCacheKey(token);
 		userRedisDao.setJsonObj(key, tokenObj);
 	}
-
-	public TUserProUsers saveProsUserInfo(CreateSamPros_req req, TUserUsers user, Timestamp sysdate) throws Exception {
-
+	//
+	public TUserProUsers saveProsUserInfo(CreateSamPros_req req, TUserUsers users, SysdateObjBean sysdate) throws Exception {
+		Timestamp now = sysdate.getNow();
+		long nowVersion = sysdate.getNowVersion();
+		
 		CreateSamPros_req.Body body = req.getBody();
-		long userId = user.getUser_id();
+		long userId = users.getUser_id();
 		TUserProUsers proUsers = new TUserProUsers();
 		proUsers.setUser_id(userId);
 		proUsers.setCompany_name(body.getCompany_name());
@@ -200,24 +284,27 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 
 		proUsers.setState(Constant.STATE_IN_USE);
 
-		proUsers.setState_date(sysdate);
-		proUsers.setCreate_date(sysdate);
+		proUsers.setState_date(now);
+		proUsers.setCreate_date(now);
 		userDbDao.insertProUser(proUsers);
 
 		TUserUsers userCon = new TUserUsers();
 		userCon.setUser_id(userId);
 		userCon.setUser_type(Constant.USER_TYPE_SERVICES);
-		userCon.setState_date(sysdate);
+		userCon.setState_date(now);
 		userDbDao.updateUser(userCon);
 
 		UserInfoProRds userProInfo = new UserInfoProRds();
+		userProInfo.setNowVersion(nowVersion);
 		PropertyUtils.copyProperties(userProInfo, proUsers);
-
-		UserInfoRds userInfo = hgetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.BASE_INFO.val());
-		userInfo.setUserInfoProRds(userProInfo);
-		userInfo.setUser_type(Constant.USER_TYPE_SERVICES);
-		userInfo.setState_date(sysdate);
-		hsetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.BASE_INFO.val(), userInfo);
+		hsetUserInfoProsJsonObj(userId, userProInfo);
+		
+		UserInfoRds userInfo = new UserInfoRds();
+		userInfo.setNowVersion(nowVersion);
+		PropertyUtils.copyProperties(userInfo, users);
+ 		userInfo.setUser_type(userCon.getUser_type());
+		userInfo.setState_date(userCon.getState_date());
+		hsetUserInfoJsonObj(userId, userInfo);
 
 		return proUsers;
 
@@ -277,19 +364,25 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 	}
 
 	public TUserUsers updateAvatar(String origin, String thumb, long userId, Timestamp sysdate) throws Exception {
-		TUserUsers u = new TUserUsers();
-		u.setUser_id(userId);
-		u.setAvatar_origin(origin);
-		u.setAvatar_thumb(S3Util.getThumbObject(origin));
-		u.setState_date(sysdate);
-		userDbDao.updateUser(u);
+		
+		TUserUsers uu = queryUser(userId);
+		uu.setUser_id(userId);
+		uu.setAvatar_origin(origin);
+		uu.setAvatar_thumb(S3Util.getThumbObject(origin));
+		uu.setState_date(sysdate);
+		userDbDao.updateUser(uu);
 
-		UserInfoRds uur = hgetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.BASE_INFO.val());
-		uur.setAvatar_origin(u.getAvatar_origin());
-		uur.setAvatar_thumb(u.getAvatar_thumb());
-		hsetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.BASE_INFO.val(), uur);
+		UserInfoRds uur = new UserInfoRds();
+		PropertyUtils.copyProperties(uur, uu);
+		hsetUserInfoJsonObj(userId, uur);
 
-		return u;
+		return uu;
 	}
 
+	public void updateDbToken(long userId, String token) {
+		TUserUsers user = new TUserUsers();
+		user.setUser_id(userId);
+		user.setCur_token(token);
+		userDbDao.updateUser(user);
+	}
 }

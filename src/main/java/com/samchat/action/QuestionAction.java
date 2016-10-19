@@ -12,7 +12,7 @@ import com.samchat.common.beans.auto.json.appserver.question.QueryPopularRequest
 import com.samchat.common.beans.auto.json.appserver.question.Question_req;
 import com.samchat.common.beans.auto.json.appserver.question.Question_res;
 import com.samchat.common.beans.manual.db.QryPopularRequests;
-import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.sqs.QuestionSqs;
 import com.samchat.common.enums.Constant;
 import com.samchat.service.interfaces.ICommonSrvm;
@@ -29,7 +29,7 @@ public class QuestionAction extends BaseAction {
 	@Autowired
 	private ICommonSrvm commonSrvm;
 
-	public Question_res question(Question_req req, TokenRds token) throws Exception {
+	public Question_res question(Question_req req, TokenMappingRds token) throws Exception {
 
 		Timestamp sysdate = commonSrv.querySysdate();
 		long qstId = commonSrvm.querySeqId(Constant.SEQUENCE.S_QUESTION);
@@ -41,10 +41,10 @@ public class QuestionAction extends BaseAction {
 		return res;
 	}
 
-	public void questionValidate(Question_req req, TokenRds token) {
+	public void questionValidate(Question_req req, TokenMappingRds token) {
 	}
 
-	public QueryPopularRequest_res queryPopularRequest(QueryPopularRequest_req req, TokenRds token) {
+	public QueryPopularRequest_res queryPopularRequest(QueryPopularRequest_req req, TokenMappingRds token) {
 		long count = req.getBody().getCount();
 		QueryPopularRequest_res res = new QueryPopularRequest_res();
 		ArrayList<Popular_request> prl = new ArrayList<Popular_request>();
@@ -58,7 +58,7 @@ public class QuestionAction extends BaseAction {
 		return res;
 	}
 	
-	public void queryPopularRequestValidate(QueryPopularRequest_req req, TokenRds token) {
+	public void queryPopularRequestValidate(QueryPopularRequest_req req, TokenMappingRds token) {
 		
  	}
 }

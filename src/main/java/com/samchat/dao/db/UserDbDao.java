@@ -98,6 +98,12 @@ public class UserDbDao extends BaseDbDao implements IUserDbDao {
 	public TUserUsers queryUser(long userId) {
 		return userUsersMapper.selectByPrimaryKey(userId);
 	}
+	
+	public List<TUserUsers> queryUserByToken(String token) {
+		TUserUsersExample uue = new TUserUsersExample();
+		uue.createCriteria().andCur_tokenEqualTo(token).andStateEqualTo(Constant.STATE_IN_USE);
+		return userUsersMapper.selectByExample(uue);
+ 	}
 
 	public List<TUserUsers> queryUsers() {
 		TUserUsersExample uue = new TUserUsersExample();

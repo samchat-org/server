@@ -9,12 +9,15 @@ import org.springframework.stereotype.Repository;
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigsExample;
 import com.samchat.common.beans.auto.db.mapper.TSysConfigsMapper;
+import com.samchat.common.beans.manual.common.SysdateObjBean;
 import com.samchat.common.beans.manual.db.QrySequenceVO;
 import com.samchat.common.enums.Constant;
 import com.samchat.dao.db.interfaces.ICommonDbDao;
 
 @Repository
 public class CommonDbDao extends BaseDbDao implements ICommonDbDao {
+	
+	private static final long baseMills= 1476777812155L;
 	
 	@Autowired
 	private TSysConfigsMapper  sysConfigsMapper;
@@ -53,5 +56,13 @@ public class CommonDbDao extends BaseDbDao implements ICommonDbDao {
 
 	public Timestamp querySysdate() {
 		return (Timestamp) executeSqlOne("query_sysdate");
+	}
+	
+	public SysdateObjBean querySysdateObj() throws Exception{
+		String[] dateMicro = ((String)executeSqlOne("query_sysdateMicro")).split(",");
+		SysdateObjBean sb = new SysdateObjBean();
+		sb.setNow(new Timestamp(Constant.SDF_YYYYMMDDHHmmss.parse(dateMicro[0]).getTime()));
+		sb.setNowVersion((sb.getNow().getTime() - baseMills) * 1000 + Long.parseLong(dateMicro[1]));
+		return sb;
 	}
 }

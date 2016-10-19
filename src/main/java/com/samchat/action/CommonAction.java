@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.samchat.common.beans.auto.json.appserver.common.SendInviteMsg_req;
 import com.samchat.common.beans.auto.json.appserver.common.SendInviteMsg_res;
-import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
@@ -23,9 +23,9 @@ public class CommonAction extends BaseAction {
 	@Autowired
 	private IUsersSrvs usersSrv;
 
-	public SendInviteMsg_res sendInviteMsg(SendInviteMsg_req req, TokenRds token) throws Exception {
+	public SendInviteMsg_res sendInviteMsg(SendInviteMsg_req req, TokenMappingRds token) throws Exception {
 
-		UserInfoRds userInfo = usersSrv.hgetUserInfoJsonObjRedis(token.getUserId(), UserInfoFieldRdsEnum.BASE_INFO.val());
+		UserInfoRds userInfo = usersSrv.hgetUserInfoJsonObj(token.getUserId());
 		String countrycode = userInfo.getCountry_code();
 		String cellphone = userInfo.getPhone_no();
 
@@ -40,6 +40,6 @@ public class CommonAction extends BaseAction {
 		return new SendInviteMsg_res();
 	}
 
-	public void sendInviteMsgValidate(SendInviteMsg_req req, TokenRds token) {
+	public void sendInviteMsgValidate(SendInviteMsg_req req, TokenMappingRds token) {
  	}
 }

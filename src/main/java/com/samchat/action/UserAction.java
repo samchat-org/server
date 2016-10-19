@@ -39,8 +39,9 @@ import com.samchat.common.beans.auto.json.appserver.user.Register_req;
 import com.samchat.common.beans.auto.json.appserver.user.Register_res;
 import com.samchat.common.beans.auto.json.appserver.user.SignupCodeVerify_req;
 import com.samchat.common.beans.auto.json.appserver.user.SignupCodeVerify_res;
+import com.samchat.common.beans.manual.common.SysdateObjBean;
 import com.samchat.common.beans.manual.db.QryUserInfoVO;
-import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
@@ -48,6 +49,7 @@ import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.exceptions.AppException;
+import com.samchat.common.utils.CacheUtil;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.Md5Util;
 import com.samchat.common.utils.TwilioUtil;
@@ -68,43 +70,6 @@ public class UserAction extends BaseAction {
 	@Autowired
 	private ICommonSrvm commonSrvm;
 
-	/**
-	 * 注册验证码验证
-	 * 
-	 * @param req
-	 * @return
-	 */
-	public SignupCodeVerify_res signupCodeVerify(SignupCodeVerify_req req) {
-		return new SignupCodeVerify_res();
-	}
-
-	/**
-	 * 注册验证码验证 信息校验
-	 * 
-	 * @param req
-	 * @return
-	 */
-	public void signupCodeVerifyValidate(SignupCodeVerify_req req) {
-		SignupCodeVerify_req.Body body = req.getBody();
-
-		String countryCode = body.getCountrycode();
-		String cellphone = body.getCellphone();
-
-		if (!CommonUtil.phoneNoFormatValidate(cellphone)) {
-			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
-		}
-		TUserUsers userUsers = usersSrv.queryUserInfoByPhone(cellphone, countryCode);
-		if (userUsers != null) {
-			throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
-		}
-		String registerCode = usersSrv.getRegisterCode(countryCode, cellphone);
-		if (registerCode == null) {
-			throw new AppException(ResCodeAppEnum.REGISTER_CODE_EXPIRED.getCode());
-		}
-		if (!registerCode.equals(body.getVerifycode())) {
-			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE.getCode());
-		}
-	}
 
 	/**
 	 * 注册验证码申请
@@ -158,6 +123,44 @@ public class UserAction extends BaseAction {
 			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE_FREQUENT.getCode());
 		}
 	}
+	
+	/**
+	 * 注册验证码验证
+	 * 
+	 * @param req
+	 * @return
+	 */
+	public SignupCodeVerify_res signupCodeVerify(SignupCodeVerify_req req) {
+		return new SignupCodeVerify_res();
+	}
+
+	/**
+	 * 注册验证码验证 信息校验
+	 * 
+	 * @param req
+	 * @return
+	 */
+	public void signupCodeVerifyValidate(SignupCodeVerify_req req) {
+		SignupCodeVerify_req.Body body = req.getBody();
+
+		String countryCode = body.getCountrycode();
+		String cellphone = body.getCellphone();
+
+		if (!CommonUtil.phoneNoFormatValidate(cellphone)) {
+			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
+		}
+		TUserUsers userUsers = usersSrv.queryUserInfoByPhone(cellphone, countryCode);
+		if (userUsers != null) {
+			throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
+		}
+		String registerCode = usersSrv.getRegisterCode(countryCode, cellphone);
+		if (registerCode == null) {
+			throw new AppException(ResCodeAppEnum.REGISTER_CODE_EXPIRED.getCode());
+		}
+		if (!registerCode.equals(body.getVerifycode())) {
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE.getCode());
+		}
+	}
 
 	/**
 	 * 注册请求
@@ -167,7 +170,7 @@ public class UserAction extends BaseAction {
 	 * @throws Exception
 	 */
 	public Register_res register(Register_req req) throws Exception {
-		Timestamp sysdate = commonSrv.querySysdate();
+		SysdateObjBean sysdate = commonSrv.querySysdateObj();
 		Register_res res = usersSrv.saveRegisterUserInfo(req, sysdate);
 
 		List<TSysConfigs> scslist = commonSrv.queryAllSysconfigsForApp();
@@ -213,65 +216,9 @@ public class UserAction extends BaseAction {
 	 * @return
 	 */
 	public Login_res login(Login_req req, TUserUsers user) throws Exception {
-
-		Login_req.Body body = req.getBody();
-		String deviceId = body.getDeviceid();
-		long userId = user.getUser_id();
-
-		usersSrv.getUserInfoAndSetRedis(userId);
-		String tokenCur = usersSrv.hgetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.TOKEN.val());
-		log.info("login old token:" + tokenCur);
-		if (tokenCur != null) {
-			usersSrv.deleteToken(tokenCur);
-		}
-
-		Login_res res = new Login_res();
-
-		Timestamp cur = commonSrv.querySysdate();
-		String[] token = usersSrv.getAddedToken(userId, cur.getTime(), deviceId);
-
-		String retToken = token[0];
-		String realToken = token[1];
+		SysdateObjBean sysdate = commonSrv.querySysdateObj();
+		Login_res res = usersSrv.saveLoginUserInfo(req, user, sysdate);
 		
-		TokenRds t = usersSrv.getTokenObj(realToken);
-		log.info("TokenRds user_id:" + t.getUserId() );
-
-		usersSrv.hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.TOKEN.val(), realToken);
-		usersSrv.niTokenUpdate(userId, realToken, cur);
-		res.setToken(retToken);
-
-		Login_res.User userRes = new Login_res.User();
-
-		userRes.setId(userId);
-		userRes.setUsername(user.getUser_name());
-		userRes.setType(user.getUser_type());
-		userRes.setCountrycode(user.getCountry_code());
-		userRes.setCellphone(user.getPhone_no());
-		userRes.setAddress(user.getAddress());
-		userRes.setEmail(user.getEmail());
-		userRes.setLastupdate(user.getState_date().getTime());
-
-		Login_res.Avatar avatar = new Login_res.Avatar();
-		avatar.setOrigin(user.getAvatar_origin());
-		avatar.setThumb(user.getAvatar_thumb());
-		userRes.setAvatar(avatar);
-
-		Sam_pros_info info = new Login_res.Sam_pros_info();
-		userRes.setSam_pros_info(info);
-		if (user.getUser_type() == Constant.USER_TYPE_SERVICES) {
-			TUserProUsers proUser = usersSrv.queryProUser(userId);
-			if (proUser != null) {
-				info.setCompany_name(proUser.getCompany_name());
-				info.setService_category(proUser.getService_category());
-				info.setService_description(proUser.getService_description());
-				info.setCountrycode(proUser.getCountry_code());
-				info.setPhone(proUser.getPhone_no());
-				info.setEmail(proUser.getEmail());
-				info.setAddress(proUser.getAddress());
-			}
-		}
-		res.setUser(userRes);
-
 		List<TSysConfigs> scslist = commonSrv.queryAllSysconfigsForApp();
 		ArrayList<Login_res.Sys_params> paramslist = new ArrayList<Login_res.Sys_params>();
 
@@ -319,7 +266,7 @@ public class UserAction extends BaseAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public Logout_res logout(Logout_req req, TokenRds token) throws Exception {
+	public Logout_res logout(Logout_req req, TokenMappingRds token) throws Exception {
 
 		usersSrv.deleteToken(req.getHeader().getToken());
 
@@ -334,7 +281,7 @@ public class UserAction extends BaseAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public void logoutValidate(Logout_req req, TokenRds token) throws Exception {
+	public void logoutValidate(Logout_req req, TokenMappingRds token) throws Exception {
 	}
 
 	/**
@@ -343,9 +290,9 @@ public class UserAction extends BaseAction {
 	 * @param req
 	 * @return
 	 */
-	public CreateSamPros_res createSamPros(CreateSamPros_req req, TokenRds token, TUserUsers user) throws Exception {
+	public CreateSamPros_res createSamPros(CreateSamPros_req req, TokenMappingRds token, TUserUsers user) throws Exception {
 
-		Timestamp sysdate = commonSrv.querySysdate();
+		SysdateObjBean sysdate = commonSrv.querySysdateObj();
 		usersSrv.saveProsUserInfo(req, user, sysdate);
 
 		CreateSamPros_res res = new CreateSamPros_res();
@@ -362,7 +309,7 @@ public class UserAction extends BaseAction {
 		avatar.setOrigin(user.getAvatar_origin());
 		avatar.setThumb(user.getAvatar_thumb());
 		userRet.setAvatar(avatar);
-		userRet.setLastupdate(sysdate.getTime());
+		userRet.setLastupdate(sysdate.getNow().getTime());
 		userRet.setAvatar(avatar);
 
 		res.setUser(userRet);
@@ -370,7 +317,7 @@ public class UserAction extends BaseAction {
 		return res;
 	}
 
-	public TUserUsers createSamProsValidate(CreateSamPros_req req, TokenRds token) {
+	public TUserUsers createSamProsValidate(CreateSamPros_req req, TokenMappingRds token) {
 
 		TUserUsers user = usersSrv.queryUser(token.getUserId());
 		if (Constant.USER_TYPE_SERVICES == user.getUser_type()) {
@@ -494,14 +441,14 @@ public class UserAction extends BaseAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public PwdUpdate_res pwdUpdate(PwdUpdate_req req, TokenRds token, TUserUsers user) throws Exception {
+	public PwdUpdate_res pwdUpdate(PwdUpdate_req req, TokenMappingRds token, TUserUsers user) throws Exception {
 		String newPwd = Md5Util.getSign4String(req.getBody().getNew_pwd(), "");
 		Timestamp sysate = commonSrv.querySysdate();
 		usersSrv.updatePassword(user.getUser_id(), newPwd, sysate);
 		return new PwdUpdate_res();
 	}
 
-	public TUserUsers pwdUpdateValidate(PwdUpdate_req req, TokenRds token) {
+	public TUserUsers pwdUpdateValidate(PwdUpdate_req req, TokenMappingRds token) {
 
 		TUserUsers user = usersSrv.queryUser(token.getUserId());
 		if (req.getBody().getOld_pwd().equals(user.getUser_pwd())) {
@@ -510,7 +457,7 @@ public class UserAction extends BaseAction {
 		return user;
 	}
 
-	public QueryFuzzy_res queryFuzzy(QueryFuzzy_req req, TokenRds token) {
+	public QueryFuzzy_res queryFuzzy(QueryFuzzy_req req, TokenMappingRds token) {
 		QueryFuzzy_req.Param p = req.getBody().getParam();
 		String key = p.getSearch_key();
 		List<QryUserInfoVO> userlist = usersSrv.queryUsersFuzzy(key);
@@ -556,10 +503,10 @@ public class UserAction extends BaseAction {
 		return res;
 	}
 
-	public void queryFuzzyValidate(QueryFuzzy_req req, TokenRds token) {
+	public void queryFuzzyValidate(QueryFuzzy_req req, TokenMappingRds token) {
 	}
 
-	public QueryAccurate_res queryAccurate(QueryAccurate_req req, TokenRds token) throws Exception {
+	public QueryAccurate_res queryAccurate(QueryAccurate_req req, TokenMappingRds token) throws Exception {
 
 		QueryAccurate_req.Param p = req.getBody().getParam();
 		String cellphone = null;
@@ -572,7 +519,7 @@ public class UserAction extends BaseAction {
 
 		ArrayList<QueryAccurate_res.Users> users = new ArrayList<QueryAccurate_res.Users>();
 		if (type == 1) {
-			UserInfoRds uur = usersSrv.getUserInfoAndSetRedis(new Long(id));
+			UserInfoRds uur = usersSrv.hgetUserInfoJsonObj(Long.parseLong(id));
 			if (uur != null) {
 				users = new ArrayList<QueryAccurate_res.Users>();
 				QueryAccurate_res.Users user = new QueryAccurate_res.Users();
@@ -593,7 +540,7 @@ public class UserAction extends BaseAction {
 				QueryAccurate_res.Sam_pros_info pros = new QueryAccurate_res.Sam_pros_info();
 				user.setSam_pros_info(pros);
 				
-				UserInfoProRds uupr = uur.getUserInfoProRds();
+				UserInfoProRds uupr = usersSrv.hgetUserInfoProsJsonObj(Long.parseLong(id));
 				if (uupr != null) {
 					pros.setCompany_name(uupr.getCompany_name());
 					pros.setService_category(uupr.getService_category());
@@ -645,11 +592,11 @@ public class UserAction extends BaseAction {
 		return res;
 	}
 
-	public void queryAccurateValidate(QueryAccurate_req req, TokenRds token) {
+	public void queryAccurateValidate(QueryAccurate_req req, TokenMappingRds token) {
 
 	}
 
-	public QueryGroup_res queryGroup(QueryGroup_req req, TokenRds token) {
+	public QueryGroup_res queryGroup(QueryGroup_req req, TokenMappingRds token) {
 		QueryGroup_req.Param param = req.getBody().getParam();
 		ArrayList<Long> userIds = param.getUnique_id();
 		List<QryUserInfoVO> userlist = usersSrv.queryUsersGroup(userIds);
@@ -694,7 +641,7 @@ public class UserAction extends BaseAction {
 		return res;
 	}
 
-	public void queryGroupValidate(QueryGroup_req req, TokenRds token) {
+	public void queryGroupValidate(QueryGroup_req req, TokenMappingRds token) {
 	}
 
 	public QueryWithoutToken_res queryWithoutToken(QueryWithoutToken_req req) {

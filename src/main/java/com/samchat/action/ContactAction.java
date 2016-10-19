@@ -13,7 +13,7 @@ import com.samchat.common.beans.auto.json.appserver.contact.ContactListQuery_res
 import com.samchat.common.beans.auto.json.appserver.contact.Contact_req;
 import com.samchat.common.beans.auto.json.appserver.contact.Contact_res;
 import com.samchat.common.beans.manual.db.QryContactVO;
-import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.ResCodeAppEnum;
@@ -40,19 +40,18 @@ public class ContactAction extends BaseAction {
 	@Autowired
 	private ICommonSrvs commonSrvs;
 
-	public Contact_res contact(Contact_req req, TokenRds token) throws Exception {
+	public Contact_res contact(Contact_req req, TokenMappingRds token) throws Exception {
 		long senderId = token.getUserId();
-		UserInfoRds userInfo = usersSrv.hgetUserInfoJsonObjRedis(senderId,
-				UserInfoFieldRdsEnum.BASE_INFO.val());
+		TUserUsers senderInfo = usersSrv.queryUser(senderId);
 
 		Contact_req.Body body = req.getBody();
 		long userId = body.getId();
 		long opt = body.getOpt();
 		long type = body.getType();
 		Timestamp sysdate = commonSrvs.querySysdate();
+		String sysdateStr = sysdate.getTime() + "";
 		TUserUsers user = usersSrv.queryUser(userId);
-		String fieldCode = "";
-		if (user == null) {
+ 		if (user == null) {
 			throw new AppException(ResCodeAppEnum.USER_NOT_EXIST.getCode(), "user not exists:" + userId);
 		}
 		if (opt == 0) {
@@ -62,33 +61,32 @@ public class ContactAction extends BaseAction {
 				}
 				log.info("user_id:" + senderId + "--user_id_pro:" + userId);
 				contactSrv.addContactUser(senderId, userId, sysdate);
-				fieldCode = UserInfoFieldRdsEnum.SERVICER_LIST_DATE.val();
+ 				contactSrv.hsetUserInfoServicerListDate(userId, sysdateStr);
 			} else if (type == 1) {
-				if (userInfo.getUser_type() == Constant.USER_TYPE_CUSTOMER) {
+				if (senderInfo.getUser_type() == Constant.USER_TYPE_CUSTOMER) {
 					throw new AppException(ResCodeAppEnum.CUSTORMER_ADD_SERVIER_CONTACT_LIST.getCode());
 				}
 				contactSrv.addContactProUser(senderId, userId, sysdate);
-				fieldCode = UserInfoFieldRdsEnum.CUSTOMER_LIST_DATE.val();
+ 				contactSrv.hsetUserInfoCustomerListDate(userId, sysdateStr);
 			}
 			
 		} else if (opt == 1) {
 			if (type == 0) {
 				contactSrv.deleteContactUser(senderId, userId);
-				fieldCode = UserInfoFieldRdsEnum.SERVICER_LIST_DATE.val();
-			} else if (type == 1) {
+				contactSrv.hsetUserInfoServicerListDate(userId, sysdateStr);
+ 			} else if (type == 1) {
 				contactSrv.deleteContactProUser(senderId, userId);
-				fieldCode = UserInfoFieldRdsEnum.CUSTOMER_LIST_DATE.val();
+				contactSrv.hsetUserInfoCustomerListDate(userId, sysdateStr);
 			}
 			
 		}
-		contactSrv.hsetUserInfoStrRedis(senderId, fieldCode, sysdate.getTime() + "");
-		return new Contact_res();
+ 		return new Contact_res();
 	}
 
-	public void contactValidate(Contact_req req, TokenRds token) {
+	public void contactValidate(Contact_req req, TokenMappingRds token) {
 	}
 
-	public ContactListQuery_res contactListQuery(ContactListQuery_req req, TokenRds token) {
+	public ContactListQuery_res contactListQuery(ContactListQuery_req req, TokenMappingRds token) {
 
 		log.info("start list");
 		long userId = token.getUserId();
@@ -127,7 +125,7 @@ public class ContactAction extends BaseAction {
 
 	}
 
-	public void contactListQueryValidate(ContactListQuery_req req, TokenRds token) {
+	public void contactListQueryValidate(ContactListQuery_req req, TokenMappingRds token) {
 	}
 
 }

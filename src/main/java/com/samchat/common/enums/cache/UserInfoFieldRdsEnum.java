@@ -4,7 +4,8 @@ public enum UserInfoFieldRdsEnum {
 
 	CLIENT_ID("ci"), 
 	TOKEN("tk"), 
-	BASE_INFO("bi"), 
+	USER_INFO("ui"), 
+	PROS_INFO("pi"),
 	CUSTOMER_LIST_DATE("cld"), 
 	SERVICER_LIST_DATE("sld"), 
 	FOLLOW_LIST_DATE("fld");

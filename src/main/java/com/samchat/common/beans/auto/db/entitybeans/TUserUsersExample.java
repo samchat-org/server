@@ -1054,6 +1054,76 @@ public class TUserUsersExample {
             addCriterion("create_date not between", value1, value2, "create_date");
             return (Criteria) this;
         }
+
+        public Criteria andCur_tokenIsNull() {
+            addCriterion("cur_token is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenIsNotNull() {
+            addCriterion("cur_token is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenEqualTo(String value) {
+            addCriterion("cur_token =", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenNotEqualTo(String value) {
+            addCriterion("cur_token <>", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenGreaterThan(String value) {
+            addCriterion("cur_token >", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenGreaterThanOrEqualTo(String value) {
+            addCriterion("cur_token >=", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenLessThan(String value) {
+            addCriterion("cur_token <", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenLessThanOrEqualTo(String value) {
+            addCriterion("cur_token <=", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenLike(String value) {
+            addCriterion("cur_token like", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenNotLike(String value) {
+            addCriterion("cur_token not like", value, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenIn(List<String> values) {
+            addCriterion("cur_token in", values, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenNotIn(List<String> values) {
+            addCriterion("cur_token not in", values, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenBetween(String value1, String value2) {
+            addCriterion("cur_token between", value1, value2, "cur_token");
+            return (Criteria) this;
+        }
+
+        public Criteria andCur_tokenNotBetween(String value1, String value2) {
+            addCriterion("cur_token not between", value1, value2, "cur_token");
+            return (Criteria) this;
+        }
     }
 
     /**

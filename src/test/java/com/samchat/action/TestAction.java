@@ -6,11 +6,11 @@ import com.samchat.common.beans.auto.json.appserver.profile.GetPlacesInfoRequest
 import com.samchat.common.beans.auto.json.appserver.profile.GetPlacesInfoRequest_res;
 import com.samchat.common.beans.auto.json.appserver.profile.GoogleplaceAutocomplete_res;
 import com.samchat.common.beans.auto.json.appserver.profile.GoogleplaceAutocomplete_res.Predictions;
-import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.utils.GooglePlaceUtil;
 
 public class TestAction  extends BaseAction{
-	public GetPlacesInfoRequest_res getPlacesInfoRequest(GetPlacesInfoRequest_req req, TokenRds token) throws Exception {
+	public GetPlacesInfoRequest_res getPlacesInfoRequest(GetPlacesInfoRequest_req req, TokenMappingRds token) throws Exception {
 
 		String key = req.getBody().getKey();
 		GoogleplaceAutocomplete_res gac = GooglePlaceUtil.autocomplete(key);
@@ -30,7 +30,7 @@ public class TestAction  extends BaseAction{
  		return res;
 	}
 
-	public void getPlacesInfoRequestValidate(GetPlacesInfoRequest_req req, TokenRds token) {
+	public void getPlacesInfoRequestValidate(GetPlacesInfoRequest_req req, TokenMappingRds token) {
 
 	}
 }

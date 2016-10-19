@@ -10,7 +10,7 @@ import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementContent;
 import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementSendLog;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementDelete_req;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementWrite_req;
-import com.samchat.common.beans.manual.json.redis.TokenRds;
+import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
@@ -48,7 +48,7 @@ public class AdvertisementSrvs extends BaseSrvs implements IAdvertisementSrvs {
 		}
 	}
 
-	public AdvertisementSqs advertisementSend(AdvertisementWrite_req req, TokenRds token, long adsId) throws Exception {
+	public AdvertisementSqs advertisementSend(AdvertisementWrite_req req, TokenMappingRds token, long adsId) throws Exception {
 
 		AdvertisementSqs ads = new AdvertisementSqs();
 		AdvertisementWrite_req.Body body = req.getBody();

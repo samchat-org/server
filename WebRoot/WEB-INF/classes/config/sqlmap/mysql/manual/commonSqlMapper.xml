@@ -4,7 +4,12 @@
 	<select id="query_sysdate" parameterType="map" resultType="java.sql.Timestamp">
 		select now() from dual
 	</select>
-
+	<select id="query_sysdateMicro" parameterType="map" resultType="java.lang.String">
+		SELECT
+	DATE_FORMAT(NOW(6), '%Y-%m-%d %T,%f')
+FROM
+	DUAL
+	</select>
 	<insert id="query_seqId" parameterType="com.samchat.common.beans.manual.db.QrySequenceVO">
 		replace into ${seq_name} (stub) values('a')
 		<selectKey keyProperty="seq_id" order="AFTER" resultType="java.lang.Long">
