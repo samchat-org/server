@@ -43,4 +43,13 @@ AND cu.user_id = uu.user_id
 AND cu.user_id_pro = #{user_id_pro}
 
 	</select>
+<select id="queryContactListStateDate" parameterType="map"
+		resultType="java.sql.Timestamp">
+select max(state_date) from t_contact_user where user_id = #{user_id} and state = 1		
+</select>
+
+<select id="queryContactProsListStateDate" parameterType="map"
+		resultType="java.sql.Timestamp">
+select max(state_date) from t_contact_pro_user where user_id_pro = #{user_id} and state = 1		
+</select>
 </mapper>

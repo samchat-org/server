@@ -104,42 +104,33 @@ public abstract class BaseAction extends ToolAction {
 				throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode());
 			}
 			action = StrUtils.firstToUpperCase(action, "-");
+			
+			try {
+				List<Object> objlist = new ArrayList<Object>();
+				objlist.add(dataObj);
 
-			int dev = 0;//CommonUtil.getSysConfigInt("dev_" + action); // 1 开发模式
-			if (dev == Constant.DEV_MODE) {
-				String tplDataRes = CommonUtil.getSysConfigStr("json_dev_position") + "/" + parts[2] + "/" + parts[3]
-						+ "_res.json";
-				retJson = FileUtils.readFileToString(new File(tplDataRes), Constant.CHARSET);
-
-			} else {
+				TokenMappingRds tokenrds = identifyToken(head);
+				if (tokenrds != null) {
+					objlist.add(tokenrds);
+					log.info("tokenrds user_id:" + tokenrds.getUserId());
+				}
 				
-				try {
-					List<Object> objlist = new ArrayList<Object>();
-					objlist.add(dataObj);
-
-					TokenMappingRds tokenrds = identifyToken(head);
-					if (tokenrds != null) {
-						objlist.add(tokenrds);
-						log.info("tokenrds user_id:" + tokenrds.getUserId());
-					}
-					
-					Object vaildRetObj = CommonUtil.methodInvoke(this, action + "Validate", objlist);
-					if (vaildRetObj != null) {
-						objlist.add(vaildRetObj);
-					}
-					retObj = CommonUtil.methodInvoke(this, action, objlist);
-					CommonUtil.methodInvoke(retObj, "setRet", new Object[]{new Long(ResCodeAppEnum.SUCCESS.getCode())}, new Class[]{long.class});
-
-				} catch (NoSuchMethodException e) {
-					throw new AppException(ResCodeAppEnum.ACTION_NONSUPPORT.getCode());
+				Object vaildRetObj = CommonUtil.methodInvoke(this, action + "Validate", objlist);
+				if (vaildRetObj != null) {
+					objlist.add(vaildRetObj);
 				}
+				retObj = CommonUtil.methodInvoke(this, action, objlist);
+				CommonUtil.methodInvoke(retObj, "setRet", new Object[]{new Long(ResCodeAppEnum.SUCCESS.getCode())}, new Class[]{long.class});
 
-				try {
-					retJson = om.writeValueAsString(retObj);
-				} catch (Exception e) {
-					log.error(" error, objectMapper writeValueAsString, retObj:" + retObj);
-					throw e;
-				}
+			} catch (NoSuchMethodException e) {
+				throw new AppException(ResCodeAppEnum.ACTION_NONSUPPORT.getCode());
+			}
+
+			try {
+				retJson = om.writeValueAsString(retObj);
+			} catch (Exception e) {
+				log.error(" error, objectMapper writeValueAsString, retObj:" + retObj);
+				throw e;
 			}
 		} catch (AppException a) {
 

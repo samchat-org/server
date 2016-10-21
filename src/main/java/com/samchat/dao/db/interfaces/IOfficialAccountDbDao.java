@@ -24,4 +24,6 @@ public interface IOfficialAccountDbDao extends IBaseDbDao {
 	public List<QryPublicQueryVO> queryPublicList(String key);
 
 	public List<TOaFollow> queryFollowListByAdserId(long userId);
+	
+	public Timestamp queryFollowListStateDate(long userId);
 }

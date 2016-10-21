@@ -37,8 +37,7 @@ public class ContactDbDao extends BaseDbDao implements IContactDbDao {
 
 	public void addContactUser(long userId, long proUserId, Timestamp sysdate) {
  		
-		HintManager.getInstance().setMasterRouteOnly();
- 		TContactUserExample cue = new TContactUserExample();
+  		TContactUserExample cue = new TContactUserExample();
 		cue.createCriteria().andUser_idEqualTo(userId).andUser_id_proEqualTo(proUserId)
 				.andStateEqualTo(Constant.STATE_IN_USE);
 		List<TContactUser> lst = contactUserMapper.selectByExample(cue);
@@ -87,13 +86,25 @@ public class ContactDbDao extends BaseDbDao implements IContactDbDao {
 	public List<QryContactVO> queryContactUserList(long userId) {
 		Map<String, Long> param = new HashMap<String, Long> ();
 		param.put("user_id", new Long(userId));
-		return this.executeSqlList("queryContactUserList", param);
+		return executeSqlList("queryContactUserList", param);
 	}
 
 	public List<QryContactVO> queryContactProUserList(long proUserId) {
 		Map<String, Long> param = new HashMap<String, Long> ();
 		param.put("user_id_pro", new Long(proUserId));
-		return this.executeSqlList("queryContactProUserList", param);
+		return executeSqlList("queryContactProUserList", param);
+	}
+	
+	public Timestamp queryContactListStateDate(long userId) {
+		Map param = new HashMap();
+		param.put("user_id", new Long(userId));
+		return (Timestamp)executeSqlOne("queryContactListStateDate", param);
+	}
+	
+	public Timestamp queryContactProsListStateDate(long userId) {
+		Map param = new HashMap();
+		param.put("user_id", new Long(userId));
+		return (Timestamp)executeSqlOne("queryContactProsListStateDate", param);
 	}
 
 }

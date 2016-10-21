@@ -39,5 +39,5 @@ public interface IUserDbDao extends IBaseDbDao {
 	public List<QryUserInfoVO> queryUserAccurate(HashMap<String, Object> param);
 
 	public List<TUserUsers> queryUserWithoutToken(long type, String countrycode, String cellphone, String userName);
-
+	
 }

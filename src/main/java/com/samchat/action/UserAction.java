@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
-import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.user.CreateSamPros_req;
 import com.samchat.common.beans.auto.json.appserver.user.CreateSamPros_res;
@@ -20,7 +19,6 @@ import com.samchat.common.beans.auto.json.appserver.user.FindpwdUpdate_req;
 import com.samchat.common.beans.auto.json.appserver.user.FindpwdUpdate_res;
 import com.samchat.common.beans.auto.json.appserver.user.Login_req;
 import com.samchat.common.beans.auto.json.appserver.user.Login_res;
-import com.samchat.common.beans.auto.json.appserver.user.Login_res.Sam_pros_info;
 import com.samchat.common.beans.auto.json.appserver.user.Logout_req;
 import com.samchat.common.beans.auto.json.appserver.user.Logout_res;
 import com.samchat.common.beans.auto.json.appserver.user.PwdUpdate_req;
@@ -46,10 +44,8 @@ import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.ResCodeAppEnum;
-import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.exceptions.AppException;
-import com.samchat.common.utils.CacheUtil;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.Md5Util;
 import com.samchat.common.utils.TwilioUtil;
@@ -115,7 +111,7 @@ public class UserAction extends BaseAction {
 		if (!CommonUtil.phoneNoFormatValidate(body.getCellphone())) {
 			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
 		}
-		TUserUsers userUsers = usersSrv.queryUserInfoByPhone(cellphone, countryCode);
+		TUserUsers userUsers = usersSrv.queryUserInfoByPhone_master(cellphone, countryCode);
 		if (userUsers != null) {
 			throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
 		}
@@ -149,7 +145,7 @@ public class UserAction extends BaseAction {
 		if (!CommonUtil.phoneNoFormatValidate(cellphone)) {
 			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
 		}
-		TUserUsers userUsers = usersSrv.queryUserInfoByPhone(cellphone, countryCode);
+		TUserUsers userUsers = usersSrv.queryUserInfoByPhone_master(cellphone, countryCode);
 		if (userUsers != null) {
 			throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
 		}
@@ -171,7 +167,7 @@ public class UserAction extends BaseAction {
 	 */
 	public Register_res register(Register_req req) throws Exception {
 		SysdateObjBean sysdate = commonSrv.querySysdateObj();
-		Register_res res = usersSrv.saveRegisterUserInfo(req, sysdate);
+		Register_res res = usersSrv.saveRegisterUserInfo_master(req, sysdate);
 
 		List<TSysConfigs> scslist = commonSrv.queryAllSysconfigsForApp();
 		ArrayList<Register_res.Sys_params> paramslist = new ArrayList<Register_res.Sys_params>();
@@ -200,9 +196,9 @@ public class UserAction extends BaseAction {
 		if (!CommonUtil.phoneNoFormatValidate(body.getCellphone())) {
 			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
 		}
-		TUserUsers userUsers = usersSrv.queryUserInfoByPhone(body.getCellphone(), body.getCountrycode());
+		TUserUsers userUsers = usersSrv.queryUserInfoByPhone_master(body.getCellphone(), body.getCountrycode());
 		if (userUsers == null) {
-			userUsers = usersSrv.queryUserInfoByUserName(body.getUsername());
+			userUsers = usersSrv.queryUserInfoByUserName_master(body.getUsername());
 		}
 		if (userUsers != null) {
 			throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
@@ -217,9 +213,8 @@ public class UserAction extends BaseAction {
 	 */
 	public Login_res login(Login_req req, TUserUsers user) throws Exception {
 		SysdateObjBean sysdate = commonSrv.querySysdateObj();
-		Login_res res = usersSrv.saveLoginUserInfo(req, user, sysdate);
-		
-		List<TSysConfigs> scslist = commonSrv.queryAllSysconfigsForApp();
+		Login_res res = usersSrv.saveLoginUserInfo_master(req, user, sysdate);
+ 		List<TSysConfigs> scslist = commonSrv.queryAllSysconfigsForApp();
 		ArrayList<Login_res.Sys_params> paramslist = new ArrayList<Login_res.Sys_params>();
 
 		for (TSysConfigs scs : scslist) {
@@ -245,9 +240,9 @@ public class UserAction extends BaseAction {
 		String countryCode = body.getCountrycode();
 		String pwd = Md5Util.getSign4String(body.getPwd(), "");
 
-		TUserUsers user = usersSrv.queryUserInfoByPhone(account, countryCode);
+		TUserUsers user = usersSrv.queryUserInfoByPhone_master(account, countryCode);
 		if (user == null) {
-			user = usersSrv.queryUserInfoByUserName(account);
+			user = usersSrv.queryUserInfoByUserName_master(account);
 		}
 		if (user == null) {
 			throw new AppException(ResCodeAppEnum.USER_NOT_EXIST.getCode());
@@ -268,7 +263,8 @@ public class UserAction extends BaseAction {
 	 */
 	public Logout_res logout(Logout_req req, TokenMappingRds token) throws Exception {
 
-		usersSrv.deleteToken(req.getHeader().getToken());
+		usersSrv.deleteRedisToken(req.getHeader().getToken());
+		usersSrv.deleteRedisUserInfo(token.getUserId());
 
 		return new Logout_res();
 	}
@@ -293,7 +289,7 @@ public class UserAction extends BaseAction {
 	public CreateSamPros_res createSamPros(CreateSamPros_req req, TokenMappingRds token, TUserUsers user) throws Exception {
 
 		SysdateObjBean sysdate = commonSrv.querySysdateObj();
-		usersSrv.saveProsUserInfo(req, user, sysdate);
+		usersSrv.saveProsUserInfo_master(req, user, sysdate);
 
 		CreateSamPros_res res = new CreateSamPros_res();
 		CreateSamPros_res.User userRet = new CreateSamPros_res.User();
@@ -319,7 +315,7 @@ public class UserAction extends BaseAction {
 
 	public TUserUsers createSamProsValidate(CreateSamPros_req req, TokenMappingRds token) {
 
-		TUserUsers user = usersSrv.queryUser(token.getUserId());
+		TUserUsers user = usersSrv.queryUser_master(token.getUserId());
 		if (Constant.USER_TYPE_SERVICES == user.getUser_type()) {
 			throw new AppException(ResCodeAppEnum.USER_PROS_EXIST.getCode());
 		}

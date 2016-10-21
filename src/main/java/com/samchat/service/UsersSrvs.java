@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.user.CreateSamPros_req;
@@ -28,11 +29,14 @@ import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.cache.CacheNameCacheEnum;
+import com.samchat.common.exceptions.RedisException;
 import com.samchat.common.utils.CacheUtil;
 import com.samchat.common.utils.Md5Util;
 import com.samchat.common.utils.S3Util;
 import com.samchat.common.utils.niUtils.NiUtil;
 import com.samchat.dao.db.interfaces.ICommonDbDao;
+import com.samchat.dao.db.interfaces.IContactDbDao;
+import com.samchat.dao.db.interfaces.IOfficialAccountDbDao;
 import com.samchat.dao.db.interfaces.IUserDbDao;
 import com.samchat.dao.redis.interfaces.IUserRedisDao;
 import com.samchat.service.interfaces.IUsersSrvs;
@@ -48,29 +52,60 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 	private IUserDbDao userDbDao;
 	@Autowired
 	private ICommonDbDao commonDbDao;
+	@Autowired
+	private IOfficialAccountDbDao officialAccountDbDao;
+	@Autowired
+	private IContactDbDao contactDbDao;
 
 	public TUserUsers queryUserInfoByPhone(String phoneNo, String countryCode) {
 		return userDbDao.queryUserInfoByPhone(phoneNo, countryCode);
+	}
+	
+	public TUserUsers queryUserInfoByPhone_master(String phoneNo, String countryCode) {
+		return queryUserInfoByPhone(phoneNo, countryCode);
 	}
 
 	public TUserUsers queryUserInfoByUserName(String userName) {
 		return userDbDao.queryUserInfoByUserName(userName);
 	}
+	
+	public TUserUsers queryUserInfoByUserName_master(String userName) {
+		return queryUserInfoByUserName(userName);
+	}
 
 	public TUserUsers queryUserInfoByEmail(String email) {
 		return userDbDao.queryUserInfoByEmail(email);
 	}
+	
+	private String getStateDate(Timestamp stateDate){
+		if(stateDate == null){
+			return "0";
+		}else{
+			return stateDate.getTime() + "";
+		}
+	}
+	
+	public void cacheExtUserInfoUpdate(long userId){
+		Timestamp fsd = officialAccountDbDao.queryFollowListStateDate(userId);
+		hsetUserInfoFollowListDate(userId, getStateDate(fsd));
+		
+		Timestamp csd = contactDbDao.queryContactListStateDate(userId);
+		hsetUserInfoServicerListDate(userId, getStateDate(csd));
+		
+		Timestamp cpsd = contactDbDao.queryContactProsListStateDate(userId);
+		hsetUserInfoCustomerListDate(userId, getStateDate(cpsd));
+		
+	}
 
-	public TUserProUsers updateTokenInfo(TUserUsers user, SysdateObjBean sysdate, String realToken) throws Exception {
+	public TUserProUsers cacheBaseUserInfoUpdate(TUserUsers user, SysdateObjBean sysdate, String realToken) throws Exception {
 
 		long nowVersion = sysdate.getNowVersion();
 		long userId = user.getUser_id();
 
 		TokenValRds token = hgetUserInfoTokenJsonObj(userId);
 		if (token != null) {
-			deleteToken(token.getToken());
+			deleteRedisToken(token.getToken());
 		}
-
 		TokenMappingRds tk = new TokenMappingRds();
 		tk.setUserId(userId);
 		tk.setNowVersion(nowVersion);
@@ -93,9 +128,6 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 			PropertyUtils.copyProperties(uupr, uup);
 			hsetUserInfoProsJsonObj(userId, uupr);
 		}
-
-		niTokenUpdate(userId, realToken, sysdate.getNow());
-
 		return uup;
 
 	}
@@ -104,25 +136,38 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		try {
 			userRedisDao.setJsonObj(CacheUtil.getTokenCacheKey(realTokenKey), tk);
 		} catch (Exception e) {
+			throw new RedisException("", e);
 		}
 	}
+	
+	public void updateUser(TUserUsers userCon){
+		userDbDao.updateUser(userCon);
+	}
 
-	public Login_res saveLoginUserInfo(Login_req req, TUserUsers user, SysdateObjBean sysdate) throws Exception {
-
-		Login_req.Body body = req.getBody();
+	public Login_res saveLoginUserInfo_master(Login_req req, TUserUsers user, SysdateObjBean sysdate) throws Exception {
+		
+ 		Login_req.Body body = req.getBody();
 		String deviceId = body.getDeviceid();
 		long userId = user.getUser_id();
 
 		String retToken = CacheUtil.getToken(user.getCountry_code(), user.getPhone_no(), sysdate.getNowVersion(),
 				deviceId);
 		String realToken = CacheUtil.getRealToken(retToken, deviceId);
+		// update t_user_users.cur_token
+		TUserUsers userCon = new TUserUsers();
+		userCon.setUser_id(userId);
+		userCon.setCur_token(realToken);
+		userDbDao.updateUser(userCon);
 
-		TUserProUsers proUser = updateTokenInfo(user, sysdate, realToken);
-
+		TUserProUsers proUser = cacheBaseUserInfoUpdate(user, sysdate, realToken);
+		cacheExtUserInfoUpdate(userId);
+		niTokenUpdate(userId, realToken, sysdate.getNow());
+		
 		Login_res res = new Login_res();
 		res.setToken(retToken);
 
 		Login_res.User userRes = new Login_res.User();
+		res.setUser(userRes);
 
 		userRes.setId(userId);
 		userRes.setUsername(user.getUser_name());
@@ -151,12 +196,10 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 				info.setAddress(proUser.getAddress());
 			}
 		}
-		res.setUser(userRes);
-		return null;
+ 		return res;
 	}
 
-	public Register_res saveRegisterUserInfo(Register_req req, SysdateObjBean sysdate) throws Exception {
-
+	public Register_res saveRegisterUserInfo_master(Register_req req, SysdateObjBean sysdate) throws Exception {
 		Timestamp now = sysdate.getNow();
 		long nowVersion = sysdate.getNowVersion();
 
@@ -166,6 +209,8 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		String userName = body.getUsername();
 		String pwd = Md5Util.getSign4String(body.getPwd(), "");
 		String deviceId = body.getDeviceid();
+		String retToken = CacheUtil.getToken(countryCode, cellPhone, nowVersion, deviceId);
+		String realToken = CacheUtil.getRealToken(retToken, deviceId);
 
 		TUserUsers uu = new TUserUsers();
 		uu.setUser_type(Constant.USER_TYPE_CUSTOMER);
@@ -176,15 +221,12 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		uu.setState(Constant.STATE_IN_USE);
 		uu.setState_date(now);
 		uu.setCreate_date(now);
-
-		String retToken = CacheUtil.getToken(countryCode, cellPhone, nowVersion, deviceId);
-		String realToken = CacheUtil.getRealToken(retToken, deviceId);
 		uu.setCur_token(realToken);
 
 		userDbDao.insertUser(uu, now);
 		long userId = uu.getUser_id();
 
-		updateTokenInfo(uu, sysdate, realToken);
+		cacheBaseUserInfoUpdate(uu, sysdate, realToken);
 		niRegister(userId, userName, realToken, now);
 
 		Register_res res = new Register_res();
@@ -193,7 +235,7 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		user.setId(userId);
 		user.setLastupdate(now.getTime());
 		res.setUser(user);
-		return res;
+ 		return res;
 	}
 
 	public void putRegisterCode(String countryCode, String cellPhone, String registerCode, int expireSec) {
@@ -239,24 +281,30 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 	}
 
 	public TokenMappingRds getTokenObj(String token) throws Exception {
-		String key = CacheUtil.getTokenCacheKey(token);
-		return userRedisDao.getJsonObj(key);
+ 		try {
+			String key = CacheUtil.getTokenCacheKey(token);
+			return userRedisDao.getJsonObj(key);
+		} catch (Exception e) {
+			 List<TUserUsers>  list = userDbDao.queryUserByToken(token);
+			 if(list.size() == 1){
+				 TokenMappingRds tr = new TokenMappingRds();
+				 tr.setUserId(list.get(0).getUser_id());
+				 return tr;
+			 }
+		}
+		return null;
 	}
 
-	public void deleteToken(String token) {
+	public void deleteRedisToken(String token) {
 		try {
 			String key = CacheUtil.getTokenCacheKey(token);
 			userRedisDao.delete(key);
 		} catch (Exception e) {
+			throw new RedisException("", e);
 		}
 	}
-
-	public void updateToken(String token, TokenMappingRds tokenObj) throws Exception {
-		String key = CacheUtil.getTokenCacheKey(token);
-		userRedisDao.setJsonObj(key, tokenObj);
-	}
 	//
-	public TUserProUsers saveProsUserInfo(CreateSamPros_req req, TUserUsers users, SysdateObjBean sysdate) throws Exception {
+	public TUserProUsers saveProsUserInfo_master(CreateSamPros_req req, TUserUsers users, SysdateObjBean sysdate) throws Exception {
 		Timestamp now = sysdate.getNow();
 		long nowVersion = sysdate.getNowVersion();
 		
@@ -283,7 +331,6 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		}
 
 		proUsers.setState(Constant.STATE_IN_USE);
-
 		proUsers.setState_date(now);
 		proUsers.setCreate_date(now);
 		userDbDao.insertProUser(proUsers);
@@ -340,6 +387,10 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 	public TUserUsers queryUser(long userId) {
 		return userDbDao.queryUser(userId);
 	}
+	
+	public TUserUsers queryUser_master(long userId) {
+		return queryUser(userId);
+	}
 
 	public List<QryUserInfoVO> queryUsersFuzzy(String key) {
 		return userDbDao.queryUsersFuzzy(key);
@@ -384,5 +435,10 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		user.setUser_id(userId);
 		user.setCur_token(token);
 		userDbDao.updateUser(user);
+	}
+	
+	public void deleteRedisUserInfo(long userId){
+		String key = CacheUtil.getUserInfoIdCacheKey(userId);
+		userRedisDao.delete(key);
 	}
 }

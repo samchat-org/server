@@ -1,7 +1,9 @@
 package com.samchat.dao.db.interfaces;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.samchat.common.beans.manual.db.QryContactVO;
 
@@ -18,4 +20,8 @@ public interface IContactDbDao extends IBaseDbDao {
 	public  List<QryContactVO> queryContactUserList(long userId);
 
 	public List<QryContactVO> queryContactProUserList(long proUserId);
+	
+	public Timestamp queryContactListStateDate(long userId);
+	
+	public Timestamp queryContactProsListStateDate(long userId);
 }

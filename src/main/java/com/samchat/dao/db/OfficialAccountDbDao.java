@@ -101,4 +101,10 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 		return oaFollowMapper.selectByExample(ttx);
 
 	}
+	
+	public Timestamp queryFollowListStateDate(long userId) {
+		Map param = new HashMap();
+		param.put("user_id", new Long(userId));
+		return (Timestamp)executeSqlOne("queryFollowListStateDate", param);
+	}
 }

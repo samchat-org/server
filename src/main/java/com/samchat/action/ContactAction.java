@@ -60,7 +60,7 @@ public class ContactAction extends BaseAction {
 					throw new AppException(ResCodeAppEnum.CUSTORMER_ADD_CUSTORMER.getCode());
 				}
 				log.info("user_id:" + senderId + "--user_id_pro:" + userId);
-				contactSrv.addContactUser(senderId, userId, sysdate);
+				contactSrv.addContactUser_master(senderId, userId, sysdate);
  				contactSrv.hsetUserInfoServicerListDate(userId, sysdateStr);
 			} else if (type == 1) {
 				if (senderInfo.getUser_type() == Constant.USER_TYPE_CUSTOMER) {

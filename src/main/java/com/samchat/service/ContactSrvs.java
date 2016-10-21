@@ -16,7 +16,7 @@ public class ContactSrvs  extends BaseSrvs implements IContactSrvs {
 	@Autowired
 	private IContactDbDao contactDbDao;
 
-	public void addContactUser(long userId, long proUserId, Timestamp sysdate) {
+	public void addContactUser_master(long userId, long proUserId, Timestamp sysdate) {
 		contactDbDao.addContactUser(userId, proUserId, sysdate);
 	}
 

@@ -95,7 +95,7 @@ public class ProfileAction extends BaseAction {
 			cellphoneOpt = cellphone;
 		}
 		if (countrycodeOpt != countrycode || cellphoneOpt != cellphone) {
-			TUserUsers u = usersSrv.queryUserInfoByPhone(cellphoneOpt, countrycodeOpt);
+			TUserUsers u = usersSrv.queryUserInfoByPhone_master(cellphoneOpt, countrycodeOpt);
 			if (u != null) {
 				throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode(), "countrycode:" + countrycodeOpt
 						+ "--cellphone:" + cellphoneOpt);

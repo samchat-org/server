@@ -15,6 +15,7 @@ import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
 import com.samchat.common.exceptions.AppException;
+import com.samchat.common.exceptions.RedisException;
 import com.samchat.common.utils.CacheUtil;
 import com.samchat.dao.db.interfaces.ICommonDbDao;
 import com.samchat.dao.db.interfaces.IUserDbDao;
@@ -32,7 +33,7 @@ public class BaseSrvs implements IBaseSrvs {
 	protected ICommonDbDao commonDbDao;
 
 	@Autowired
-	private IUserDbDao userDbDao;
+	protected IUserDbDao userDbDao;
 	
 	public void hsetUserInfoJsonObjRedis(long userId, String filed, Object uif) throws Exception {
 		String key = CacheUtil.getUserInfoIdCacheKey(userId);
@@ -48,7 +49,7 @@ public class BaseSrvs implements IBaseSrvs {
 		try {
 			hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.CLIENT_ID.val(), clientId);
 		} catch (Exception e) {
-			
+			throw new RedisException("", e);
 		}
 	}
 	
@@ -56,7 +57,7 @@ public class BaseSrvs implements IBaseSrvs {
 		try {
 			hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.CUSTOMER_LIST_DATE.val(), date);
 		} catch (Exception e) {
-			
+			throw new RedisException("", e);
 		}
 	}
 	
@@ -64,7 +65,7 @@ public class BaseSrvs implements IBaseSrvs {
 		try {
 			hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.SERVICER_LIST_DATE.val(), date);
 		} catch (Exception e) {
-			
+			throw new RedisException("", e);
 		}
 	}
 	
@@ -72,7 +73,7 @@ public class BaseSrvs implements IBaseSrvs {
 		try {
 			hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.FOLLOW_LIST_DATE.val(), date);
 		} catch (Exception e) {
-			
+			throw new RedisException("", e);
 		}
 	}
 
@@ -80,6 +81,7 @@ public class BaseSrvs implements IBaseSrvs {
 		try {
 			hsetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.USER_INFO.val(), uur);
 		} catch (Exception e) {
+			throw new RedisException("", e);
 		}
 	}
 	
@@ -87,6 +89,7 @@ public class BaseSrvs implements IBaseSrvs {
 		try {
 			hsetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.PROS_INFO.val(), uur);
 		} catch (Exception e) {
+			throw new RedisException("", e);
 		}
 	}
 
@@ -94,6 +97,7 @@ public class BaseSrvs implements IBaseSrvs {
 		try {
 			hsetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.TOKEN.val(), tvr);
 		} catch (Exception e) {
+			throw new RedisException("", e);
 		}
 	}
 
@@ -113,6 +117,7 @@ public class BaseSrvs implements IBaseSrvs {
 		try {
 			t = hgetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.CLIENT_ID.val());
 		} catch (Exception e) {
+			throw new RedisException("", e);
 		}
 		return t;
 	}
@@ -122,6 +127,7 @@ public class BaseSrvs implements IBaseSrvs {
 		try {
 			t = hgetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.CUSTOMER_LIST_DATE.val());
 		} catch (Exception e) {
+			throw new RedisException("", e);
 		}
 		return t;
 	}
@@ -131,6 +137,7 @@ public class BaseSrvs implements IBaseSrvs {
 		try {
 			t = hgetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.SERVICER_LIST_DATE.val());
 		} catch (Exception e) {
+			throw new RedisException("", e);
 		}
 		return t;
 	}
@@ -140,6 +147,7 @@ public class BaseSrvs implements IBaseSrvs {
 		try {
 			t = hgetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.FOLLOW_LIST_DATE.val());
 		} catch (Exception e) {
+			throw new RedisException("", e);
 		}
 		return t;
 	}
@@ -150,6 +158,7 @@ public class BaseSrvs implements IBaseSrvs {
 		try {
 			t = hgetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.USER_INFO.val());
 		} catch (Exception e) {
+			throw new RedisException("", e);
 		}
 		return t;
 	}
@@ -160,6 +169,7 @@ public class BaseSrvs implements IBaseSrvs {
 		try {
 			t = hgetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.PROS_INFO.val());
 		} catch (Exception e) {
+			throw new RedisException("", e);
 		}
 		return t;
 	}
@@ -170,6 +180,7 @@ public class BaseSrvs implements IBaseSrvs {
 		try {
 			t = hgetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.TOKEN.val());
 		} catch (Exception e) {
+			throw new RedisException("", e);
 		}
 		return t;
 	}

@@ -29,7 +29,7 @@ public class NiUtil {
 	private static final long CODE_SUCCESS = 200;
 
 	public static void createAction(Create_req register, Timestamp cur) throws Exception {
-		log.info("register param : " + register);
+		log.error("register param : " + register);
 
 		String body = NiPostClient.post(CREATE_ACTION, new BeanMap(register), cur);
 		ObjectMapper om = new ObjectMapper();

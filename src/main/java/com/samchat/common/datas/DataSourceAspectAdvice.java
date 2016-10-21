@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.Before;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
+import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.samchat.common.enums.Constant;
 
 @Component
@@ -13,14 +14,21 @@ import com.samchat.common.enums.Constant;
 public class DataSourceAspectAdvice implements Ordered {
 
 	private static Logger log = Logger.getLogger(DataSourceAspectAdvice.class);
-
+	
 	@Before("execution(* com.samchat.service.*Srvs.*(..))")
 	public void switchShardingSource() throws Throwable {
+		log.info("switchShardingSource");
 		DbContextHolder.setDbType(Constant.DATA_SOURCE.DS_SHARDING);
 	}
 
+	@Before("execution(* com.samchat.service.*Srvs.*_master(..))")
+	public void switchShardingSourceMaster() throws Throwable {
+		log.info("switchShardingSourceMaster");
+ 		HintManager.getInstance().setMasterRouteOnly();
+	}
+
 	@Before("execution(* com.samchat.service.*Srvm.*(..))")
-	public void switchMainSource() throws Throwable {
+	public void switchMasterSource() throws Throwable {
 		DbContextHolder.setDbType(Constant.DATA_SOURCE.DS_MASTER_0);
 	}
 
