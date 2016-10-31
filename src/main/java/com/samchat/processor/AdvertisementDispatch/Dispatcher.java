@@ -113,37 +113,40 @@ public class Dispatcher extends Thread {
 
 	public void resendAdvertisement(AdvertisementSqs req) throws Exception {
 		long userId = req.getUser_id();
- 		int validCycle = CommonUtil.getSysConfigInt("aws_sqs_advertisement_valid_cycle");
+		int validCycle = CommonUtil.getSysConfigInt("aws_sqs_advertisement_valid_cycle");
 
 		Timestamp sysdate = commonSrv.querySysdate();
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTime(sysdate);
-		
+
 		for (int i = 0; i < validCycle; i++) {
 			int shardingFlag = Integer.parseInt(Constant.SDF_YYYYMM.format(gc.getTime()));
 			List<TAdvertisementSendLog> sendLogs = advertisementSrv.queryAdvertisementSendLog(userId, shardingFlag);
 
 			for (TAdvertisementSendLog sendlog : sendLogs) {
+
 				long adsId = sendlog.getAds_id();
 				long logId = sendlog.getLog_id();
-				TAdvertisementContent content = advertisementSrv.queryAdvertisementCotentById(adsId, shardingFlag);
-				TOaFollow follow = officialAccountSrv.queryUserFollow(userId, content.getUser_id_pro());
-				
-				if(follow == null || content == null || follow.getBlock_tag() == FollowDbEnum.Block.BLOCK.val()){
-					advertisementSrv.updateAdvertisementSendLog(logId, null, AdsDbEnum.SendLogState.CANCEL.val(), null, "cancel", shardingFlag, 0);
-					continue;
-				}
-				log.info("content:" + content.getContent());
 				String clientId = sendlog.getClient_id();
- 				int sendcount = sendlog.getSend_count();
-				
- 				String curClientId = commonSrv.hgetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.CLIENT_ID.val());
-		
-				log.info("old clientId:" + clientId + "--new clientId:" + curClientId + "--sysdate:" + sysdate);
+				int sendcount = sendlog.getSend_count();
+				String curClientId = commonSrv.hgetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.CLIENT_ID.val());
+
 				byte state = AdsDbEnum.SendLogState.SEND_SUCCESS.val();
 				String remark = AdsDbEnum.SendLogState.SEND_SUCCESS.name();
 				String pushRst = "";
+				
 				try {
+					TAdvertisementContent content = advertisementSrv.queryAdvertisementCotentById(adsId, shardingFlag);
+					TOaFollow follow = officialAccountSrv.queryUserFollow(userId, content.getUser_id_pro());
+
+					if (follow == null || content == null || follow.getBlock_tag() == FollowDbEnum.Block.BLOCK.val()) {
+						advertisementSrv.updateAdvertisementSendLog(logId, null, AdsDbEnum.SendLogState.CANCEL.val(),
+								null, "cancel", shardingFlag, 0);
+						continue;
+					}
+					log.info("content:" + content.getContent());
+					log.info("old clientId:" + clientId + "--new clientId:" + curClientId + "--sysdate:" + sysdate);
+
 					String dispatchReq = om.writeValueAsString(getRequest(sendlog, content));
 					pushRst = GetuiUtil.push(userId + "", dispatchReq);
 				} catch (Exception e) {
@@ -151,8 +154,8 @@ public class Dispatcher extends Thread {
 					state = AdsDbEnum.SendLogState.ERROR.val();
 					remark = AdsDbEnum.SendLogState.ERROR.name();
 				} finally {
-					advertisementSrv.updateAdvertisementSendLog(logId, new Timestamp(sysdate.getTime()),
-							state, curClientId, remark + "," + pushRst, shardingFlag, sendcount + 1);
+					advertisementSrv.updateAdvertisementSendLog(logId, new Timestamp(sysdate.getTime()), state,
+							curClientId, remark + "," + pushRst, shardingFlag, sendcount + 1);
 				}
 			}
 			gc.add(Calendar.MONTH, -1);
@@ -214,7 +217,7 @@ public class Dispatcher extends Thread {
 					log.info("messages body:" + body);
 					try {
 						AdvertisementSqs req = om.readValue(body, AdvertisementSqs.class);
- 						long sendType = req.getSendType();
+						long sendType = req.getSendType();
 						if (sendType == 2) {
 							sendAdvertisement(req);
 						} else if (sendType == 1) {

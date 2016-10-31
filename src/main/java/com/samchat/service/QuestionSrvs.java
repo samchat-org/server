@@ -111,7 +111,7 @@ public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 		if (ctl.getLast() - ctl.getFirst() < limit * 60 * 1000 && ctl.getCount() > count) {
 			ctl.setBlock(Constant.QUESTION_SEND_BLOCK);
 		}
-		userRedisDao.setJsonObj(key, ctl, 0);
+		userRedisDao.setJsonObj(key, ctl);
 	}
 	
 	public List<QryPopularRequests> queryPopularRequests(int count){

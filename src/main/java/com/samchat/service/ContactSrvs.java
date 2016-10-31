@@ -20,7 +20,7 @@ public class ContactSrvs  extends BaseSrvs implements IContactSrvs {
 		contactDbDao.addContactUser(userId, proUserId, sysdate);
 	}
 
-	public void addContactProUser(long proUserId, long userId, Timestamp sysdate) {
+	public void addContactProUser_master(long proUserId, long userId, Timestamp sysdate) {
 		contactDbDao.addContactProUser(proUserId, userId, sysdate);
 	}
 

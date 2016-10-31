@@ -1,9 +1,0 @@
-{
-    "header":{
-        "action":"query-popular-request",
-        "token":"token"
-    },
-    "body":{
-        "count":50
-    }
-}

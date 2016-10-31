@@ -8,7 +8,7 @@ import com.samchat.common.beans.manual.db.QryContactVO;
 public interface IContactSrvs extends IBaseSrvs{
 	public void addContactUser_master(long userId, long proUserId, Timestamp sysdate);
 
-	public void addContactProUser(long proUserId, long userId, Timestamp sysdate);
+	public void addContactProUser_master(long proUserId, long userId, Timestamp sysdate);
 
 	public void deleteContactUser(long userId, long proUserId);
 

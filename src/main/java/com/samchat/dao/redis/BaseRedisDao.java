@@ -112,6 +112,9 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 	}
 
 	public void setJsonObj(String key, Object valueObj, int expire) throws Exception {
+		if(expire == 0){
+			throw new Exception("expire can't be 0");
+		}
 		set(key, ThreadLocalUtil.getRedisObjectMapper().writeValueAsString(valueObj), expire);
 	}
 

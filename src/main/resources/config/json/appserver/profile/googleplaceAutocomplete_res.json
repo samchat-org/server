@@ -11,6 +11,22 @@
             ],
             "place_id":"ChIJOwg_06VPwokRYv534QaPC8g",
             "reference":"CkQzAAAADIYNaU7FUpI_gPSaVdqyCN2BeT6uXQu95O0d56HaNMgg9hF1hF8lIKn__3v2wTLaXxbJJZLifUF297noVsK5ahIQ8LJtRIrOKjBcx99dlfbXNRoUJrUvlZQ7uCcOfndCQPeGxL6dSsQ",
+            "structured_formatting":{
+                "main_text":"a",
+                "main_text_matched_substrings":[
+                    {
+                        "length":2,
+                        "offset":3
+                    }
+                ],
+                "secondary_text":"b",
+                "secondary_text_matched_substrings":[
+                    {
+                        "length":2,
+                        "offset":5
+                    }
+                ]
+            },
             "terms":[
                 {
                     "offset":0,
@@ -29,146 +45,6 @@
                 "locality",
                 "political",
                 "geocode"
-            ]
-        },
-        {
-            "description":"NewYork-Presbyterian/Queens, NY, United States",
-            "id":"cc32e83846dda37fa23949a7f395fedc34b1b7f4",
-            "matched_substrings":[
-                {
-                    "length":7,
-                    "offset":0
-                }
-            ],
-            "place_id":"ChIJJ-iLpm5gwokRjmTfwQ6e-K8",
-            "reference":"CkQ9AAAAiDwqvu064yfDfWyp9v-HvRy9G3Lknrq38KgDWo5RYssULi5OHHR-owWmf7i3UoAT1kZqBoDRlBDiQc7bf5X_gxIQpnFzsUOtTMa9j11oeqT20BoUvXkKEQokIdFLGdXQfP27dLpHfG8",
-            "terms":[
-                {
-                    "offset":0,
-                    "value":"NewYork-Presbyterian/Queens"
-                },
-                {
-                    "offset":29,
-                    "value":"NY"
-                },
-                {
-                    "offset":33,
-                    "value":"United States"
-                }
-            ],
-            "types":[
-                "establishment"
-            ]
-        },
-        {
-            "description":"NewYork-Presbyterian/Lower Manhattan Hospital, William Street, New York, NY, United States",
-            "id":"c7845b1b5c70e9220765d3e2b01854e1f2023695",
-            "matched_substrings":[
-                {
-                    "length":7,
-                    "offset":0
-                }
-            ],
-            "place_id":"ChIJpYoZlyJawokRv65psH6e2pI",
-            "reference":"CnRpAAAAkzS2DKQiVvUrxtIe62h_xd_SKa2gJRZNTUE_HFgHEpZoshea4aiqjRn6EaisbDR03nEz1srw9rEUqNAksBiHOY5Ee7_LQMpS6ifSVATs9hG9GAe6UD-THsHHN1Q6-cqgbchKKVesOLN8rkrHtYST6RIQKldbODKcgKaor6htbXqC6hoUv4nkvrKJNhuRlEbYVSnBRNRMuL4",
-            "terms":[
-                {
-                    "offset":0,
-                    "value":"NewYork-Presbyterian/Lower Manhattan Hospital"
-                },
-                {
-                    "offset":47,
-                    "value":"William Street"
-                },
-                {
-                    "offset":63,
-                    "value":"New York"
-                },
-                {
-                    "offset":73,
-                    "value":"NY"
-                },
-                {
-                    "offset":77,
-                    "value":"United States"
-                }
-            ],
-            "types":[
-                "establishment"
-            ]
-        },
-        {
-            "description":"NEWYORK-PRESBYTERIAN/ LOWER MANHATTAN HOSPITAL NEUROLOGY, William Street, New York, NY, United States",
-            "id":"e2368d630452e7a920e5f2f1f88bc566b3cbb3b3",
-            "matched_substrings":[
-                {
-                    "length":7,
-                    "offset":0
-                }
-            ],
-            "place_id":"ChIJpYoZlyJawokRIUh1PA-JZnU",
-            "reference":"CoQBcwAAAFv7mi9wqmXHy64-WsjEdM-PAI0aosd8VCeuBAS-bv1o1_DGjsg9iSTg7nP8BPIA-zoyrp4jgt_yx-4lb9VGWD7-AdYKs2TKsP2MGE573aWu3rkntce54jiy2YOiITYpISQs4trgzroqEiFHRPsi5Sg04tnms4vbLHwGs4Bny0cNEhDqUmT_FNaeyx3rKGcEQW8TGhR3C8MApfpJD-bH7BCaaPa9kTijrw",
-            "terms":[
-                {
-                    "offset":0,
-                    "value":"NEWYORK-PRESBYTERIAN/ LOWER MANHATTAN HOSPITAL NEUROLOGY"
-                },
-                {
-                    "offset":58,
-                    "value":"William Street"
-                },
-                {
-                    "offset":74,
-                    "value":"New York"
-                },
-                {
-                    "offset":84,
-                    "value":"NY"
-                },
-                {
-                    "offset":88,
-                    "value":"United States"
-                }
-            ],
-            "types":[
-                "establishment"
-            ]
-        },
-        {
-            "description":"NewYork-Presbyterian/The Allen Hospital, West 218th Street, New York, NY, United States",
-            "id":"41ae583be38aa9bfd7db6573b9b9e952a5455118",
-            "matched_substrings":[
-                {
-                    "length":7,
-                    "offset":0
-                }
-            ],
-            "place_id":"ChIJSbWzmvLzwokRb2z6n4ExnDo",
-            "reference":"CnRlAAAA18rjo9-RsgN57MWdmGsvZ_Gf0E_3h_sEutRmHT9HydvGe9qzUSIGVyDxlNK60Ij6zzO0K6BhOusIgF08ZPIAiNN-JtktTmOHwjSyjyFl-ej4d7FQ9fpzEcueSYpOCEauSezTbqZzbMsN6-BjgtpNXhIQyws3mVsGM_d_oIXsUibIixoUJon_wp4rVIqPF2KsGtHgqiFCP44",
-            "terms":[
-                {
-                    "offset":0,
-                    "value":"NewYork-Presbyterian/The Allen Hospital"
-                },
-                {
-                    "offset":41,
-                    "value":"West 218th Street"
-                },
-                {
-                    "offset":60,
-                    "value":"New York"
-                },
-                {
-                    "offset":70,
-                    "value":"NY"
-                },
-                {
-                    "offset":74,
-                    "value":"United States"
-                }
-            ],
-            "types":[
-                "establishment"
             ]
         }
     ],

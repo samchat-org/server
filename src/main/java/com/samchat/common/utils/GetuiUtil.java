@@ -37,7 +37,7 @@ public class GetuiUtil {
  		payload.setContentAvailable(1);
  		// 简单模式APNPayload.SimpleMsg
  		
- 		payload.setAlertMsg(new APNPayload.SimpleAlertMsg(msg));
+ 		payload.setAlertMsg(new APNPayload.SimpleAlertMsg("a new message"));
 		// 字典模式使用下者
 		// payload.setAlertMsg(getDictionaryAlertMsg());
 		template.setAPNInfo(payload);
@@ -77,7 +77,7 @@ public class GetuiUtil {
  		payload.setContentAvailable(1);
  		// 简单模式APNPayload.SimpleMsg
  		
- 		payload.setAlertMsg(new APNPayload.SimpleAlertMsg(msgs.get(0)));
+ 		payload.setAlertMsg(new APNPayload.SimpleAlertMsg("a new message"));
 		// 字典模式使用下者
 		// payload.setAlertMsg(getDictionaryAlertMsg());
 		template.setAPNInfo(payload);

@@ -23,7 +23,7 @@ public class ProfileSrvs extends BaseSrvs implements IProfileSrvs {
 	@Autowired
 	private IUserDbDao userDbDao;
 
-	public void updateProfile(ProfileUpdate_req req, long userId, SysdateObjBean sysdate) throws Exception{
+	public void updateProfile_master(ProfileUpdate_req req, long userId, SysdateObjBean sysdate) throws Exception{
 		ProfileUpdate_req.User user = req.getBody().getUser();
 		
 		TUserUsers tuser = userDbDao.queryUser(userId);

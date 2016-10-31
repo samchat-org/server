@@ -1,11 +1,11 @@
 package com.samchat.common.utils;
 
-import java.util.HashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -14,8 +14,9 @@ import org.apache.http.util.EntityUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.samchat.common.beans.auto.json.appserver.profile.GoogleplaceAutocomplete_res;
+import com.samchat.common.beans.manual.common.InternetProxyBean;
 import com.samchat.common.enums.Constant;
- 
+
 public class GooglePlaceUtil {
 
 	private static Log log = LogFactory.getLog(GooglePlaceUtil.class);
@@ -23,16 +24,27 @@ public class GooglePlaceUtil {
 	private static String AUTO_COMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/json?";
 
 	private static String getBaseUrl() {
-		String key = "AIzaSyC3foMjnnjQaVbiKPkuXdfGllzRqo9CUa8";//CommonUtil.getSysConfigStr("google_places_key");
+		String key = CommonUtil.getSysConfigStr("google_places_key");
 		return AUTO_COMPLETE_URL + "key=" + key;
 	}
 
-	public static GoogleplaceAutocomplete_res autocomplete(String keyCotent) throws Exception {
- 		String url = HttpclientUrlUtil.encodeQuery(getBaseUrl() + "&input=" + keyCotent);
-  		CloseableHttpClient httpClient = HttpClients.createDefault();
-		HttpPost httpPost = new HttpPost(url);
-		httpPost.addHeader("Content-Type", "application/json;charset=utf-8;");
+	public static GoogleplaceAutocomplete_res autocomplete(String keyCotent){
 		
+		return (GoogleplaceAutocomplete_res)InternetProxyUtil.balanceInternetProxy(GooglePlaceUtil.class, "autocomplete", new Object[]{keyCotent});
+	}
+
+	public static GoogleplaceAutocomplete_res autocomplete(String keyCotent, InternetProxyBean pb) throws Exception {
+		
+		String url = HttpclientUrlUtil.encodeQuery(getBaseUrl() + "&input=" + keyCotent);
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		RequestConfig config = RequestConfig.custom().setProxy(new HttpHost(pb.getProxyUrl(), pb.getProxyPort()))
+				.build();
+
+		HttpPost httpPost = new HttpPost(url);
+		httpPost.setConfig(config);
+		httpPost.addHeader("Content-Type", "application/json;charset=utf-8;");
+
 		String body = null;
 		CloseableHttpResponse response = null;
 		try {
@@ -45,7 +57,7 @@ public class GooglePlaceUtil {
 			if (entity != null) {
 				body = EntityUtils.toString(entity, Constant.CHARSET);
 				log.info("google res body:" + body);
- 			}
+			}
 			EntityUtils.consume(entity);
 
 		} finally {
@@ -62,9 +74,6 @@ public class GooglePlaceUtil {
 	}
 
 	public static void main(String args[]) throws Exception {
-		HashMap<String, String> hs = new HashMap<String, String>();
-		hs.put("input", "new york");
-		GoogleplaceAutocomplete_res res = GooglePlaceUtil.autocomplete("北京");
-		System.out.print(123);
+		 autocomplete("abcd");
 	}
 }

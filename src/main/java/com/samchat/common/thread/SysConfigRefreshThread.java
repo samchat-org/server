@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.sf.ehcache.Cache;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,7 +36,8 @@ public class SysConfigRefreshThread extends Thread {
 
 		for (TSysConfigs cfg : cfgs) {
 			String paramCode = cfg.getParam_code();
-			String paramValue = cfg.getParam_value();
+			String paramValue = StringUtils.trimToEmpty(cfg.getParam_value());
+			 
 			SecurityAccessBean<String> cfgCur = CacheUtil.get(CacheNameCacheEnum.ECH_SYS_CONFIG.val(), paramCode);
 
 			if (cfgCur == null) {

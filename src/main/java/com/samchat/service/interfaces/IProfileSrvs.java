@@ -5,6 +5,6 @@ import com.samchat.common.beans.manual.common.SysdateObjBean;
 
 public interface IProfileSrvs extends IBaseSrvs{
 	
-	public void updateProfile(ProfileUpdate_req req, long userId, SysdateObjBean sysdate) throws Exception;
+	public void updateProfile_master(ProfileUpdate_req req, long userId, SysdateObjBean sysdate) throws Exception;
 
 }

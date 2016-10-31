@@ -48,4 +48,5 @@ public interface IUsersSrvs extends IBaseSrvs {
 	public TUserUsers queryUserInfoByPhone_master(String phoneNo, String countryCode);
 	public TUserUsers queryUserInfoByUserName_master(String userName);
 	public TUserUsers queryUser_master(long userId);
+	public TUserUsers updateAvatar_master(String origin, String thumb, long userId, Timestamp sysdate)  throws Exception;
 }

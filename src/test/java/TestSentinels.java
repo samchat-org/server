@@ -18,4 +18,17 @@ public class TestSentinels {
 		byte[] ob = se.serialize(rds);
 		o = se.deserialize(ob);
 	}
+	
+	public void sendPush() throws Exception{
+		SNSMobilePush sample = new SNSMobilePush(sns);
+		// TODO: Uncomment the services you wish to use.
+		//sample.demoAndroidAppNotification();
+		//sample.demoKindleAppNotification();
+		//sample.demoAppleAppNotification();
+		//sample.demoAppleSandboxAppNotification();
+		sample.demoBaiduAppNotification();
+		//sample.demoWNSAppNotification();
+		//sample.demoMPNSAppNotification();
+		                    
+	}
 }

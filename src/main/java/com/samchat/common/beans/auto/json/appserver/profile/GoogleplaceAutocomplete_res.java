@@ -27,6 +27,87 @@ public class GoogleplaceAutocomplete_res{
 		}
 	}
 
+	public static class Structured_formatting {
+		private String main_text = "";
+		private ArrayList<Main_text_matched_substrings> main_text_matched_substrings;
+		private String secondary_text = "";
+		private ArrayList<Secondary_text_matched_substrings> secondary_text_matched_substrings;
+
+		public String getMain_text() {
+			return main_text;
+		}
+
+		public void setMain_text(String main_text) {
+			this.main_text = (main_text == null? "" : main_text.trim());
+		}
+
+		public ArrayList<Main_text_matched_substrings> getMain_text_matched_substrings() {
+			return main_text_matched_substrings;
+		}
+
+		public void setMain_text_matched_substrings(ArrayList<Main_text_matched_substrings> main_text_matched_substrings) {
+			this.main_text_matched_substrings = main_text_matched_substrings;
+		}
+
+		public String getSecondary_text() {
+			return secondary_text;
+		}
+
+		public void setSecondary_text(String secondary_text) {
+			this.secondary_text = (secondary_text == null? "" : secondary_text.trim());
+		}
+
+		public ArrayList<Secondary_text_matched_substrings> getSecondary_text_matched_substrings() {
+			return secondary_text_matched_substrings;
+		}
+
+		public void setSecondary_text_matched_substrings(ArrayList<Secondary_text_matched_substrings> secondary_text_matched_substrings) {
+			this.secondary_text_matched_substrings = secondary_text_matched_substrings;
+		}
+	}
+
+	public static class Main_text_matched_substrings {
+		private long length;
+		private long offset;
+
+		public long getLength() {
+			return length;
+		}
+
+		public void setLength(long length) {
+			this.length = length;
+		}
+
+		public long getOffset() {
+			return offset;
+		}
+
+		public void setOffset(long offset) {
+			this.offset = offset;
+		}
+	}
+
+	public static class Secondary_text_matched_substrings {
+		private long length;
+		private long offset;
+
+		public long getLength() {
+			return length;
+		}
+
+		public void setLength(long length) {
+			this.length = length;
+		}
+
+		public long getOffset() {
+			return offset;
+		}
+
+		public void setOffset(long offset) {
+			this.offset = offset;
+		}
+	}
+
 	public static class Terms {
 		private long offset;
 		private String value = "";
@@ -54,6 +135,7 @@ public class GoogleplaceAutocomplete_res{
 		private ArrayList<Matched_substrings> matched_substrings;
 		private String place_id = "";
 		private String reference = "";
+		private Structured_formatting structured_formatting;
 		private ArrayList<Terms> terms;
 		private ArrayList<String> types;
 
@@ -95,6 +177,14 @@ public class GoogleplaceAutocomplete_res{
 
 		public void setReference(String reference) {
 			this.reference = (reference == null? "" : reference.trim());
+		}
+
+		public Structured_formatting getStructured_formatting() {
+			return structured_formatting;
+		}
+
+		public void setStructured_formatting(Structured_formatting structured_formatting) {
+			this.structured_formatting = structured_formatting;
 		}
 
 		public ArrayList<Terms> getTerms() {

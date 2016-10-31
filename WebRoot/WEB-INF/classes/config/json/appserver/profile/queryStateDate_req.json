@@ -1,9 +1,0 @@
-{
-    "header":{
-        "action":"query-state-date",
-        "token":"token"
-    },
-    "body":{
-        
-    }
-}

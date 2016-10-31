@@ -1,9 +1,0 @@
-{
-    "header":{
-        "action":"follow-list-query",
-        "token":"token"
-    },
-    "body":{
-        
-    }
-}

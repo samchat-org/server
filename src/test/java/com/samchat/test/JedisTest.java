@@ -1,14 +1,12 @@
 package com.samchat.test;
 
-import java.sql.Timestamp;
-
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
-import com.samchat.common.beans.manual.json.redis.UserInfoRds;
+import com.samchat.common.thread.SysConfigRefreshThread;
+import com.samchat.common.utils.GooglePlaceUtil;
+import com.samchat.common.utils.SpringUtil;
 import com.samchat.dao.redis.interfaces.IUserRedisDao;
 import com.samchat.service.interfaces.IAdvertisementSrvs;
 import com.samchat.service.interfaces.IQuestionSrvs;
@@ -31,15 +29,16 @@ public class JedisTest {
 	private ITestSrvs testSrvs;
 
 	public void test() throws Exception {
-		testSrvs.insertDict();
-		testSrvs.queryDict();
+		GooglePlaceUtil.autocomplete("abcd");
 	}
 
 	public static void main(String args[]) throws Exception {
-		UserInfoRds uur = new UserInfoRds();
-		uur.setNowVersion(123123);
-		TUserUsers user = new TUserUsers();
-		user.setAddress("123123");
-		PropertyUtils.copyProperties(uur, user);
+		ApplicationContext ctx = SpringUtil.initContext("config/spring");
+		JedisTest j = (JedisTest)ctx.getBean("jedisTest");
+		SysConfigRefreshThread refresh = (SysConfigRefreshThread) ctx.getBean("sysConfigRefreshThread");
+		refresh.run();
+		refresh.start();
+		j.test();
+		 
 	}
 }

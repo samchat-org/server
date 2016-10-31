@@ -101,7 +101,7 @@ public class S3Util {
 
 	public static void main(String args[]) throws Exception {
 
-		Thumbnails.of(new File("d:/346099232071353208.jpg")).size(1280, 960).outputQuality(new BigDecimal(50).divide(new BigDecimal(100)).doubleValue()).toFile(new File("d:/346099232071353208_t.jpg"));
+		Thumbnails.of(new File("d:/nim_g_unread_badge.9.png")).size(12, 12).toFile(new File("d:/nim_g_unread_badge.9_t.png"));
 		
 	}
 

@@ -101,16 +101,17 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 
 		long nowVersion = sysdate.getNowVersion();
 		long userId = user.getUser_id();
-
+		
 		TokenValRds token = hgetUserInfoTokenJsonObj(userId);
 		if (token != null) {
 			deleteRedisToken(token.getToken());
 		}
+		
 		TokenMappingRds tk = new TokenMappingRds();
 		tk.setUserId(userId);
 		tk.setNowVersion(nowVersion);
 		setTokenJsonObj(realToken, tk);
-
+		
 		UserInfoRds uur = new UserInfoRds();
 		uur.setNowVersion(nowVersion);
 		PropertyUtils.copyProperties(uur, user);
@@ -428,6 +429,10 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		hsetUserInfoJsonObj(userId, uur);
 
 		return uu;
+	}
+	
+	public TUserUsers updateAvatar_master(String origin, String thumb, long userId, Timestamp sysdate)  throws Exception{
+		return updateAvatar(origin, thumb, userId, sysdate);
 	}
 
 	public void updateDbToken(long userId, String token) {

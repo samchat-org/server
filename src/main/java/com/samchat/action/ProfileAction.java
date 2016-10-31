@@ -67,7 +67,7 @@ public class ProfileAction extends BaseAction {
 	public ProfileUpdate_res profileUpdate(ProfileUpdate_req req, TokenMappingRds token, TUserUsers updatedUser) throws Exception{
 
 		SysdateObjBean sysdate = commonSrv.querySysdateObj();
-		profileSrv.updateProfile(req, token.getUserId(), sysdate);
+		profileSrv.updateProfile_master(req, token.getUserId(), sysdate);
 
 		ProfileUpdate_res res = new ProfileUpdate_res();
 		ProfileUpdate_res.User userRes = new ProfileUpdate_res.User();
@@ -116,7 +116,7 @@ public class ProfileAction extends BaseAction {
 		long userId = token.getUserId();
 		Timestamp sysdate = commonSrv.querySysdate();
 
-		TUserUsers userdb = usersSrv.updateAvatar(origin, thumb, userId, sysdate);
+		TUserUsers userdb = usersSrv.updateAvatar_master(origin, thumb, userId, sysdate);
 
 		AvatarUpdate_res res = new AvatarUpdate_res();
 		AvatarUpdate_res.User user = new AvatarUpdate_res.User();

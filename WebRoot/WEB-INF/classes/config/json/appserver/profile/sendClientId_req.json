@@ -1,9 +1,0 @@
-{
-    "header":{
-        "action":"send-clientId",
-        "token":"token"
-    },
-    "body":{
-        "client_id":"1231"
-    }
-}

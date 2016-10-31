@@ -1,6 +1,10 @@
 eclipse.preferences.version=1
+encoding//src/main/java=UTF8
 encoding//src/main/java/com/samchat/common/utils/GetuiUtil.java=UTF-8
+encoding//src/main/resources=UTF8
 encoding//src/main/resources/jdbc.properties=UTF-8
 encoding//src/main/resources/log4j.properties=UTF-8
-encoding/<project>=UTF-8
+encoding//src/test/java=UTF8
+encoding//src/test/resources=UTF8
+encoding/<project>=UTF8
 encoding/src=UTF-8

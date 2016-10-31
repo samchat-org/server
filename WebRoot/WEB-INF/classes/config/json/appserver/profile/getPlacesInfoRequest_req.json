@@ -1,9 +1,0 @@
-{
-    "header":{
-        "action":"get-places-info-request",
-        "token":"token"
-    },
-    "body":{
-        "key":""
-    }
-}
