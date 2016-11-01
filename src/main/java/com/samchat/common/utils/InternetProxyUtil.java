@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 
 import com.samchat.common.beans.manual.common.InternetProxyBean;
 import com.samchat.common.exceptions.SysException;
-import com.samchat.test.JedisTest;
 
 public class InternetProxyUtil {
 	
@@ -51,7 +50,7 @@ public class InternetProxyUtil {
 			
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			iplist.remove(postion);
+			iplist.remove(ipb);
 			return balanceInternetProxy(iplist, clazz, method, param);
 		}
 	}

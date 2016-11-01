@@ -10,6 +10,6 @@
 	<bean id="questionDispatcher" class="com.samchat.processor.QuestionDispatch.Dispatcher" />
 	<bean id="advertisementDispatcher" class="com.samchat.processor.AdvertisementDispatch.Dispatcher" />
 	<bean id="sysConfigRefreshThread" class="com.samchat.common.thread.SysConfigRefreshThread" />
- 	
+ 	<bean id="test" class="com.samchat.test.Test" />
  	
 </beans>
