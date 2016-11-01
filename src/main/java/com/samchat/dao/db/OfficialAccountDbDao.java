@@ -1,6 +1,7 @@
 package com.samchat.dao.db;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,13 +9,17 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.github.pagehelper.PageInfo;
 import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
 import com.samchat.common.beans.auto.db.entitybeans.TOaFollowExample;
 import com.samchat.common.beans.auto.db.mapper.TOaFollowMapper;
 import com.samchat.common.beans.manual.db.QryFollowVO;
 import com.samchat.common.beans.manual.db.QryPublicQueryVO;
+import com.samchat.common.beans.manual.db.QryUserInfoVO;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.db.FollowDbEnum;
+import com.samchat.common.exceptions.SysException;
+import com.samchat.common.utils.CommonUtil;
 import com.samchat.dao.db.interfaces.IOfficialAccountDbDao;
 
 @Repository
@@ -86,12 +91,26 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 		return executeSqlList("queryFollowList", param);
 	}
 
-	public List<QryPublicQueryVO> queryPublicList(String key) {
+	public List<QryPublicQueryVO> queryPublicList(String key, long count) {
 
-		Map param = new HashMap();
-		param.put("key", key);
-
-		return executeSqlList("queryPublicList", param);
+		Map<String, Object> p = new HashMap<String, Object>();
+		p.put("key", key);
+		
+		int ps = getQueryPublicListPageSize();
+		if(count < ps && count > 0){
+			return new ArrayList<QryPublicQueryVO>();
+		}
+		int curpage = ((int)count / ps) + 1;
+		PageInfo pi = executePageSql("queryPublicList", p, curpage, ps);
+		return pi.getList();
+	}
+	
+	private int getQueryPublicListPageSize(){
+		int ps = Integer.parseInt(CommonUtil.getSysConfigStr("queryPublicList_page_size"));
+		if(ps <= 0){
+			throw new SysException("queryPageSize <= 0, error ");
+		}
+		return ps;
 	}
 
 	public List<TOaFollow> queryFollowListByAdserId(long userId) {

@@ -27,8 +27,17 @@ public class PublicQuery_req{
 	}
 
 	public static class Body {
+		private long count;
 		private String key;
 		private Location location;
+
+		public long getCount() {
+			return count;
+		}
+
+		public void setCount(long count) {
+			this.count = count;
+		}
 
 		public String getKey() {
 			return key;

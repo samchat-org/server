@@ -34,6 +34,12 @@ WHERE
 		<if test="key != null">
 			AND (INSTR(uu.user_name,#{key}) &gt; 0  or INSTR(uu.phone_no,#{key}) &gt; 0)
 		</if>
+		<if test="type == 0">
+			AND uu.user_type = 0
+		</if>
+		<if test="type == 1">
+			AND uu.user_type = 1
+		</if>
 	</select>
  
 	<select id="queryUsersGroup" parameterType="map"

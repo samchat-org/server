@@ -68,7 +68,7 @@ public class SNSMobilePush {
 			/* TODO: Uncomment the services you wish to use. */
 			// sample.demoAndroidAppNotification();
 			// sample.demoKindleAppNotification();
-			// sample.demoAppleAppNotification();
+			 sample.demoAppleAppNotification();
 			// sample.demoAppleSandboxAppNotification();
 			 sample.demoBaiduAppNotification();
 			  

@@ -35,7 +35,7 @@ public interface IUsersSrvs extends IBaseSrvs {
 	public void loginPwderrorCheck(String countryCode, String cellphone, Timestamp sysdate) throws Exception ;
 	public List<TUserUsers> queryUsers() ;
 	public TUserUsers queryUser(long userId) ;
-	public List<QryUserInfoVO> queryUsersFuzzy(String key) ;
+	public List<QryUserInfoVO> queryUsersFuzzy(String key, long count, long type) ;
 	public List<QryUserInfoVO> queryUserAccurate(Long type, String cellphone, String userName, String userId) ;
 	public List<QryUserInfoVO> queryUsersGroup(List<Long> userIds) ;
 	public List<TUserUsers> queryUserWithoutToken(long type, String countrycode, String cellphone, String userName) ;

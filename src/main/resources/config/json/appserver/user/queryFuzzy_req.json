@@ -4,9 +4,11 @@
         "token":"token"
     },
     "body":{
+        "count":500,
         "opt":1,
         "param":{
-            "search_key":""
+            "search_key":"",
+            "search_type":1
         }
     }
 }

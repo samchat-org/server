@@ -393,8 +393,8 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		return queryUser(userId);
 	}
 
-	public List<QryUserInfoVO> queryUsersFuzzy(String key) {
-		return userDbDao.queryUsersFuzzy(key);
+	public List<QryUserInfoVO> queryUsersFuzzy(String key, long count, long type) {
+		return userDbDao.queryUsersFuzzy(key, count, type);
 	}
 
 	public List<QryUserInfoVO> queryUserAccurate(Long type, String cellphone, String userName, String userId) {

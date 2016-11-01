@@ -228,6 +228,7 @@ public class OfficialAccountAction extends BaseAction {
 
 	public PublicQuery_res publicQuery(PublicQuery_req req, TokenMappingRds token) {
 		PublicQuery_req.Body body = req.getBody();
+		long count = body.getCount();
 		String key = body.getKey();
 		String address = "";
 		String placeId = "";
@@ -246,7 +247,7 @@ public class OfficialAccountAction extends BaseAction {
 			}
 		}
 
-		List<QryPublicQueryVO> oalist = officialAccountSrv.queryPublicList(key);
+		List<QryPublicQueryVO> oalist = officialAccountSrv.queryPublicList(key, count);
 		PublicQuery_res res = new PublicQuery_res();
 		res.setCount(oalist.size());
 

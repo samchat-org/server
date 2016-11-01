@@ -32,7 +32,7 @@ public interface IUserDbDao extends IBaseDbDao {
 	
 	public List<TUserUsers> queryUserByToken(String token);
 
-	public List<QryUserInfoVO> queryUsersFuzzy(String key);
+	public List<QryUserInfoVO> queryUsersFuzzy(String key , long count, long type);
 
 	public List<QryUserInfoVO> queryUsersGroup(List<Long> userIds);
 

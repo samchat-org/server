@@ -455,9 +455,11 @@ public class UserAction extends BaseAction {
 
 	public QueryFuzzy_res queryFuzzy(QueryFuzzy_req req, TokenMappingRds token) {
 		QueryFuzzy_req.Param p = req.getBody().getParam();
+		long count = req.getBody().getCount();
 		String key = p.getSearch_key();
-		List<QryUserInfoVO> userlist = usersSrv.queryUsersFuzzy(key);
-
+		long type = p.getSearch_type();
+		
+		List<QryUserInfoVO> userlist = usersSrv.queryUsersFuzzy(key, count, type);
 		ArrayList<QueryFuzzy_res.Users> users = new ArrayList<QueryFuzzy_res.Users>();
 
 		for (QryUserInfoVO pq : userlist) {

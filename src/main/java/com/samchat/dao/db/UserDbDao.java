@@ -1,6 +1,7 @@
 package com.samchat.dao.db;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.github.pagehelper.PageInfo;
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsersExample;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
@@ -17,6 +19,8 @@ import com.samchat.common.beans.auto.db.mapper.TUserProUsersMapper;
 import com.samchat.common.beans.auto.db.mapper.TUserUsersMapper;
 import com.samchat.common.beans.manual.db.QryUserInfoVO;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.exceptions.SysException;
+import com.samchat.common.utils.CommonUtil;
 import com.samchat.dao.db.interfaces.IUserDbDao;
 
 @Repository
@@ -111,10 +115,26 @@ public class UserDbDao extends BaseDbDao implements IUserDbDao {
 		return userUsersMapper.selectByExample(uue);
 	}
 
-	public List<QryUserInfoVO> queryUsersFuzzy(String key) {
+	public List<QryUserInfoVO> queryUsersFuzzy(String key , long count, long type) {
 		Map<String, Object> p = new HashMap<String, Object>();
 		p.put("key", key);
-		return this.executeSqlList("queryUsersFuzzy", p);
+		p.put("type", new Long(type));
+		int ps = getQueryUsersFuzzyPageSize();
+		if(count < ps && count > 0){
+			return new ArrayList<QryUserInfoVO>();
+		}
+		int curpage = ((int)count / ps) + 1;
+		PageInfo pi = executePageSql("queryUsersFuzzy", p, curpage, ps);
+		return pi.getList();
+		
+ 	}
+	
+	private int getQueryUsersFuzzyPageSize(){
+		int ps = Integer.parseInt(CommonUtil.getSysConfigStr("queryUsersFuzzy_page_size"));
+		if(ps <= 0){
+			throw new SysException("queryPageSize <= 0, error ");
+		}
+		return ps;
 	}
 
 	public List<QryUserInfoVO> queryUsersGroup(List<Long> userIds) {

@@ -57,6 +57,7 @@ AND (
 	INSTR(upu.company_name,#{key}) > 0
 	OR INSTR(upu.service_category,#{key}) > 0
 	OR INSTR(upu.service_description,#{key})> 0
+	OR INSTR(uu.user_name,#{key})> 0
 )
 	</select>	
 <select id="queryFollowListStateDate" parameterType="map"
