@@ -443,10 +443,11 @@ public class UserAction extends BaseAction {
 		return new PwdUpdate_res();
 	}
 
-	public TUserUsers pwdUpdateValidate(PwdUpdate_req req, TokenMappingRds token) {
+	public TUserUsers pwdUpdateValidate(PwdUpdate_req req, TokenMappingRds token) throws Exception{
 
 		TUserUsers user = usersSrv.queryUser(token.getUserId());
-		if (req.getBody().getOld_pwd().equals(user.getUser_pwd())) {
+		String oldPsw = Md5Util.getSign4String(req.getBody().getOld_pwd(),"");
+		if (!oldPsw.equals(user.getUser_pwd())) {
 			throw new AppException(ResCodeAppEnum.USER_OLD_PWD.getCode());
 		}
 		return user;
