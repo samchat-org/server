@@ -5,10 +5,15 @@
     },
     "body":{
         "user":{
-            "countrycode[Y]":"",
-            "cellphone[Y]":"",
             "email":"",
-            "address":"",
+            "location":{
+                "location_info":{
+                    "longitude":"",
+                    "latitude":""
+                },
+                "place_id":"",
+                "address":""
+            },
             "sam_pros_info":{
                 "company_name":"KFC",
                 "service_category":"fast food",
@@ -16,7 +21,14 @@
                 "countrycode":"",
                 "phone":"",
                 "email":"",
-                "address":""
+                "location":{
+                    "location_info":{
+                        "longitude":"",
+                        "latitude":""
+                    },
+                    "place_id":"",
+                    "address":""
+                }
             }
         }
     }

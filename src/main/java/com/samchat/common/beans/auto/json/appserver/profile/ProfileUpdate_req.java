@@ -1,7 +1,5 @@
 package com.samchat.common.beans.auto.json.appserver.profile;
 
-import com.samchat.common.exceptions.AppException;
-import com.samchat.common.enums.app.ResCodeAppEnum;
 public class ProfileUpdate_req{
 
 	private Header header;
@@ -41,33 +39,9 @@ public class ProfileUpdate_req{
 	}
 
 	public static class User {
-		private String countrycode;
-		private String cellphone;
 		private String email;
-		private String address;
+		private Location location;
 		private Sam_pros_info sam_pros_info;
-
-		public String getCountrycode() {
-			return countrycode;
-		}
-
-		public void setCountrycode(String countrycode) {
-			if ("".equals(countrycode) || countrycode== null){
-				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + countrycode);
-			}
-			this.countrycode = (countrycode == null? null : countrycode.trim());
-		}
-
-		public String getCellphone() {
-			return cellphone;
-		}
-
-		public void setCellphone(String cellphone) {
-			if ("".equals(cellphone) || cellphone== null){
-				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + cellphone);
-			}
-			this.cellphone = (cellphone == null? null : cellphone.trim());
-		}
 
 		public String getEmail() {
 			return email;
@@ -77,12 +51,12 @@ public class ProfileUpdate_req{
 			this.email = (email == null? null : email.trim());
 		}
 
-		public String getAddress() {
-			return address;
+		public Location getLocation() {
+			return location;
 		}
 
-		public void setAddress(String address) {
-			this.address = (address == null? null : address.trim());
+		public void setLocation(Location location) {
+			this.location = location;
 		}
 
 		public Sam_pros_info getSam_pros_info() {
@@ -94,6 +68,57 @@ public class ProfileUpdate_req{
 		}
 	}
 
+	public static class Location {
+		private Location_info location_info;
+		private String place_id;
+		private String address;
+
+		public Location_info getLocation_info() {
+			return location_info;
+		}
+
+		public void setLocation_info(Location_info location_info) {
+			this.location_info = location_info;
+		}
+
+		public String getPlace_id() {
+			return place_id;
+		}
+
+		public void setPlace_id(String place_id) {
+			this.place_id = (place_id == null? null : place_id.trim());
+		}
+
+		public String getAddress() {
+			return address;
+		}
+
+		public void setAddress(String address) {
+			this.address = (address == null? null : address.trim());
+		}
+	}
+
+	public static class Location_info {
+		private String longitude;
+		private String latitude;
+
+		public String getLongitude() {
+			return longitude;
+		}
+
+		public void setLongitude(String longitude) {
+			this.longitude = (longitude == null? null : longitude.trim());
+		}
+
+		public String getLatitude() {
+			return latitude;
+		}
+
+		public void setLatitude(String latitude) {
+			this.latitude = (latitude == null? null : latitude.trim());
+		}
+	}
+
 	public static class Sam_pros_info {
 		private String company_name;
 		private String service_category;
@@ -101,7 +126,7 @@ public class ProfileUpdate_req{
 		private String countrycode;
 		private String phone;
 		private String email;
-		private String address;
+		private Location location;
 
 		public String getCompany_name() {
 			return company_name;
@@ -151,12 +176,12 @@ public class ProfileUpdate_req{
 			this.email = (email == null? null : email.trim());
 		}
 
-		public String getAddress() {
-			return address;
+		public Location getLocation() {
+			return location;
 		}
 
-		public void setAddress(String address) {
-			this.address = (address == null? null : address.trim());
+		public void setLocation(Location location) {
+			this.location = location;
 		}
 	}
 
