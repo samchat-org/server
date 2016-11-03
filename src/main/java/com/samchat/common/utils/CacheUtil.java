@@ -161,7 +161,10 @@ public class CacheUtil {
 
 	public static String getUserInfoCacheKey(String countryCode, String cellPhone) {
 		return getSystemId() + CacheNameCacheEnum.RDS_USER_INFO.val() + ":" + countryCode + "_" + cellPhone;
-
+	}
+	
+	public static String getEditCellPhoneCacheKey(String countryCode, String cellPhone) {
+		return getSystemId() + CacheNameCacheEnum.EDIT_CELL_PHONE.val() + ":" + countryCode + "_" + cellPhone;
 	}
 
 	public static String getUserInfoIdCacheKey(long userId) {

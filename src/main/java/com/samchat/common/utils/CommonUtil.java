@@ -49,6 +49,7 @@ public class CommonUtil {
 		Class[] paramTypeArr = new Class[paramObjArr.length];
 		for (int i = 0; i < length; i++) {
 			paramTypeArr[i] = paramObjArr[i].getClass();
+			log.info("paramType" + i + ":" + paramTypeArr[i]);
 		}
 		log.info("method invoke : class[" + obj.getClass().getSimpleName() + "], method:[" + methodStr + "]");
 		Method method = obj.getClass().getDeclaredMethod(methodStr, paramTypeArr);

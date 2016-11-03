@@ -11,6 +11,10 @@ import com.samchat.common.beans.auto.json.appserver.profile.AppkeyGet_req;
 import com.samchat.common.beans.auto.json.appserver.profile.AppkeyGet_res;
 import com.samchat.common.beans.auto.json.appserver.profile.AvatarUpdate_req;
 import com.samchat.common.beans.auto.json.appserver.profile.AvatarUpdate_res;
+import com.samchat.common.beans.auto.json.appserver.profile.EditCellPhoneCodeRequest_req;
+import com.samchat.common.beans.auto.json.appserver.profile.EditCellPhoneCodeRequest_res;
+import com.samchat.common.beans.auto.json.appserver.profile.EditCellPhoneUpdate_req;
+import com.samchat.common.beans.auto.json.appserver.profile.EditCellPhoneUpdate_res;
 import com.samchat.common.beans.auto.json.appserver.profile.GetPlacesInfoRequest_req;
 import com.samchat.common.beans.auto.json.appserver.profile.GetPlacesInfoRequest_res;
 import com.samchat.common.beans.auto.json.appserver.profile.GoogleplaceAutocomplete_res;
@@ -21,17 +25,19 @@ import com.samchat.common.beans.auto.json.appserver.profile.QueryStateDate_req;
 import com.samchat.common.beans.auto.json.appserver.profile.QueryStateDate_res;
 import com.samchat.common.beans.auto.json.appserver.profile.SendClientId_req;
 import com.samchat.common.beans.auto.json.appserver.profile.SendClientId_res;
+import com.samchat.common.beans.auto.json.appserver.user.FindpwdUpdate_req;
 import com.samchat.common.beans.manual.common.SysdateObjBean;
 import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
-import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
+import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.ResCodeAppEnum;
-import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.GooglePlaceUtil;
+import com.samchat.common.utils.Md5Util;
 import com.samchat.common.utils.SqsUtil;
+import com.samchat.common.utils.TwilioUtil;
 import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IProfileSrvs;
 import com.samchat.service.interfaces.IUsersSrvs;
@@ -64,7 +70,7 @@ public class ProfileAction extends BaseAction {
 	public void appkeyGetValidate(AppkeyGet_req req, TokenMappingRds token) {
 	}
 
-	public ProfileUpdate_res profileUpdate(ProfileUpdate_req req, TokenMappingRds token, TUserUsers updatedUser) throws Exception{
+	public ProfileUpdate_res profileUpdate(ProfileUpdate_req req, TokenMappingRds token) throws Exception{
 
 		SysdateObjBean sysdate = commonSrv.querySysdateObj();
 		profileSrv.updateProfile_master(req, token.getUserId(), sysdate);
@@ -77,36 +83,7 @@ public class ProfileAction extends BaseAction {
 		return res;
 	}
 
-	public TUserUsers profileUpdateValidate(ProfileUpdate_req req, TokenMappingRds token) throws Exception{
-
-		TUserUsers userInfo = usersSrv.queryUser(token.getUserId());
-
-		String countrycode = userInfo.getCountry_code();
-		String cellphone = userInfo.getPhone_no();
-
-		ProfileUpdate_req.User user = req.getBody().getUser();
-		String countrycodeOpt = user.getCountrycode();
-		String cellphoneOpt = user.getCellphone();
-
-		if (countrycodeOpt == null) {
-			countrycodeOpt = countrycode;
-		}
-		if (cellphoneOpt == null) {
-			cellphoneOpt = cellphone;
-		}
-		if (countrycodeOpt != countrycode || cellphoneOpt != cellphone) {
-			TUserUsers u = usersSrv.queryUserInfoByPhone_master(cellphoneOpt, countrycodeOpt);
-			if (u != null) {
-				throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode(), "countrycode:" + countrycodeOpt
-						+ "--cellphone:" + cellphoneOpt);
-			}
-			u = new TUserUsers();
-			u.setCountry_code(countrycodeOpt);
-			u.setPhone_no(cellphoneOpt);
-			return u;
-		}
-		return new TUserUsers();
-	}
+	public void profileUpdateValidate(ProfileUpdate_req req, TokenMappingRds token) throws Exception{}
 
 	public AvatarUpdate_res avatarUpdate(AvatarUpdate_req req, TokenMappingRds token) throws Exception {
 
@@ -194,5 +171,95 @@ public class ProfileAction extends BaseAction {
 
 	public void queryStateDateValidate(QueryStateDate_req req, TokenMappingRds token) {
 
+	}
+	
+	/**
+	 * 修改手机号码验证码申请
+	 * 
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	public EditCellPhoneCodeRequest_res editCellPhoneCodeRequest(EditCellPhoneCodeRequest_req req, TokenMappingRds token) throws Exception {
+
+		String countryCode = req.getBody().getCountrycode();
+		String cellPhone = req.getBody().getCellphone();
+		String verificationCode = CommonUtil.getRadom(4);
+		verificationCode = "1234";
+		
+		profileSrv.putEditCellPhoneVerificationCode(countryCode, cellPhone, verificationCode);
+
+		String smstpl = CommonUtil
+				.getSysConfigStr(SysParamCodeDbEnum.TWILIO_VERIFICATION_EDIT_CELL_PHONE_CODE_SMS_TEMPLETE.getParamCode());
+		String smsContent = smstpl.replaceAll(Constant.TWILLO_VERIFICATION_CODE, verificationCode);
+
+		TwilioUtil.sendSms(countryCode, cellPhone, smsContent);
+
+		return new EditCellPhoneCodeRequest_res();
+	}
+
+	public void editCellPhoneCodeRequestValidate(EditCellPhoneCodeRequest_req req, TokenMappingRds token) {
+
+		String countryCode = req.getBody().getCountrycode();
+		String cellPhone = req.getBody().getCellphone();
+
+		if (!CommonUtil.phoneNoFormatValidate(cellPhone)) {
+			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
+		}
+		TUserUsers user = usersSrv.queryUserInfoByPhone(cellPhone, countryCode);
+		if (user != null) {
+			if(user.getUser_id() == token.getUserId()){
+				throw new AppException(ResCodeAppEnum.SAME_PHONE_NO.getCode());
+			}else{
+				throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
+			}
+		}
+		String code = profileSrv.getEditCellPhoneVerificationCode(countryCode, cellPhone);
+		if (code != null) {
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE_FREQUENT.getCode());
+		}
+	}
+
+	/**
+	 * 手机号码更新
+	 * 
+	 * @param req
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
+	public EditCellPhoneUpdate_res editCellPhoneUpdate(EditCellPhoneUpdate_req req, TokenMappingRds token) throws Exception {
+		EditCellPhoneUpdate_req.Body body = req.getBody();
+		String countryCode = body.getCountrycode();
+		String cellPhone = body.getCellphone();
+		SysdateObjBean sysdate = commonSrv.querySysdateObj();
+		
+		profileSrv.updatePhoneNo_master(token.getUserId(), countryCode, cellPhone, sysdate);
+		return new EditCellPhoneUpdate_res();
+
+	}
+
+	public void editCellPhoneUpdateValidate(EditCellPhoneUpdate_req req, TokenMappingRds token) {
+		
+		EditCellPhoneUpdate_req.Body body = req.getBody();
+		String countryCode = body.getCountrycode();
+		String cellPhone = body.getCellphone();
+		String verifycode = body.getVerifycode();
+
+		if (!CommonUtil.phoneNoFormatValidate(cellPhone)) {
+			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
+		}
+		TUserUsers user = usersSrv.queryUserInfoByPhone(cellPhone, countryCode);
+		if (user != null) {
+			if(user.getUser_id() == token.getUserId()){
+				throw new AppException(ResCodeAppEnum.SAME_PHONE_NO.getCode());
+			}else{
+				throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
+			}
+		}
+		String code = profileSrv.getEditCellPhoneVerificationCode(countryCode, cellPhone);
+		if(!verifycode.equals(code)){
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE.getCode());
+		}
 	}
 }

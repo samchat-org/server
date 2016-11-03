@@ -264,7 +264,6 @@ public class UserAction extends BaseAction {
 	public Logout_res logout(Logout_req req, TokenMappingRds token) throws Exception {
 
 		usersSrv.deleteRedisToken(req.getHeader().getToken());
-		usersSrv.deleteRedisUserInfo(token.getUserId());
 
 		return new Logout_res();
 	}

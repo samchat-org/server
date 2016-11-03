@@ -3,6 +3,7 @@ package com.samchat.common.utils.jsonUtils.jsonObjConvertUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -129,7 +130,10 @@ public class JsonObjUtil {
 		if (hasCustomeClass) {
 			for (String customClassName : customClassNames) {
 				// 根据名称申明子类
-
+//				if("LOCATION".equalsIgnoreCase(customClassName)){
+//					int i = 1;
+//					System.out.print(i);
+//				}
 				// public class CustomClass {
 				sb.append("\n");
 				sb.append(StrUtils.formatSingleLine(1,
@@ -137,6 +141,19 @@ public class JsonObjUtil {
 
 				StringBuilder sbSubGetterAndSetter = new StringBuilder();
 				// 循环余下的集合
+				HashSet ths = new HashSet();
+				List<Json2JavaElement> jsonBeanTreetmp = new ArrayList<Json2JavaElement>();
+				for(int i = 0; i < jsonBeanTree.size(); i ++){
+					Json2JavaElement je = jsonBeanTree.get(i);
+					String key = je.getName() + "_" + je.getParentJb().getCustomClassName();
+					if(ths.contains(key)){
+						continue;
+					}else{
+						jsonBeanTreetmp.add(je);
+						ths.add(key);
+					}
+				}
+				jsonBeanTree = jsonBeanTreetmp;
 				Iterator<Json2JavaElement> customIterator = jsonBeanTree
 						.iterator();
 				while (customIterator.hasNext()) {
