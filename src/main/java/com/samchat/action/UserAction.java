@@ -79,19 +79,26 @@ public class UserAction extends BaseAction {
 		RegisterCodeRequest_req.Body body = req.getBody();
 		String countrycode = body.getCountrycode();
 		String cellphone = body.getCellphone();
-		String registerCode = CommonUtil.getRadom(4);
+		
+		String code = usersSrv.getRegisterCode(countrycode, cellphone);
+		String registerCode = code;
+		if(registerCode == null){
+			registerCode = CommonUtil.getRadom(4);
+		}
 		log.info("countryCode:" + countrycode + "--" + "cellphone:" + cellphone + "--registerCode:" + registerCode);
 
-		int timeToIdle = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.USER_REGISTER_CODE_TIME_TO_IDLE.getParamCode());
-
-		registerCode = "1234";// dev_m
 		String smstpl = CommonUtil
 				.getSysConfigStr(SysParamCodeDbEnum.TWILIO_VERIFICATION_REGISTER_CODE_SMS_TEMPLETE.getParamCode());
 		String smsContent = smstpl.replaceAll(Constant.TWILLO_VERIFICATION_CODE, registerCode);
 
 		String twilloPhoneNo = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.TWILIO_PHONE_NO.getParamCode());
 		TwilioUtil.sendSms(CommonUtil.getE164PhoneNo(countrycode, cellphone), twilloPhoneNo, smsContent);
-		usersSrv.putRegisterCode(countrycode, cellphone, registerCode, timeToIdle);
+		
+		if(code == null){
+			usersSrv.putRegisterCode(countrycode, cellphone, registerCode);
+		}
+		usersSrv.putRegisterCodeCtrl(countrycode, cellphone);
+		
 		return new RegisterCodeRequest_res();
 	}
 
@@ -111,13 +118,14 @@ public class UserAction extends BaseAction {
 		if (!CommonUtil.phoneNoFormatValidate(body.getCellphone())) {
 			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
 		}
+		if (usersSrv.getRegisterCodeCtrl(countryCode, cellphone) != null) {
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE_FREQUENT.getCode());
+		}
 		TUserUsers userUsers = usersSrv.queryUserInfoByPhone_master(cellphone, countryCode);
 		if (userUsers != null) {
 			throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
 		}
-		if (usersSrv.getRegisterCode(countryCode, cellphone) != null) {
-			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE_FREQUENT.getCode());
-		}
+
 	}
 	
 	/**
@@ -145,17 +153,17 @@ public class UserAction extends BaseAction {
 		if (!CommonUtil.phoneNoFormatValidate(cellphone)) {
 			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
 		}
+		String code = usersSrv.getRegisterCode(countryCode, cellphone);
+		if (code == null) {
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE_EXPIRED.getCode());
+		} else if (!code.equals(body.getVerifycode())) {
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE.getCode());
+		}
 		TUserUsers userUsers = usersSrv.queryUserInfoByPhone_master(cellphone, countryCode);
 		if (userUsers != null) {
 			throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
 		}
-		String registerCode = usersSrv.getRegisterCode(countryCode, cellphone);
-		if (registerCode == null) {
-			throw new AppException(ResCodeAppEnum.REGISTER_CODE_EXPIRED.getCode());
-		}
-		if (!registerCode.equals(body.getVerifycode())) {
-			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE.getCode());
-		}
+
 	}
 
 	/**
@@ -332,16 +340,22 @@ public class UserAction extends BaseAction {
 
 		String countryCode = req.getBody().getCountrycode();
 		String cellPhone = req.getBody().getCellphone();
-		String verificationCode = CommonUtil.getRadom(4);
-		verificationCode = "1234";
-		int timeToIdle = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.USER_FIND_PASSWORD_CODE_TIME_TO_IDLE.getParamCode());
-		usersSrv.putFindpasswordVerificationCode(countryCode, cellPhone, verificationCode, timeToIdle);
-
-		String smstpl = CommonUtil
-				.getSysConfigStr(SysParamCodeDbEnum.TWILIO_VERIFICATION_FINDPWD_CODE_SMS_TEMPLETE.getParamCode());
+		
+		String code = usersSrv.getFindpasswordVerificationCode(countryCode, cellPhone);
+		String verificationCode = null;
+		if(verificationCode == null){
+			verificationCode = CommonUtil.getRadom(4);
+		}
+		log.info("countryCode:" + countryCode + "--" + "cellphone:" + cellPhone + "--verificationCode:" + verificationCode);
+		
+ 		String smstpl = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.TWILIO_VERIFICATION_FINDPWD_CODE_SMS_TEMPLETE.getParamCode());
 		String smsContent = smstpl.replaceAll(Constant.TWILLO_VERIFICATION_CODE, verificationCode);
-
 		TwilioUtil.sendSms(countryCode, cellPhone, smsContent);
+		
+		if(code == null){
+			usersSrv.putFindpasswordVerificationCode(countryCode, cellPhone, verificationCode);
+		}
+		usersSrv.putFindpasswordVerificationCodeCtrl(countryCode, cellPhone);
 
 		return new FindpwdCodeRequest_res();
 	}
@@ -358,7 +372,7 @@ public class UserAction extends BaseAction {
 		if (user == null) {
 			throw new AppException(ResCodeAppEnum.PHONE_NOT_EXIST.getCode());
 		}
-		String code = usersSrv.getFindpasswordVerificationCode(countryCode, cellPhone);
+		String code = usersSrv.getFindpasswordVerificationCodeCtrl(countryCode, cellPhone);
 		if (code != null) {
 			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE_FREQUENT.getCode());
 		}
@@ -375,20 +389,23 @@ public class UserAction extends BaseAction {
 	}
 
 	public void findpwdCodeVerifyValidate(FindpwdCodeVerify_req req) {
-
-		String countryCode = req.getBody().getCountrycode();
-		String cellPhone = req.getBody().getCellphone();
+		
+		FindpwdCodeVerify_req.Body body = req.getBody();
+		String countryCode = body.getCountrycode();
+		String cellPhone = body.getCellphone();
 
 		if (!CommonUtil.phoneNoFormatValidate(cellPhone)) {
 			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
 		}
+		String code = usersSrv.getFindpasswordVerificationCode(countryCode, cellPhone);
+		if(code == null){
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE_EXPIRED.getCode());
+		} else if (!code.equals(body.getVerifycode())) {
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE.getCode());
+		}
 		TUserUsers user = usersSrv.queryUserInfoByPhone(cellPhone, countryCode);
 		if (user == null) {
 			throw new AppException(ResCodeAppEnum.PHONE_NOT_EXIST.getCode());
-		}
-		String code = usersSrv.getFindpasswordVerificationCode(countryCode, cellPhone);
-		if (!req.getBody().getVerifycode().equals(code)) {
-			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE.getCode());
 		}
 	}
 

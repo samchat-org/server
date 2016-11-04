@@ -150,13 +150,23 @@ public class CacheUtil {
 	public static String getRegiserCodeCacheKey(String countryCode, String cellPhone) {
 		return getSystemId() + CacheNameCacheEnum.RDS_REGISTER_CODE.val() + ":" + countryCode + "_" + cellPhone;
 	}
-
-	public static String getTokenCacheKey(String token) {
-		return getSystemId() + CacheNameCacheEnum.RDS_TOKEN.val() + ":" + token;
+	
+	public static String getRegiserCodeCtrlCacheKey(String countryCode, String cellPhone) {
+		return getSystemId() + CacheNameCacheEnum.RDS_REGISTER_CODE_CTRL.val() + ":" + countryCode + "_" + cellPhone;
 	}
+
 
 	public static String getFindpasswordCacheKey(String countryCode, String cellPhone) {
 		return getSystemId() + CacheNameCacheEnum.RDS_FIND_PASSWORD_CODE.val() + ":" + countryCode + "_" + cellPhone;
+	}
+	
+	public static String getFindpasswordCtrlCacheKey(String countryCode, String cellPhone) {
+		return getSystemId() + CacheNameCacheEnum.RDS_FIND_PASSWORD_CODE_CTRL.val() + ":" + countryCode + "_" + cellPhone;
+	}
+	
+
+	public static String getTokenCacheKey(String token) {
+		return getSystemId() + CacheNameCacheEnum.RDS_TOKEN.val() + ":" + token;
 	}
 
 	public static String getUserInfoCacheKey(String countryCode, String cellPhone) {
@@ -165,6 +175,10 @@ public class CacheUtil {
 	
 	public static String getEditCellPhoneCacheKey(String countryCode, String cellPhone) {
 		return getSystemId() + CacheNameCacheEnum.EDIT_CELL_PHONE.val() + ":" + countryCode + "_" + cellPhone;
+	}
+	
+	public static String getEditCellPhoneCtrlCacheKey(String countryCode, String cellPhone) {
+		return getSystemId() + CacheNameCacheEnum.EDIT_CELL_PHONE_CTRL.val() + ":" + countryCode + "_" + cellPhone;
 	}
 
 	public static String getUserInfoIdCacheKey(long userId) {

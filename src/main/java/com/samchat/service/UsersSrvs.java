@@ -29,8 +29,10 @@ import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.cache.CacheNameCacheEnum;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.exceptions.RedisException;
 import com.samchat.common.utils.CacheUtil;
+import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.Md5Util;
 import com.samchat.common.utils.S3Util;
 import com.samchat.common.utils.niUtils.NiUtil;
@@ -239,13 +241,25 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
  		return res;
 	}
 
-	public void putRegisterCode(String countryCode, String cellPhone, String registerCode, int expireSec) {
+	public void putRegisterCode(String countryCode, String cellPhone, String registerCode) {
+		int timeToIdle = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.USER_REGISTER_CODE_TIME_TO_IDLE.getParamCode());
 		String keystr = CacheUtil.getRegiserCodeCacheKey(countryCode, cellPhone);
-		userRedisDao.set(keystr, registerCode, expireSec);
+		userRedisDao.set(keystr, registerCode, timeToIdle);
+	}
+	
+	public void putRegisterCodeCtrl(String countryCode, String cellPhone) {
+		int timeToIdle = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.USER_REGISTER_CODE_CTRL_TIME_TO_IDLE.getParamCode());
+		String keystr = CacheUtil.getRegiserCodeCtrlCacheKey(countryCode, cellPhone);
+		userRedisDao.set(keystr, "0", timeToIdle);
 	}
 
 	public String getRegisterCode(String countryCode, String cellPhone) {
 		String keystr = CacheUtil.getRegiserCodeCacheKey(countryCode, cellPhone);
+		return userRedisDao.get(keystr);
+	}
+	
+	public String getRegisterCodeCtrl(String countryCode, String cellPhone) {
+		String keystr = CacheUtil.getRegiserCodeCtrlCacheKey(countryCode, cellPhone);
 		return userRedisDao.get(keystr);
 	}
 
@@ -253,11 +267,22 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		String keystr = CacheUtil.getFindpasswordCacheKey(countryCode, cellPhone);
 		return userRedisDao.get(keystr);
 	}
+	
+	public String getFindpasswordVerificationCodeCtrl(String countryCode, String cellPhone) {
+		String keystr = CacheUtil.getFindpasswordCtrlCacheKey(countryCode, cellPhone);
+		return userRedisDao.get(keystr);
+	}
 
-	public void putFindpasswordVerificationCode(String countryCode, String cellPhone, String verificationCode,
-			int expireSec) {
+	public void putFindpasswordVerificationCode(String countryCode, String cellPhone, String verificationCode) {
+		int timeToIdle = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.USER_FIND_PASSWORD_CODE_TIME_TO_IDLE.getParamCode());
 		String keystr = CacheUtil.getFindpasswordCacheKey(countryCode, cellPhone);
-		userRedisDao.set(keystr, verificationCode, expireSec);
+		userRedisDao.set(keystr, verificationCode, timeToIdle);
+	}
+	
+	public void putFindpasswordVerificationCodeCtrl(String countryCode, String cellPhone) {
+		int timeToIdle = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.USER_FIND_PASSWORD_CODE_CTRL_TIME_TO_IDLE.getParamCode());
+		String keystr = CacheUtil.getFindpasswordCtrlCacheKey(countryCode, cellPhone);
+		userRedisDao.set(keystr, "0", timeToIdle);
 	}
 
 	public void cancelUserInfoIntoRedis(String countryCode, String cellPhone) {

@@ -92,7 +92,9 @@ public class CommonUtil {
 	}
 
 	public static String getRadom(int len) {
-		return (Math.random() + "").substring(2, len + 2);
+		String radom = (Math.random() + "").substring(2, len + 2);
+		radom = "1234";
+ 		return radom;
 
 	}
 

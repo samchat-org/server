@@ -20,10 +20,10 @@ public interface IUsersSrvs extends IBaseSrvs {
 	public TUserUsers queryUserInfoByUserName(String userName) ;
 	public TUserUsers queryUserInfoByEmail(String email) ;
 	public Register_res saveRegisterUserInfo_master(Register_req req, SysdateObjBean sysdate) throws Exception ;
-	public void putRegisterCode(String countryCode, String cellPhone, String registerCode, int expireSec) ;
+	public void putRegisterCode(String countryCode, String cellPhone, String registerCode) ;
 	public String getRegisterCode(String countryCode, String cellPhone) ;
 	public String getFindpasswordVerificationCode(String countryCode, String cellPhone) ;
-	public void putFindpasswordVerificationCode(String countryCode, String cellPhone, String verificationCode,int expireSec);
+	public void putFindpasswordVerificationCode(String countryCode, String cellPhone, String verificationCode);
 	public void cancelUserInfoIntoRedis(String countryCode, String cellPhone) ;
 	public void niRegister(long userId, String userName, String token, Timestamp cur) throws Exception ;
 	public void niTokenUpdate(long userId, String token, Timestamp cur) throws Exception ;
@@ -49,4 +49,9 @@ public interface IUsersSrvs extends IBaseSrvs {
 	public TUserUsers queryUserInfoByUserName_master(String userName);
 	public TUserUsers queryUser_master(long userId);
 	public TUserUsers updateAvatar_master(String origin, String thumb, long userId, Timestamp sysdate)  throws Exception;
+	public void putRegisterCodeCtrl(String countryCode, String cellPhone);
+	public String getRegisterCodeCtrl(String countryCode, String cellPhone);
+	public void putFindpasswordVerificationCodeCtrl(String countryCode, String cellPhone);
+	public String getFindpasswordVerificationCodeCtrl(String countryCode, String cellPhone);
+
 }

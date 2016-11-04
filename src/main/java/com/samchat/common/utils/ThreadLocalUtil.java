@@ -1,6 +1,7 @@
 package com.samchat.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 
@@ -14,6 +15,8 @@ public class ThreadLocalUtil {
 		ObjectMapper om = TL_OM_APP.get();
 		if (om == null) {
 			om = new ObjectMapper();
+			om.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+			//mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 			TL_OM_APP.set(om);
 		}
 		return om;

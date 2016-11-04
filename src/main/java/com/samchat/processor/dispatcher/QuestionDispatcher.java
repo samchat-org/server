@@ -1,4 +1,4 @@
-package com.samchat.processor.QuestionDispatch;
+package com.samchat.processor.dispatcher;
 
 import java.util.List;
 
@@ -16,31 +16,17 @@ import com.samchat.common.beans.auto.json.appserver.question.DispatchQuestion_re
 import com.samchat.common.beans.manual.json.sqs.QuestionSqs;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.GetuiUtil;
+import com.samchat.processor.dispatcher.base.DispatcherBase;
 import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IQuestionSrvs;
 import com.samchat.service.interfaces.IUsersSrvs;
 
-public class Dispatcher extends Thread {
+public class QuestionDispatcher extends DispatcherBase {
 
-	private static Logger log = Logger.getLogger(Dispatcher.class);
-
-	@Autowired
-	private ICommonSrvs commonSrv;
+	private static Logger log = Logger.getLogger(QuestionDispatcher.class);
 
 	@Autowired
 	private IQuestionSrvs questionSrv;
-
-	@Autowired
-	private IUsersSrvs usersSrv;
-
-	private ObjectMapper om = null;
-
-	private AmazonSQS asqs;
-
-	public void paramInit() {
-		asqs = new AmazonSQSClient();
-		om = new ObjectMapper();
-	}
 
 	private DispatchQuestion_req getRequest(TUserUsers destUser, QuestionSqs reqSqs) {
 
@@ -71,46 +57,21 @@ public class Dispatcher extends Thread {
 		return req;
 	}
 
-	public void run() {
-		paramInit();
-		for (;;) {
-			try {
-				String queueUrl = CommonUtil.getSysConfigStr("aws_sqs_question_url");
-				ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest(queueUrl);
-				
-				int watiTime = CommonUtil.getSysConfigInt("aws_sqs_receive_wait_time");
-				int visibilityTime = CommonUtil.getSysConfigInt("aws_sqs_receive_visibility_time");
-				receiveMessageRequest.setWaitTimeSeconds(watiTime);
-				receiveMessageRequest.setVisibilityTimeout(visibilityTime);
-				
-				log.info("recving---");
-				List<Message> messages = asqs.receiveMessage(receiveMessageRequest).getMessages();
- 				for (Message message : messages) {
-					String body = message.getBody();
-					log.info("messages body:" + body);
-					try {
-						QuestionSqs req = om.readValue(body, QuestionSqs.class);
-						questionSrv.saveQuestion(req);
- 						List<TUserUsers> users = usersSrv.queryUsers();
-						for (TUserUsers user : users) {
-							if(user.getUser_id() != req.getUser_id()){
-								String dispatchReq = om.writeValueAsString(getRequest(user, req));
-	 							GetuiUtil.push(user.getUser_id().toString(), dispatchReq);
-							}
-						}
-					} catch (Exception e) {
-						log.error("error message:" + body, e);
-					} finally{
-						asqs.deleteMessage(queueUrl, message.getReceiptHandle());
-					}
-				}
-			} catch (Exception e) {
-				log.error(e);
+	protected void process(Message message) throws Exception {
+
+		String body = message.getBody();
+		QuestionSqs req = om.readValue(body, QuestionSqs.class);
+		questionSrv.saveQuestion(req);
+		List<TUserUsers> users = usersSrv.queryUsers();
+		for (TUserUsers user : users) {
+			if (user.getUser_id() != req.getUser_id()) {
+				String dispatchReq = om.writeValueAsString(getRequest(user, req));
+				GetuiUtil.push(user.getUser_id().toString(), dispatchReq);
 			}
 		}
 	}
-	
-	public static void main(String args[]){
-		
+
+	public static void main(String args[]) {
+
 	}
 }

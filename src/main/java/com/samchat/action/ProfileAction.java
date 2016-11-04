@@ -184,16 +184,23 @@ public class ProfileAction extends BaseAction {
 
 		String countryCode = req.getBody().getCountrycode();
 		String cellPhone = req.getBody().getCellphone();
-		String verificationCode = CommonUtil.getRadom(4);
-		verificationCode = "1234";
 		
-		profileSrv.putEditCellPhoneVerificationCode(countryCode, cellPhone, verificationCode);
-
-		String smstpl = CommonUtil
-				.getSysConfigStr(SysParamCodeDbEnum.TWILIO_VERIFICATION_EDIT_CELL_PHONE_CODE_SMS_TEMPLETE.getParamCode());
+		String code = profileSrv.getEditCellPhoneVerificationCode(countryCode, cellPhone);
+		String verificationCode = code;
+		if(verificationCode == null){
+			verificationCode = CommonUtil.getRadom(4);
+		}
+ 		
+		log.info("countryCode:" + countryCode + "--" + "cellphone:" + cellPhone + "--verificationCode:" + verificationCode);
+		
+		String smstpl = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.TWILIO_VERIFICATION_EDIT_CELL_PHONE_CODE_SMS_TEMPLETE.getParamCode());
 		String smsContent = smstpl.replaceAll(Constant.TWILLO_VERIFICATION_CODE, verificationCode);
-
 		TwilioUtil.sendSms(countryCode, cellPhone, smsContent);
+		
+		if(code == null){
+			profileSrv.putEditCellPhoneVerificationCode(countryCode, cellPhone, verificationCode);
+		}
+		profileSrv.putEditCellPhoneVerificationCodeCtrl(countryCode, cellPhone);
 
 		return new EditCellPhoneCodeRequest_res();
 	}
@@ -214,8 +221,7 @@ public class ProfileAction extends BaseAction {
 				throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
 			}
 		}
-		String code = profileSrv.getEditCellPhoneVerificationCode(countryCode, cellPhone);
-		if (code != null) {
+		if (profileSrv.getEditCellPhoneVerificationCodeCtrl(countryCode, cellPhone) != null) {
 			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE_FREQUENT.getCode());
 		}
 	}
@@ -235,7 +241,12 @@ public class ProfileAction extends BaseAction {
 		SysdateObjBean sysdate = commonSrv.querySysdateObj();
 		
 		profileSrv.updatePhoneNo_master(token.getUserId(), countryCode, cellPhone, sysdate);
-		return new EditCellPhoneUpdate_res();
+		EditCellPhoneUpdate_res res = new EditCellPhoneUpdate_res();
+		EditCellPhoneUpdate_res.User user = new EditCellPhoneUpdate_res.User();
+		user.setLastupdate(sysdate.getNow().getTime());
+		res.setUser(user);
+		
+		return res;
 
 	}
 
@@ -249,6 +260,12 @@ public class ProfileAction extends BaseAction {
 		if (!CommonUtil.phoneNoFormatValidate(cellPhone)) {
 			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
 		}
+		String code = profileSrv.getEditCellPhoneVerificationCode(countryCode, cellPhone);
+		if(code == null){
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE_EXPIRED.getCode());
+		} else if(!code.equals(verifycode)){
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE.getCode());
+		}
 		TUserUsers user = usersSrv.queryUserInfoByPhone(cellPhone, countryCode);
 		if (user != null) {
 			if(user.getUser_id() == token.getUserId()){
@@ -257,9 +274,6 @@ public class ProfileAction extends BaseAction {
 				throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
 			}
 		}
-		String code = profileSrv.getEditCellPhoneVerificationCode(countryCode, cellPhone);
-		if(!verifycode.equals(code)){
-			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE.getCode());
-		}
+
 	}
 }

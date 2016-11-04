@@ -1,4 +1,4 @@
-package com.samchat.processor;
+package com.samchat.processor.dispatcher.base;
 
 import java.util.concurrent.Executors;
 
@@ -8,7 +8,6 @@ import org.springframework.context.ApplicationContext;
 import com.samchat.common.thread.SysConfigRefreshThread;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.SpringUtil;
-import com.samchat.processor.QuestionDispatch.Dispatcher;
 
 public class MainProcessor {
 	

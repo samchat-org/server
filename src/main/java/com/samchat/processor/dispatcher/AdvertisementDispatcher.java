@@ -1,12 +1,10 @@
-package com.samchat.processor.AdvertisementDispatch;
+package com.samchat.processor.dispatcher;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +17,6 @@ import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementContent;
 import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementSendLog;
 import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementDispatch_req;
-import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
@@ -28,44 +25,21 @@ import com.samchat.common.enums.db.FollowDbEnum;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.GetuiUtil;
 import com.samchat.common.utils.S3Util;
+import com.samchat.processor.dispatcher.base.DispatcherBase;
 import com.samchat.service.interfaces.IAdvertisementSrvs;
-import com.samchat.service.interfaces.ICommonSrvm;
 import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IOfficialAccountSrvs;
 import com.samchat.service.interfaces.IUsersSrvs;
 
-public class Dispatcher extends Thread {
+public class AdvertisementDispatcher extends DispatcherBase {
 
-	private static Logger log = Logger.getLogger(Dispatcher.class);
-
-	@Autowired
-	private ICommonSrvs commonSrv;
-
-	@Autowired
-	private ICommonSrvm commonSrvm;
+	private static Logger log = Logger.getLogger(AdvertisementDispatcher.class);
 
 	@Autowired
 	private IAdvertisementSrvs advertisementSrv;
 
 	@Autowired
-	private IUsersSrvs usersSrv;
-
-	@Autowired
 	private IOfficialAccountSrvs officialAccountSrv;
-
-	private ObjectMapper om = null;
-
-	private AmazonSQS asqs;
-
-	public void paramInit() {
-		try {
-			asqs = new AmazonSQSClient();
-			om = new ObjectMapper();
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			throw new Error();
-		}
-	}
 
 	private AdvertisementDispatch_req getRequest(TAdvertisementSendLog sendlog, TAdvertisementContent content) {
 
@@ -111,7 +85,7 @@ public class Dispatcher extends Thread {
 		return req;
 	}
 
-	public void resendAdvertisement(AdvertisementSqs req) throws Exception {
+	private void resendAdvertisement(AdvertisementSqs req) throws Exception {
 		long userId = req.getUser_id();
 		int validCycle = CommonUtil.getSysConfigInt("aws_sqs_advertisement_valid_cycle");
 
@@ -134,7 +108,7 @@ public class Dispatcher extends Thread {
 				byte state = AdsDbEnum.SendLogState.SEND_SUCCESS.val();
 				String remark = AdsDbEnum.SendLogState.SEND_SUCCESS.name();
 				String pushRst = "";
-				
+
 				try {
 					TAdvertisementContent content = advertisementSrv.queryAdvertisementCotentById(adsId, shardingFlag);
 					TOaFollow follow = officialAccountSrv.queryUserFollow(userId, content.getUser_id_pro());
@@ -163,7 +137,7 @@ public class Dispatcher extends Thread {
 
 	}
 
-	public void sendAdvertisement(AdvertisementSqs req) throws Exception {
+	private void sendAdvertisement(AdvertisementSqs req) throws Exception {
 
 		long adsId = req.getAds_id();
 		long userIdPro = req.getUser_id_pro();
@@ -198,40 +172,15 @@ public class Dispatcher extends Thread {
 		}
 	}
 
-	public void run() {
-		paramInit();
-		for (;;) {
-			try {
-				String queueUrl = CommonUtil.getSysConfigStr("aws_sqs_advertisement_url");
-				ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest(queueUrl);
+	protected void process(Message message) throws Exception {
 
-				int watiTime = CommonUtil.getSysConfigInt("aws_sqs_receive_wait_time");
-				int visibilityTime = CommonUtil.getSysConfigInt("aws_sqs_receive_visibility_time");
-				receiveMessageRequest.setWaitTimeSeconds(watiTime);
-				receiveMessageRequest.setVisibilityTimeout(visibilityTime);
-
-				log.info("recving---");
-				List<Message> messages = asqs.receiveMessage(receiveMessageRequest).getMessages();
-				for (Message message : messages) {
-					String body = message.getBody();
-					log.info("messages body:" + body);
-					try {
-						AdvertisementSqs req = om.readValue(body, AdvertisementSqs.class);
-						long sendType = req.getSendType();
-						if (sendType == 2) {
-							sendAdvertisement(req);
-						} else if (sendType == 1) {
-							resendAdvertisement(req);
-						}
-					} catch (Exception e) {
-						log.error("error message:" + body, e);
-					} finally {
-						asqs.deleteMessage(queueUrl, message.getReceiptHandle());
-					}
-				}
-			} catch (Exception e) {
-				log.error(e);
-			}
+		String body = message.getBody();
+		AdvertisementSqs req = om.readValue(body, AdvertisementSqs.class);
+		long sendType = req.getSendType();
+		if (sendType == 2) {
+			sendAdvertisement(req);
+		} else if (sendType == 1) {
+			resendAdvertisement(req);
 		}
 	}
 

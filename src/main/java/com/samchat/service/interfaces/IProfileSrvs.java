@@ -1,7 +1,5 @@
 package com.samchat.service.interfaces;
 
-import java.sql.Timestamp;
-
 import com.samchat.common.beans.auto.json.appserver.profile.ProfileUpdate_req;
 import com.samchat.common.beans.manual.common.SysdateObjBean;
 
@@ -14,4 +12,8 @@ public interface IProfileSrvs extends IBaseSrvs{
 	public String getEditCellPhoneVerificationCode(String countryCode, String cellPhone);
 	
 	public void updatePhoneNo_master(long userId, String countryCode, String phoneNo, SysdateObjBean sysdate) throws Exception;
+	
+	public String getEditCellPhoneVerificationCodeCtrl(String countryCode, String cellPhone);
+	
+	public void putEditCellPhoneVerificationCodeCtrl(String countryCode, String cellPhone);
 }

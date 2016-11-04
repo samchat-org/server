@@ -96,9 +96,20 @@ public class ProfileSrvs extends BaseSrvs implements IProfileSrvs {
 		String keystr = CacheUtil.getEditCellPhoneCacheKey(countryCode, cellPhone);
 		userRedisDao.set(keystr, verificationCode, timeToIdle);
 	}
+	
+	public void putEditCellPhoneVerificationCodeCtrl(String countryCode, String cellPhone) {
+		int timeToIdle = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.EDIT_CELL_PHONE_CODE_CTRL_TIME_TO_IDLE.getParamCode());
+		String keystr = CacheUtil.getEditCellPhoneCtrlCacheKey(countryCode, cellPhone);
+		userRedisDao.set(keystr, "0", timeToIdle);
+	}
  
 	public String getEditCellPhoneVerificationCode(String countryCode, String cellPhone) {
 		String keystr = CacheUtil.getEditCellPhoneCacheKey(countryCode, cellPhone);
+		return userRedisDao.get(keystr);
+	}
+	
+	public String getEditCellPhoneVerificationCodeCtrl(String countryCode, String cellPhone) {
+		String keystr = CacheUtil.getEditCellPhoneCtrlCacheKey(countryCode, cellPhone);
 		return userRedisDao.get(keystr);
 	}
 	
