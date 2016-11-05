@@ -56,9 +56,9 @@ public class ProfileAction extends BaseAction {
 	public AppkeyGet_res appkeyGet(AppkeyGet_req req, TokenMappingRds token) {
 		AppkeyGet_res res = new AppkeyGet_res();
 
-		String appI = CommonUtil.getSysConfigStr("getui_appI");
-		String appK = CommonUtil.getSysConfigStr("getui_appK");
-		String appS = CommonUtil.getSysConfigStr("getui_appS");
+		String appI = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.GETUI_APP_ID.getParamCode());
+		String appK = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.GETUI_APP_KEY.getParamCode());
+		String appS = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.GETUI_APP_MASTER_SECRET.getParamCode());
 		log.info("appI:" + appI + "---appK" + appI + "---appS:" + appS);
 
 		res.setAppi(appI);
@@ -115,7 +115,7 @@ public class ProfileAction extends BaseAction {
 		AdvertisementSqs ads = new AdvertisementSqs();
 		ads.setUser_id(userId);
 		ads.setSendType((byte) 1);
-		SqsUtil.pushMessage(ads, SysParamCodeDbEnum.SQS_ADVERTISEMENT.getParamCode());
+		SqsUtil.pushMessage(ads, SysParamCodeDbEnum.SQS_ADVERTISEMENT_URL.getParamCode());
 
 		return new SendClientId_res();
 	}

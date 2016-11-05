@@ -22,6 +22,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.utils.CommonUtil;
 
 public class NiPostClient {
@@ -37,8 +38,8 @@ public class NiPostClient {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(actionUrl);
 		
-		String appKey = CommonUtil.getSysConfigStr("ni_app_key");
- 		String appSecret = CommonUtil.getSysConfigStr("ni_app_secret");
+		String appKey = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.NI_APP_KEY.getParamCode());
+ 		String appSecret = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.NI_APP_SECRET.getParamCode());
 		String nonce = CommonUtil.getRandom();
 		String curTime = String.valueOf(cur.getTime() / 1000L);
 		String checkSum = NiCheckSumBuilder.getCheckSum(appSecret, nonce, curTime);// 计算CheckSum的java代码

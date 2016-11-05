@@ -246,8 +246,8 @@ public class OfficialAccountAction extends BaseAction {
 
 			}
 		}
-
-		List<QryPublicQueryVO> oalist = officialAccountSrv.queryPublicList(key, count);
+		;
+		List<QryPublicQueryVO> oalist = officialAccountSrv.queryPublicList(token.getUserId(), key, count);
 		PublicQuery_res res = new PublicQuery_res();
 		res.setCount(oalist.size());
 
@@ -255,7 +255,6 @@ public class OfficialAccountAction extends BaseAction {
 		res.setUsers(users);
 
 		for (QryPublicQueryVO pq : oalist) {
-			
 			long userId = pq.getUser_id();
 			if(userId == token.getUserId()){
 				continue;
@@ -285,9 +284,7 @@ public class OfficialAccountAction extends BaseAction {
 			pros.setPhone(pq.getPhone_pro());
 			pros.setEmail(pq.getEmail_pro());
 			pros.setAddress(pq.getAddress_pro());
-
 			users.add(user);
-
 		}
 
 		return res;

@@ -19,6 +19,7 @@ import com.samchat.common.beans.auto.db.mapper.TUserProUsersMapper;
 import com.samchat.common.beans.auto.db.mapper.TUserUsersMapper;
 import com.samchat.common.beans.manual.db.QryUserInfoVO;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.exceptions.SysException;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.dao.db.interfaces.IUserDbDao;
@@ -130,7 +131,7 @@ public class UserDbDao extends BaseDbDao implements IUserDbDao {
  	}
 	
 	private int getQueryUsersFuzzyPageSize(){
-		int ps = Integer.parseInt(CommonUtil.getSysConfigStr("queryUsersFuzzy_page_size"));
+		int ps = Integer.parseInt(CommonUtil.getSysConfigStr(SysParamCodeDbEnum.PAGE_SIZE_QUERYUSERSFUZZY.getParamCode()));
 		if(ps <= 0){
 			throw new SysException("queryPageSize <= 0, error ");
 		}

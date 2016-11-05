@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.samchat.common.beans.auto.db.entitybeans.TQuestionQuestions;
-import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.question.Question_req;
 import com.samchat.common.beans.manual.db.QryPopularRequests;
 import com.samchat.common.beans.manual.json.redis.QuSendCtlRds;
@@ -17,7 +16,6 @@ import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.beans.manual.json.sqs.QuestionSqs;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.ResCodeAppEnum;
-import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CacheUtil;
@@ -34,7 +32,7 @@ public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 	private static Logger log = Logger.getLogger(QuestionSrvs.class);
 
 	@Autowired
-	private IUserRedisDao<String, Object> userRedisDao;
+	private IUserRedisDao userRedisDao;
 
 	@Autowired
 	private IQuestionDbDao questionDbDao;
@@ -78,19 +76,19 @@ public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 				sqs.setLongitude(info.getLongitude());
 			}
 		}
-		SqsUtil.pushMessage(sqs, SysParamCodeDbEnum.SQS_QUESTION.getParamCode());
+		SqsUtil.pushMessage(sqs, SysParamCodeDbEnum.SQS_QUESTION_URL.getParamCode());
 
 		return sqs;
 	}
 
 	private void questionSendControl(long sysdate, String countryCode, String cellphone) throws Exception{
 		String key = CacheUtil.getQuestSendCtlCacheKey(countryCode, cellphone);
-		QuSendCtlRds ctl = userRedisDao.getJsonObj(key);
+		QuSendCtlRds ctl = userRedisDao.getJsonObj(key, QuSendCtlRds.class);
 		if (ctl == null) {
 			ctl = new QuSendCtlRds();
 		} else {
 			if (ctl.getBlock() == Constant.QUESTION_SEND_BLOCK) {
-				int blocktime = CommonUtil.getSysConfigInt("question_send_block_time");
+				int blocktime = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.QUESTION_SEND_BLOCK_TIME.getParamCode());
 				if (sysdate - ctl.getLast() < blocktime * 60 * 1000) {
 					log.info("sysdate:" + sysdate + "--last:" + ctl.getLast() + "--blocktime:" + blocktime);
 					throw new AppException(ResCodeAppEnum.SEND_QUESTION_FREQUENT.getCode());
@@ -106,8 +104,8 @@ public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 		}
 		ctl.setLast(sysdate);
 		ctl.setCount(ctl.getCount() + 1);
-		int limit = CommonUtil.getSysConfigInt("question_send_limit_time");
-		int count = CommonUtil.getSysConfigInt("question_send_limit_count");
+		int limit = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.QUESTION_SEND_LIMIT_TIME.getParamCode());
+		int count = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.QUESTION_SEND_LIMIT_COUNT.getParamCode());
 		if (ctl.getLast() - ctl.getFirst() < limit * 60 * 1000 && ctl.getCount() > count) {
 			ctl.setBlock(Constant.QUESTION_SEND_BLOCK);
 		}

@@ -6,13 +6,9 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.Message;
-import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementContent;
 import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementSendLog;
 import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
@@ -22,14 +18,14 @@ import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
 import com.samchat.common.enums.db.AdsDbEnum;
 import com.samchat.common.enums.db.FollowDbEnum;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.GetuiUtil;
 import com.samchat.common.utils.S3Util;
+import com.samchat.common.utils.ThreadLocalUtil;
 import com.samchat.processor.dispatcher.base.DispatcherBase;
 import com.samchat.service.interfaces.IAdvertisementSrvs;
-import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IOfficialAccountSrvs;
-import com.samchat.service.interfaces.IUsersSrvs;
 
 public class AdvertisementDispatcher extends DispatcherBase {
 
@@ -87,7 +83,7 @@ public class AdvertisementDispatcher extends DispatcherBase {
 
 	private void resendAdvertisement(AdvertisementSqs req) throws Exception {
 		long userId = req.getUser_id();
-		int validCycle = CommonUtil.getSysConfigInt("aws_sqs_advertisement_valid_cycle");
+		int validCycle = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.DISPATCHER_ADVERTISEMENT_VALID_CYCLE.getParamCode());
 
 		Timestamp sysdate = commonSrv.querySysdate();
 		GregorianCalendar gc = new GregorianCalendar();
@@ -121,7 +117,7 @@ public class AdvertisementDispatcher extends DispatcherBase {
 					log.info("content:" + content.getContent());
 					log.info("old clientId:" + clientId + "--new clientId:" + curClientId + "--sysdate:" + sysdate);
 
-					String dispatchReq = om.writeValueAsString(getRequest(sendlog, content));
+					String dispatchReq = ThreadLocalUtil.getAppObjectMapper().writeValueAsString(getRequest(sendlog, content));
 					pushRst = GetuiUtil.push(userId + "", dispatchReq);
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
@@ -159,7 +155,7 @@ public class AdvertisementDispatcher extends DispatcherBase {
 			String remark = AdsDbEnum.SendLogState.SEND_SUCCESS.name();
 			String pushRst = "";
 			try {
-				String dispatchReq = om.writeValueAsString(getRequest(userId, req));
+				String dispatchReq = ThreadLocalUtil.getAppObjectMapper().writeValueAsString(getRequest(userId, req));
 				pushRst = GetuiUtil.push(userId + "", dispatchReq);
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
@@ -172,16 +168,23 @@ public class AdvertisementDispatcher extends DispatcherBase {
 		}
 	}
 
-	protected void process(Message message) throws Exception {
+	public void process(Message message) throws Exception {
 
 		String body = message.getBody();
-		AdvertisementSqs req = om.readValue(body, AdvertisementSqs.class);
+		AdvertisementSqs req = ThreadLocalUtil.getAppObjectMapper().readValue(body, AdvertisementSqs.class);
 		long sendType = req.getSendType();
 		if (sendType == 2) {
 			sendAdvertisement(req);
 		} else if (sendType == 1) {
 			resendAdvertisement(req);
 		}
+	}
+	
+	public void init(){
+		String sqsUrlName = SysParamCodeDbEnum.SQS_ADVERTISEMENT_URL.getParamCode();
+		int threadCount = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.DISPATCHER_ADVERTISEMENT_THREAD_COUNT.getParamCode());
+		this.setSqsUrlName(sqsUrlName);
+		this.setThreadCount(threadCount);
 	}
 
 	public static void main(String args[]) {

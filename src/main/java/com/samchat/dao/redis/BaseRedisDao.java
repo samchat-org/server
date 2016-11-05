@@ -13,7 +13,7 @@ import redis.clients.jedis.ShardedJedisPool;
 import com.samchat.common.utils.ThreadLocalUtil;
 import com.samchat.dao.redis.interfaces.IBaseRedisDao;
 
-public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
+public class BaseRedisDao implements IBaseRedisDao {
 
 	private static Logger log = Logger.getLogger(BaseRedisDao.class);
 
@@ -41,7 +41,7 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 	}
 
 	public void hsetJsonObj(String key, String field, Object value) throws Exception {
-		hset(key, field, ThreadLocalUtil.getRedisObjectMapper().writeValueAsString(value));
+		hset(key, field, ThreadLocalUtil.getAppObjectMapper().writeValueAsString(value));
 	}
 
 	public void set(String key, String value) {
@@ -108,22 +108,22 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 	}
 
 	public void setJsonObj(String key, Object valueObj) throws Exception {
-		set(key, ThreadLocalUtil.getRedisObjectMapper().writeValueAsString(valueObj));
+		set(key, ThreadLocalUtil.getAppObjectMapper().writeValueAsString(valueObj));
 	}
 
 	public void setJsonObj(String key, Object valueObj, int expire) throws Exception {
-		if(expire == 0){
+		if (expire == 0) {
 			throw new Exception("expire can't be 0");
 		}
-		set(key, ThreadLocalUtil.getRedisObjectMapper().writeValueAsString(valueObj), expire);
+		set(key, ThreadLocalUtil.getAppObjectMapper().writeValueAsString(valueObj), expire);
 	}
 
 	public boolean setJsonObjNX(String key, Object valueObj) throws Exception {
-		return setNX(key, ThreadLocalUtil.getRedisObjectMapper().writeValueAsString(valueObj));
+		return setNX(key, ThreadLocalUtil.getAppObjectMapper().writeValueAsString(valueObj));
 	}
 
 	public boolean setJsonObjNX(String key, Object valueObj, int expire) throws Exception {
-		return setNX(key, ThreadLocalUtil.getRedisObjectMapper().writeValueAsString(valueObj), expire);
+		return setNX(key, ThreadLocalUtil.getAppObjectMapper().writeValueAsString(valueObj), expire);
 	}
 
 	public String getFromMaster(String key) {
@@ -156,12 +156,11 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 		return getFromSlave(key);
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T getJsonObj(String key) throws Exception {
+ 	public <T> T getJsonObj(String key, Class<T> clazz) throws Exception {
 		String ret = get(key);
-		if(ret == null)
+		if (ret == null)
 			return null;
-		return (T)ThreadLocalUtil.getRedisObjectMapper().readValue(get(key), Object.class);
+		return ThreadLocalUtil.getAppObjectMapper().readValue(ret, clazz);
 	}
 
 	public String hgetFromMaster(String key, String field) {
@@ -177,7 +176,7 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 		}
 	}
 
-	public String hgetFromSlave(String key,  String field) {
+	public String hgetFromSlave(String key, String field) {
 		ShardedJedis shardedJedis = null;
 		try {
 			shardedJedis = shardedJedisPool.getResource();
@@ -194,13 +193,12 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 		return hgetFromSlave(key, field);
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T hgetJsonObj(String key, String field) throws Exception {
- 		String ret = hget(key, field);
-		if(ret == null){
+	public <T> T hgetJsonObj(String key, String field, Class<T> clazz) throws Exception {
+		String ret = hget(key, field);
+		if (ret == null) {
 			return null;
 		}
-		return (T)ThreadLocalUtil.getRedisObjectMapper().readValue(ret, Object.class);
+		return ThreadLocalUtil.getAppObjectMapper().readValue(ret, clazz);
 	}
 
 	public void delete(String key) {
@@ -229,7 +227,5 @@ public class BaseRedisDao<K, V> implements IBaseRedisDao<K, V> {
 		} finally {
 			jedis.close();
 		}
-
 	}
-
 }

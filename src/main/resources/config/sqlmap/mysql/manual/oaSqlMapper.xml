@@ -59,6 +59,7 @@ AND (
 	OR INSTR(upu.service_description,#{key})> 0
 	OR INSTR(uu.user_name,#{key})> 0
 )
+AND uu.user_id &lt;&gt; #{cur_user_id}
 	</select>	
 <select id="queryFollowListStateDate" parameterType="map"
 		resultType="java.sql.Timestamp">

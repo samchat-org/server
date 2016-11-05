@@ -49,7 +49,7 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 	private static Logger log = Logger.getLogger(UsersSrvs.class);
 
 	@Autowired
-	private IUserRedisDao<String, Object> userRedisDao;
+	private IUserRedisDao userRedisDao;
 	@Autowired
 	private IUserDbDao userDbDao;
 	@Autowired
@@ -309,7 +309,7 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 	public TokenMappingRds getTokenObj(String token) throws Exception {
  		try {
 			String key = CacheUtil.getTokenCacheKey(token);
-			return userRedisDao.getJsonObj(key);
+			return userRedisDao.getJsonObj(key, TokenMappingRds.class);
 		} catch (Exception e) {
 			 List<TUserUsers>  list = userDbDao.queryUserByToken(token);
 			 if(list.size() == 1){
@@ -398,7 +398,7 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 
 	public void loginPwderrorCheck(String countryCode, String cellphone, Timestamp sysdate) throws Exception {
 		LoginErrRds loginerr = this.userRedisDao.getJsonObj(CacheNameCacheEnum.RDS_LOGIN_ERR.val() + ":" + countryCode
-				+ "_" + cellphone);
+				+ "_" + cellphone, LoginErrRds.class);
 		if (loginerr == null) {
 			loginerr = new LoginErrRds();
 			loginerr.setFirst(sysdate.getTime());

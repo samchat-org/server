@@ -9,7 +9,7 @@ public class ThreadLocalUtil {
 
 	private static ThreadLocal<ObjectMapper> TL_OM_APP = new ThreadLocal<ObjectMapper>();
 
-	private static ThreadLocal<ObjectMapper> TL_OM_REDIS = new ThreadLocal<ObjectMapper>();
+	private static ThreadLocal<ObjectMapper> TL_OM_DEF = new ThreadLocal<ObjectMapper>();
 
 	public static ObjectMapper getAppObjectMapper() {
 		ObjectMapper om = TL_OM_APP.get();
@@ -22,12 +22,12 @@ public class ThreadLocalUtil {
 		return om;
 	}
 
-	public static ObjectMapper getRedisObjectMapper() {
-		ObjectMapper om = TL_OM_REDIS.get();
+	public static ObjectMapper getDefObjectMappera() {
+		ObjectMapper om = TL_OM_DEF.get();
 		if (om == null) {
 			om = new ObjectMapper();
 			om.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
-			TL_OM_REDIS.set(om);
+			TL_OM_DEF.set(om);
 		}
 		return om;
 	}

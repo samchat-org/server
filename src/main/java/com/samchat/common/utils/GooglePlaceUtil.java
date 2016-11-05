@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.samchat.common.beans.auto.json.appserver.profile.GoogleplaceAutocomplete_res;
 import com.samchat.common.beans.manual.common.InternetProxyBean;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 
 public class GooglePlaceUtil {
 
@@ -24,7 +25,7 @@ public class GooglePlaceUtil {
 	private static String AUTO_COMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/json?";
 
 	private static String getBaseUrl() {
-		String key = CommonUtil.getSysConfigStr("google_places_key");
+		String key = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.GOOGLE_PLACES_KEY.getParamCode());
 		return AUTO_COMPLETE_URL + "key=" + key;
 	}
 

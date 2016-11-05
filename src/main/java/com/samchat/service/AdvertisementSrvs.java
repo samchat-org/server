@@ -66,7 +66,7 @@ public class AdvertisementSrvs extends BaseSrvs implements IAdvertisementSrvs {
 		Timestamp sysdate = this.querySysdate();
 		ads.setSendType((byte) 2);
 		ads.setTime(sysdate.getTime());
-		SqsUtil.pushMessage(ads, SysParamCodeDbEnum.SQS_ADVERTISEMENT.getParamCode());
+		SqsUtil.pushMessage(ads, SysParamCodeDbEnum.SQS_ADVERTISEMENT_URL.getParamCode());
 
 		return ads;
 	}

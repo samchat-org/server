@@ -2,19 +2,14 @@ package com.samchat.service;
 
 import java.sql.Timestamp;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
-import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.manual.common.SysdateObjBean;
 import com.samchat.common.beans.manual.json.redis.TokenValRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
-import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
-import com.samchat.common.exceptions.AppException;
 import com.samchat.common.exceptions.RedisException;
 import com.samchat.common.utils.CacheUtil;
 import com.samchat.dao.db.interfaces.ICommonDbDao;
@@ -27,7 +22,7 @@ public class BaseSrvs implements IBaseSrvs {
 	private static Logger log = Logger.getLogger(BaseSrvs.class);
 
 	@Autowired
-	protected IUserRedisDao<String, Object> userRedisDao;
+	protected IUserRedisDao userRedisDao;
 
 	@Autowired
 	protected ICommonDbDao commonDbDao;
@@ -102,9 +97,9 @@ public class BaseSrvs implements IBaseSrvs {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T hgetUserInfoJsonObjRedis(long userId, String field) throws Exception {
+	public <T> T hgetUserInfoJsonObjRedis(long userId, String field, Class<T> clazz) throws Exception {
 		String key = CacheUtil.getUserInfoIdCacheKey(userId);
-		return (T) userRedisDao.hgetJsonObj(key, field);
+		return userRedisDao.hgetJsonObj(key, field, clazz);
 	}
 	
 	public String hgetUserInfoStrRedis(long userId, String field) throws Exception {
@@ -156,7 +151,7 @@ public class BaseSrvs implements IBaseSrvs {
 	public UserInfoRds hgetUserInfoJsonObj(long userId){
 		UserInfoRds t = null;
 		try {
-			t = hgetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.USER_INFO.val());
+			t = hgetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.USER_INFO.val(), UserInfoRds.class);
 		} catch (Exception e) {
 			throw new RedisException("", e);
 		}
@@ -167,7 +162,7 @@ public class BaseSrvs implements IBaseSrvs {
 	public UserInfoProRds hgetUserInfoProsJsonObj(long userId){
 		UserInfoProRds t = null;
 		try {
-			t = hgetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.PROS_INFO.val());
+			t = hgetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.PROS_INFO.val(),UserInfoProRds.class);
 		} catch (Exception e) {
 			throw new RedisException("", e);
 		}
@@ -178,7 +173,7 @@ public class BaseSrvs implements IBaseSrvs {
 	public TokenValRds hgetUserInfoTokenJsonObj(long userId){
 		TokenValRds t = null;
 		try {
-			t = hgetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.TOKEN.val());
+			t = hgetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.TOKEN.val(), TokenValRds.class);
 		} catch (Exception e) {
 			throw new RedisException("", e);
 		}

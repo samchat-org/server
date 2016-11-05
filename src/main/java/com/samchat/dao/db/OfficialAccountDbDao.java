@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -18,6 +19,7 @@ import com.samchat.common.beans.manual.db.QryPublicQueryVO;
 import com.samchat.common.beans.manual.db.QryUserInfoVO;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.db.FollowDbEnum;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.exceptions.SysException;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.dao.db.interfaces.IOfficialAccountDbDao;
@@ -86,15 +88,19 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 	}
 
 	public List<QryFollowVO> queryFollowList(long userId) {
-		Map param = new HashMap();
+		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("user_id", new Long(userId));
 		return executeSqlList("queryFollowList", param);
 	}
 
-	public List<QryPublicQueryVO> queryPublicList(String key, long count) {
-
+	public List<QryPublicQueryVO> queryPublicList(long curUserId, String key, long count) {
+		
+		if(StringUtils.trimToNull(key) == null){
+			return new ArrayList<QryPublicQueryVO>();
+		}
 		Map<String, Object> p = new HashMap<String, Object>();
 		p.put("key", key);
+		p.put("cur_user_id", new Long(curUserId));
 		
 		int ps = getQueryPublicListPageSize();
 		if(count < ps && count > 0){
@@ -106,7 +112,7 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 	}
 	
 	private int getQueryPublicListPageSize(){
-		int ps = Integer.parseInt(CommonUtil.getSysConfigStr("queryPublicList_page_size"));
+		int ps = Integer.parseInt(CommonUtil.getSysConfigStr(SysParamCodeDbEnum.PAGE_SIZE_QUERYPUBLICLIST.getParamCode()));
 		if(ps <= 0){
 			throw new SysException("queryPageSize <= 0, error ");
 		}
@@ -122,7 +128,7 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 	}
 	
 	public Timestamp queryFollowListStateDate(long userId) {
-		Map param = new HashMap();
+		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("user_id", new Long(userId));
 		return (Timestamp)executeSqlOne("queryFollowListStateDate", param);
 	}

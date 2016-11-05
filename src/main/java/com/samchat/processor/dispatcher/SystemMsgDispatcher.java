@@ -9,7 +9,6 @@ public class SystemMsgDispatcher extends DispatcherBase {
 	
 	private static Logger log = Logger.getLogger(SystemMsgDispatcher.class);
 
-	protected void process(Message message) throws Exception {
-
-	}
+	public void process(Message message) throws Exception {}
+	public void init(){}
 }

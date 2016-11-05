@@ -1,12 +1,9 @@
 package com.samchat.processor.dispatcher.base;
 
-import java.util.concurrent.Executors;
-
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import com.samchat.common.thread.SysConfigRefreshThread;
-import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.SpringUtil;
 
 public class MainProcessor {
@@ -22,21 +19,17 @@ public class MainProcessor {
 		refresh.start();
 	}
 
-	public void process(String processor, String cfgPrefix) {
-		Thread thread = (Thread) ctx.getBean(processor);
-		int count = CommonUtil.getSysConfigInt(cfgPrefix + "_thread_count");
-		
-		log.info("count:" + count);
-		Executors.newScheduledThreadPool(count).execute(thread);
+	public void process(String processor) {
+		DispatcherBase dispatcher = (DispatcherBase) ctx.getBean(processor);
+		dispatcher.multipleThreadsRun();
 	}
 
 	public static void main(String args[]) throws Exception {
 		log.info("dispatcher start");
-		if(args.length != 2){
-			throw new Exception("input the params: processer name , config perfix ");
+		if(args.length != 1){
+			throw new Exception("input the params: processer name");
 		}
-		//"advertisementDispatcher", "aws_sqs_advertisement"
-		new  MainProcessor().process(args[0], args[1]);
+		new MainProcessor().process(args[0]);
 	}
 
 }

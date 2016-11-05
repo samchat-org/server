@@ -57,22 +57,8 @@ public class CommonUtil {
 		return method.invoke(obj, paramObjArr);
 	}
 
-	public static String encryptStr3Des(String originalPwd) {
-		return originalPwd;
-	}
-
 	public static String getRandom() {
 		return String.valueOf(Math.random()).substring(2);
-	}
-
-	public static String getRegisterCode(String countryCode, String phoneNo) {
-		return CacheUtil.get(CacheNameCacheEnum.RDS_REGISTER_CODE.val(), countryCode + "_" + phoneNo);
-	}
-
-	public static void putRegisterCode(String countryCode, String phoneNo, String registerCode, int timeToIdleSeconds,
-			int timeToLiveSeconds) {
-		CacheUtil.put(CacheNameCacheEnum.RDS_REGISTER_CODE.val(), countryCode + "_" + phoneNo, registerCode, timeToIdleSeconds,
-				timeToLiveSeconds);
 	}
 
 	public static String getE164PhoneNo(String countryCode, String phoneNo) {
@@ -97,16 +83,6 @@ public class CommonUtil {
  		return radom;
 
 	}
-
-	public static String getHashSharding(String tableName, long userId) {
-		int shardingMode = CommonUtil.getSysConfigInt(("sharding_" + tableName).toLowerCase());
-		return tableName + "_" + userId % shardingMode;
-	}
 	
-	public static Date operationHourForDate(Date orgin, int offset){
-		GregorianCalendar gc = new GregorianCalendar();
-		gc.setTime(orgin);
-		gc.set(Calendar.HOUR, offset);
-		return gc.getTime();
-	}
+
 }

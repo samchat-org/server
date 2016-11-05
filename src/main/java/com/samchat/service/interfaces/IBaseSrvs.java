@@ -13,7 +13,7 @@ public interface IBaseSrvs {
 		public void hsetUserInfoJsonObj(long userId, UserInfoRds uur) ;
 		public void hsetUserInfoProsJsonObj(long userId, UserInfoProRds uur) ;
 		public void hsetUserInfoTokenJsonObj(long userId, TokenValRds tvr) ;
-		public <T> T hgetUserInfoJsonObjRedis(long userId, String field) throws Exception ;
+		public <T> T hgetUserInfoJsonObjRedis(long userId, String field, Class<T> clazz) throws Exception ;
 		public UserInfoRds hgetUserInfoJsonObj(long userId) throws Exception ;
 		public UserInfoProRds hgetUserInfoProsJsonObj(long userId) throws Exception ;
 		public TokenValRds hgetUserInfoTokenJsonObj(long userId) throws Exception ;

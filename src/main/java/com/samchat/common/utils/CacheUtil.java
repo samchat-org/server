@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import com.samchat.common.beans.manual.common.SecurityAccessBean;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.cache.CacheNameCacheEnum;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 
 /**
  * 
@@ -140,7 +141,7 @@ public class CacheUtil {
 	}
 
 	public static String getSystemId() {
-		int systemId = CommonUtil.getSysConfigInt("system_id");
+		int systemId = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.SYSTEM_ID.getParamCode());
 		if (systemId == 0) {
 			return "";
 		}

@@ -14,8 +14,10 @@ import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.question.DispatchQuestion_req;
 import com.samchat.common.beans.manual.json.sqs.QuestionSqs;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.GetuiUtil;
+import com.samchat.common.utils.ThreadLocalUtil;
 import com.samchat.processor.dispatcher.base.DispatcherBase;
 import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IQuestionSrvs;
@@ -57,20 +59,27 @@ public class QuestionDispatcher extends DispatcherBase {
 		return req;
 	}
 
-	protected void process(Message message) throws Exception {
+	public void process(Message message) throws Exception {
 
 		String body = message.getBody();
-		QuestionSqs req = om.readValue(body, QuestionSqs.class);
+		QuestionSqs req = ThreadLocalUtil.getAppObjectMapper().readValue(body, QuestionSqs.class);
 		questionSrv.saveQuestion(req);
 		List<TUserUsers> users = usersSrv.queryUsers();
 		for (TUserUsers user : users) {
 			if (user.getUser_id() != req.getUser_id()) {
-				String dispatchReq = om.writeValueAsString(getRequest(user, req));
+				String dispatchReq = ThreadLocalUtil.getAppObjectMapper().writeValueAsString(getRequest(user, req));
 				GetuiUtil.push(user.getUser_id().toString(), dispatchReq);
 			}
 		}
 	}
 
+	protected void init(){
+		String sqsUrlName = SysParamCodeDbEnum.SQS_QUESTION_URL.getParamCode();
+		int threadCount = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.DISPATCHER_QUESTION_THREAD_COUNT.getParamCode());
+		this.setSqsUrlName(sqsUrlName);
+		this.setThreadCount(threadCount);
+	}
+	
 	public static void main(String args[]) {
 
 	}

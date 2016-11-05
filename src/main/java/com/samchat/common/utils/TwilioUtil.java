@@ -19,9 +19,9 @@ public class TwilioUtil {
 	public static void sendSms(String countrycode, String cellphone, String content) throws Exception {
 		
 		String twilloPhoneNo = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.TWILIO_PHONE_NO.getParamCode());
-		String account = CommonUtil.getSysConfigStr("twilio_account");
-		String authToken = CommonUtil.getSysConfigStr("twilio_auth_token");
-		byte enable = CommonUtil.getSysConfigByte("twilio_enable");
+		String account = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.TWILIO_ACCOUNT.getParamCode());
+		String authToken = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.TWILIO_AUTH_TOKEN.getParamCode());
+		byte enable = CommonUtil.getSysConfigByte(SysParamCodeDbEnum.TWILIO_ENABLE.getParamCode());
 		
 		if(enable != Constant.STATE_IN_USE){
 			return;

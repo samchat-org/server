@@ -46,8 +46,8 @@ public class OfficialAccountSrvs extends BaseSrvs implements IOfficialAccountSrv
 		return officialAccountDbDao.queryFollowList(userId);
 	}
 	
-	public List<QryPublicQueryVO> queryPublicList(String key, long count){
-		return officialAccountDbDao.queryPublicList(key, count);
+	public List<QryPublicQueryVO> queryPublicList(long curUserId, String key, long count){
+		return officialAccountDbDao.queryPublicList(curUserId, key, count);
 	}
 	
 	public List<TOaFollow> queryFollowListByAdserId(long userId){

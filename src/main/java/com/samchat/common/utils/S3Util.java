@@ -18,22 +18,11 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 
 public class S3Util {
 
 	private static Logger log = Logger.getLogger(S3Util.class);
-	
-	private static String getBucketMapping(String name){
-		String bucketMapping = CommonUtil.getSysConfigStr("aws_s3_bucket_mapping");
-		String[] mappings = bucketMapping.split(",");
-		
-		HashMap<String, String> hs = new HashMap<String, String>();
-		for(String mapping : mappings){
-			String [] kv = mapping.split(":");
-			hs.put(kv[0].trim(), kv[1].trim());
-		}
-		return hs.get(name);
-	}
 
 	public static String getThumbObject(String s3url) throws Exception {
 
@@ -42,7 +31,7 @@ public class S3Util {
 		String bucket = url.getHost();
 		String key = url.getPath().substring(1);
 
-		String endpoint = CommonUtil.getSysConfigStr("aws_s3_endpoint");
+		String endpoint = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.S3_ENDPOINT.getParamCode());
 		s3c.setEndpoint(endpoint);
 
 		ObjectListing ol = s3c.listObjects(bucket, key);
@@ -53,9 +42,9 @@ public class S3Util {
 			S3ObjectInputStream s3ois = so.getObjectContent();
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-			int width = CommonUtil.getSysConfigInt("aws_s3_avatar_thumb_width");
-			int height = CommonUtil.getSysConfigInt("aws_s3_avatar_thumb_height");
-			int quality = CommonUtil.getSysConfigInt("aws_s3_avatar_thumb_quality");
+			int width = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.S3_AVATAR_THUMB_WIDTH.getParamCode());
+			int height = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.S3_AVATAR_THUMB_HEIGHT.getParamCode());
+			int quality = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.S3_AVATAR_THUMB_QUALITY.getParamCode());
 			
 			try {
 				Thumbnails.of(s3ois).size(width, height).outputQuality(new BigDecimal(quality).divide(new BigDecimal(100)).doubleValue()).toOutputStream(out);

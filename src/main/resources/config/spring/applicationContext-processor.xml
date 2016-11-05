@@ -7,14 +7,9 @@
 	default-autowire="byType">
 
 
-	<bean id="questionDispatcher" class="com.samchat.processor.dispatcher.QuestionDispatcher" >
- 		<property name="sqsUrlName" value="aws_sqs_question_url"></property>
-	</bean>
-	<bean id="advertisementDispatcher" class="com.samchat.processor.dispatcher.AdvertisementDispatcher" >
-		<property name="sqsUrlName" value="aws_sqs_advertisement_url"></property>
-	</bean>
-	
-	
+	<bean id="questionDispatcher" class="com.samchat.processor.dispatcher.QuestionDispatcher" />
+	<bean id="advertisementDispatcher" class="com.samchat.processor.dispatcher.AdvertisementDispatcher" />
+	<bean id="systemMsgDispatcher" class="com.samchat.processor.dispatcher.SystemMsgDispatcher" />
 	<bean id="sysConfigRefreshThread" class="com.samchat.common.thread.SysConfigRefreshThread" />
  	<bean id="test" class="com.samchat.test.Test" />
  	

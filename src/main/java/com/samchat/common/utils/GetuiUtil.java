@@ -11,6 +11,7 @@ import com.gexin.rp.sdk.base.impl.Target;
 import com.gexin.rp.sdk.base.payload.APNPayload;
 import com.gexin.rp.sdk.http.IGtPush;
 import com.gexin.rp.sdk.template.TransmissionTemplate;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 
 public class GetuiUtil {
 
@@ -24,10 +25,10 @@ public class GetuiUtil {
 
 	public static String push(String id, String msg) throws Exception {
 		log.info("send message:" + msg);
-		String appId = CommonUtil.getSysConfigStr("getui_app_id");
-		String appKey = CommonUtil.getSysConfigStr("getui_app_key");
-		String masterSecret = CommonUtil.getSysConfigStr("getui_app_master_secret");
-		int offlineTime = CommonUtil.getSysConfigInt("getui_offline_time");
+ 		String appId = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.GETUI_APP_ID.getParamCode());
+		String appKey = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.GETUI_APP_KEY.getParamCode());
+		String masterSecret = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.GETUI_APP_MASTER_SECRET.getParamCode());
+		int offlineTime = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.GETUI_OFFLINE_TIME.getParamCode());
  		TransmissionTemplate template = new TransmissionTemplate();
 		template.setAppId(appId);
 		template.setAppkey(appKey);
@@ -64,10 +65,10 @@ public class GetuiUtil {
 	
 	public static String pushList(List<String> ids, List<String> msgs) throws Exception {
 		
- 		String appId = CommonUtil.getSysConfigStr("getui_app_id");
-		String appKey = CommonUtil.getSysConfigStr("getui_app_key");
-		String masterSecret = CommonUtil.getSysConfigStr("getui_app_master_secret");
-		int offlineTime = CommonUtil.getSysConfigInt("getui_offline_time");
+ 		String appId = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.GETUI_APP_ID.getParamCode());
+		String appKey = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.GETUI_APP_KEY.getParamCode());
+		String masterSecret = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.GETUI_APP_MASTER_SECRET.getParamCode());
+		int offlineTime = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.GETUI_OFFLINE_TIME.getParamCode());
  		TransmissionTemplate template = new TransmissionTemplate();
 		template.setAppId(appId);
 		template.setAppkey(appKey);

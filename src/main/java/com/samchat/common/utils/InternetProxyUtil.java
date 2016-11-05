@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.samchat.common.beans.manual.common.InternetProxyBean;
+import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.exceptions.SysException;
 
 public class InternetProxyUtil {
@@ -13,7 +14,7 @@ public class InternetProxyUtil {
 	private static Logger log = Logger.getLogger(InternetProxyUtil.class);
 
 	private static List<InternetProxyBean> getProxyList() {
-		String[] proxyArr = CommonUtil.getSysConfigStr("internet_proxy").split(",");
+		String[] proxyArr = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.INTERNET_PROXY.getParamCode()).split(",");
 		List<InternetProxyBean> proxyList = new ArrayList<InternetProxyBean>();
 		for (String proxy : proxyArr) {
 			String[] proxyDtl = proxy.split(":");
