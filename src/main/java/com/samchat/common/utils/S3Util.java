@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
 
 import net.coobird.thumbnailator.Thumbnails;

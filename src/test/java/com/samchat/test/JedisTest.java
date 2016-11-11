@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.samchat.common.beans.manual.db.QryPublicQueryVO;
-import com.samchat.common.beans.manual.db.QryUserInfoVO;
 import com.samchat.common.thread.SysConfigRefreshThread;
 import com.samchat.common.utils.SpringUtil;
 import com.samchat.dao.redis.interfaces.IUserRedisDao;

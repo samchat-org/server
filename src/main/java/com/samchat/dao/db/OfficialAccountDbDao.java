@@ -16,7 +16,6 @@ import com.samchat.common.beans.auto.db.entitybeans.TOaFollowExample;
 import com.samchat.common.beans.auto.db.mapper.TOaFollowMapper;
 import com.samchat.common.beans.manual.db.QryFollowVO;
 import com.samchat.common.beans.manual.db.QryPublicQueryVO;
-import com.samchat.common.beans.manual.db.QryUserInfoVO;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.db.FollowDbEnum;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
@@ -32,6 +31,14 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 
 	protected String getNamespace() {
 		return "oaSqlMapper";
+	}
+	
+	private int getPageSize(String pagesizekey){
+ 		int ps = Integer.parseInt(CommonUtil.getSysConfigStr(pagesizekey));
+		if(ps <= 0){
+			throw new SysException("queryPageSize <= 0, error ");
+		}
+		return ps;
 	}
 
 	public TOaFollow queryUserFollow(long userId, long userIdPros) {
@@ -102,7 +109,7 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 		p.put("key", key);
 		p.put("cur_user_id", new Long(curUserId));
 		
-		int ps = getQueryPublicListPageSize();
+		int ps = getPageSize(SysParamCodeDbEnum.PAGE_SIZE_QUERYPUBLICLIST.getParamCode());
 		if(count < ps && count > 0){
 			return new ArrayList<QryPublicQueryVO>();
 		}
@@ -111,19 +118,14 @@ public class OfficialAccountDbDao extends BaseDbDao implements IOfficialAccountD
 		return pi.getList();
 	}
 	
-	private int getQueryPublicListPageSize(){
-		int ps = Integer.parseInt(CommonUtil.getSysConfigStr(SysParamCodeDbEnum.PAGE_SIZE_QUERYPUBLICLIST.getParamCode()));
-		if(ps <= 0){
-			throw new SysException("queryPageSize <= 0, error ");
-		}
-		return ps;
-	}
-
-	public List<TOaFollow> queryFollowListByAdserId(long userId) {
-		TOaFollowExample ttx = new TOaFollowExample();
-		ttx.createCriteria().andUser_id_proEqualTo(userId).andBlock_tagEqualTo(FollowDbEnum.Block.UNBLOCK.val())
-				.andStateEqualTo(Constant.STATE_IN_USE);
-		return oaFollowMapper.selectByExample(ttx);
+	public List<QryFollowVO> queryFollowListByAdserId(long userIdPro, int page) {
+		
+		int ps = getPageSize(SysParamCodeDbEnum.PAGE_SIZE_QUERYFOLLOWLISTFORADSDSP.getParamCode());
+		Map<String, Object> p = new HashMap<String, Object>();
+		p.put("user_id_pro", new Long(userIdPro));
+		PageInfo pi = executePageSql("queryFollowListForAdsDsp", p, page, ps);
+		
+		return pi.getList();
 
 	}
 	

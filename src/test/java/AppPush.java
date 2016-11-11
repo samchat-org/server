@@ -8,7 +8,6 @@ import com.gexin.rp.sdk.base.IPushResult;
 import com.gexin.rp.sdk.base.impl.AppMessage;
 import com.gexin.rp.sdk.http.IGtPush;
 import com.gexin.rp.sdk.template.LinkTemplate;
-import com.samchat.common.utils.GetuiUtil;
 
 
 public class AppPush {

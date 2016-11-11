@@ -4,8 +4,8 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
+import com.samchat.common.beans.auto.db.entitybeans.TSysMessageTemplete;
 import com.samchat.common.beans.manual.common.SysdateObjBean;
-import com.samchat.common.beans.manual.db.QrySequenceVO;
 
 public interface ICommonDbDao extends IBaseDbDao {
 	
@@ -20,5 +20,7 @@ public interface ICommonDbDao extends IBaseDbDao {
 	public Timestamp querySysdate();
 	
 	public SysdateObjBean querySysdateObj() throws Exception;
+	
+	public List<TSysMessageTemplete> querySysMsgTplList();
 
 }

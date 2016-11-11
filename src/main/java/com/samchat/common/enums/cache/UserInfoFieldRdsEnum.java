@@ -1,7 +1,7 @@
 package com.samchat.common.enums.cache;
 
 public enum UserInfoFieldRdsEnum {
-
+	PUBLIC_TOKEN("ptk"),
 	TOKEN("tk"), 
 	USER_INFO("ui"), 
 	PROS_INFO("pi"),

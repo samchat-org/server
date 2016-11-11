@@ -1,9 +1,6 @@
 package com.samchat.common.utils;
 
 import java.lang.reflect.Method;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -68,6 +65,10 @@ public class CommonUtil {
 	public static String getSysConfigStr(String paramCode) {
 		return (String) CacheUtil.getSysconfigOnKey(CacheNameCacheEnum.ECH_SYS_CONFIG.val(), paramCode);
 	}
+	
+	public static String getSysMsgTpl(String actionCode) {
+		return (String) CacheUtil.getSysconfigOnKey(CacheNameCacheEnum.ECH_SYS_MSG_TPL.val(), actionCode);
+	}
 
 	public static int getSysConfigInt(String paramCode) {
 		return Integer.parseInt(getSysConfigStr(paramCode));
@@ -76,12 +77,15 @@ public class CommonUtil {
 	public static byte getSysConfigByte(String paramCode) {
 		return Byte.parseByte(getSysConfigStr(paramCode));
 	}
+	
+	public static String getPublicSendUserId(long userId){
+		return "public_" + userId;
+	}
 
 	public static String getRadom(int len) {
 		String radom = (Math.random() + "").substring(2, len + 2);
 		radom = "1234";
  		return radom;
-
 	}
 	
 

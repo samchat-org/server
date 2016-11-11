@@ -1,6 +1,5 @@
 package com.samchat.action;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
@@ -25,17 +24,18 @@ import com.samchat.common.beans.auto.json.appserver.profile.QueryStateDate_req;
 import com.samchat.common.beans.auto.json.appserver.profile.QueryStateDate_res;
 import com.samchat.common.beans.auto.json.appserver.profile.SendClientId_req;
 import com.samchat.common.beans.auto.json.appserver.profile.SendClientId_res;
-import com.samchat.common.beans.auto.json.appserver.user.FindpwdUpdate_req;
+import com.samchat.common.beans.auto.json.appserver.profile.UpdateQuestionNotify_req;
+import com.samchat.common.beans.auto.json.appserver.profile.UpdateQuestionNotify_res;
 import com.samchat.common.beans.manual.common.SysdateObjBean;
 import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.ResCodeAppEnum;
+import com.samchat.common.enums.db.SysMsgTplDbEnum;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.GooglePlaceUtil;
-import com.samchat.common.utils.Md5Util;
 import com.samchat.common.utils.SqsUtil;
 import com.samchat.common.utils.TwilioUtil;
 import com.samchat.service.interfaces.ICommonSrvs;
@@ -91,7 +91,7 @@ public class ProfileAction extends BaseAction {
 		String origin = avatar.getOrigin();
 		String thumb = avatar.getThumb();
 		long userId = token.getUserId();
-		Timestamp sysdate = commonSrv.querySysdate();
+		SysdateObjBean sysdate = commonSrv.querySysdateObj();
 
 		TUserUsers userdb = usersSrv.updateAvatar_master(origin, thumb, userId, sysdate);
 
@@ -99,7 +99,7 @@ public class ProfileAction extends BaseAction {
 		AvatarUpdate_res.User user = new AvatarUpdate_res.User();
 		res.setUser(user);
 		user.setThumb(userdb.getAvatar_thumb());
-		user.setLastupdate(sysdate.getTime());
+		user.setLastupdate(sysdate.getNow().getTime());
 
 		return res;
 	}
@@ -193,8 +193,9 @@ public class ProfileAction extends BaseAction {
  		
 		log.info("countryCode:" + countryCode + "--" + "cellphone:" + cellPhone + "--verificationCode:" + verificationCode);
 		
-		String smstpl = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.TWILIO_VERIFICATION_EDIT_CELL_PHONE_CODE_SMS_TEMPLETE.getParamCode());
+		String smstpl = CommonUtil.getSysMsgTpl(SysMsgTplDbEnum.ActionCode.EDIT_CELL_PHONE_CODE_SMS.val());
 		String smsContent = smstpl.replaceAll(Constant.TWILLO_VERIFICATION_CODE, verificationCode);
+		log.info("smsContent:" + smsContent);
 		TwilioUtil.sendSms(countryCode, cellPhone, smsContent);
 		
 		if(code == null){
@@ -274,6 +275,19 @@ public class ProfileAction extends BaseAction {
 				throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
 			}
 		}
-
+	}
+	
+	public UpdateQuestionNotify_res updateQuestionNotify(UpdateQuestionNotify_req req, TokenMappingRds token) throws Exception{
+		SysdateObjBean sysdate = commonSrv.querySysdateObj();
+		profileSrv.updateQuestionNotify_master(req, token.getUserId(), sysdate);
+		
+		UpdateQuestionNotify_res res = new UpdateQuestionNotify_res();
+		UpdateQuestionNotify_res.User user = new UpdateQuestionNotify_res.User();
+		user.setLastupdate(sysdate.getNow().getTime());
+		res.setUser(user);
+		return res;	
+	}
+	
+	public void updateQuestionNotifyValidate(UpdateQuestionNotify_req req, TokenMappingRds token){	
 	}
 }

@@ -6,15 +6,22 @@ import java.util.Date;
 import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.map.ObjectMapper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.samchat.common.beans.auto.json.ni.id.Create_req;
 import com.samchat.common.beans.auto.json.ni.id.Create_res;
 import com.samchat.common.beans.auto.json.ni.id.Update_req;
 import com.samchat.common.beans.auto.json.ni.id.Update_res;
+import com.samchat.common.beans.auto.json.ni.msg.SendAttachMsgFieldOption_req;
+import com.samchat.common.beans.auto.json.ni.msg.SendAttachMsg_req;
+import com.samchat.common.beans.auto.json.ni.msg.SendAttachMsg_res;
+import com.samchat.common.beans.auto.json.ni.msg.SendBatchMsgFieldOption_req;
+import com.samchat.common.beans.auto.json.ni.msg.SendBatchMsg_req;
+import com.samchat.common.beans.auto.json.ni.msg.SendBatchMsg_res;
 import com.samchat.common.beans.auto.json.ni.msg.SendMsgFieldOption_req;
 import com.samchat.common.beans.auto.json.ni.msg.SendMsg_req;
 import com.samchat.common.beans.auto.json.ni.msg.SendMsg_res;
+import com.samchat.common.utils.ThreadLocalUtil;
 
 public class NiUtil {
 
@@ -25,6 +32,10 @@ public class NiUtil {
 	private static final String UPDATE_ACTION = "https://api.netease.im/nimserver/user/update.action";
 
 	private static final String SEND_MESSAGE = "https://api.netease.im/nimserver/msg/sendMsg.action";
+	
+	private static final String SEND_BATCH_MESSAGE = "https://api.netease.im/nimserver/msg/sendBatchMsg.action";
+	
+	private static final String SEND_ATTACH_MESSAGE = "https://api.netease.im/nimserver/msg/sendAttachMsg.action";
 
 	private static final long CODE_SUCCESS = 200;
 
@@ -50,6 +61,50 @@ public class NiUtil {
 		}
 	}
 	
+	public static void sendAttachMsg(SendAttachMsg_req msg, Timestamp cur) throws Exception{
+		log.info("send sendAttachMsg:" + msg.getAttach());
+		ObjectMapper om = ThreadLocalUtil.getAppObjectMapper();
+		
+		SendAttachMsgFieldOption_req s = new SendAttachMsgFieldOption_req();
+		s.setBadge(true);
+		s.setNeedPushNick(false);
+		s.setRoute(false);
+
+		msg.setOption(om.writeValueAsString(s));
+		msg.setSave("2");
+		msg.setMsgtype("0");
+		
+		String body = NiPostClient.post(SEND_ATTACH_MESSAGE, new BeanMap(msg), cur);
+		SendAttachMsg_res res= om.readValue(body, SendAttachMsg_res.class);
+		if (CODE_SUCCESS != res.getCode()) {
+			throw new Exception("sendAttachMsg , ni res code:" + res.getCode());
+		}
+	}
+	
+	public static void sendBatchMessage(SendBatchMsg_req batchMessage, Timestamp cur) throws Exception {
+		log.info("send batchMessage:" + batchMessage.getBody());
+		ObjectMapper om = ThreadLocalUtil.getAppObjectMapper();
+		
+		SendBatchMsgFieldOption_req s = new SendBatchMsgFieldOption_req();
+		s.setRoam(false);        
+		s.setHistory(true);     
+		s.setSendersync(true);  
+		s.setPush(true);        
+		s.setRoute(true);       
+		s.setBadge(true);       
+		s.setNeedPushNick(true);
+
+		String option =om.writeValueAsString(s);
+		batchMessage.setOption(option);
+		
+		String body = NiPostClient.post(SEND_BATCH_MESSAGE, new BeanMap(batchMessage), cur);
+		SendBatchMsg_res res = om.readValue(body, SendBatchMsg_res.class);
+		if (CODE_SUCCESS != res.getCode()) {
+			throw new Exception("sendBatchMessage , ni res code:" + res.getCode());
+		}
+		
+	}
+	
 	public static void sendMessage(SendMsg_req message, Timestamp cur) throws Exception {
 		log.info("send message  : " + message);
 
@@ -60,6 +115,7 @@ public class NiUtil {
 			throw new Exception("sendMessage , ni res code:" + res.getCode());
 		}
 	}
+
 	
 	public static void main(String args[]) throws Exception{
 		

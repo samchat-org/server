@@ -23,5 +23,5 @@ public interface IOfficialAccountSrvs extends IBaseSrvs{
 	
 	public List<QryPublicQueryVO> queryPublicList(long curUserId, String key, long count);
 	
-	public List<TOaFollow> queryFollowListByAdserId(long userId);
+	public List<QryFollowVO> queryFollowListByAdserId(long userId, int page);
 }

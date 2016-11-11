@@ -1,7 +1,7 @@
 package com.samchat.common.beans.auto.json.appserver.advertisement;
 
-import com.samchat.common.exceptions.AppException;
 import com.samchat.common.enums.app.ResCodeAppEnum;
+import com.samchat.common.exceptions.AppException;
 public class AdvertisementWrite_req{
 
 	private Header header;

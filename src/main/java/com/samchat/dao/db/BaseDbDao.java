@@ -1,6 +1,5 @@
 package com.samchat.dao.db;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.samchat.common.beans.manual.db.QrySequenceVO;
 import com.samchat.dao.db.interfaces.IBaseDbDao;
 
 public abstract class BaseDbDao implements IBaseDbDao {
@@ -44,7 +42,7 @@ public abstract class BaseDbDao implements IBaseDbDao {
 	}
 
 	public void setPageConfig(int currentPage, int pageSize) {
-		PageHelper.startPage(currentPage, pageSize, true);
+		PageHelper.startPage(currentPage, pageSize, false);
 	}
 
 	public <T1 extends Object> PageInfo<T1> getPageInfo(List<T1> resList) {
@@ -56,7 +54,6 @@ public abstract class BaseDbDao implements IBaseDbDao {
 		if (sqlName == null) {
 			return new PageInfo();
 		}
-
 		if (currentPage == 0)
 			currentPage = 1;
 		if (pageSize == 0)

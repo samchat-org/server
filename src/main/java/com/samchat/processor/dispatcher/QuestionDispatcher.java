@@ -1,27 +1,23 @@
 package com.samchat.processor.dispatcher;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.Message;
-import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.question.DispatchQuestion_req;
+import com.samchat.common.beans.auto.json.ni.msg.SendAttachMsg_req;
 import com.samchat.common.beans.manual.json.sqs.QuestionSqs;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.GetuiUtil;
 import com.samchat.common.utils.ThreadLocalUtil;
+import com.samchat.common.utils.niUtils.NiUtil;
 import com.samchat.processor.dispatcher.base.DispatcherBase;
-import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IQuestionSrvs;
-import com.samchat.service.interfaces.IUsersSrvs;
 
 public class QuestionDispatcher extends DispatcherBase {
 
@@ -60,26 +56,35 @@ public class QuestionDispatcher extends DispatcherBase {
 	}
 
 	public void process(Message message) throws Exception {
-
+		Timestamp sysdate = commonSrv.querySysdate();
 		String body = message.getBody();
 		QuestionSqs req = ThreadLocalUtil.getAppObjectMapper().readValue(body, QuestionSqs.class);
 		questionSrv.saveQuestion(req);
+		String sender = req.getUser_id() + "";
 		List<TUserUsers> users = usersSrv.queryUsers();
 		for (TUserUsers user : users) {
 			if (user.getUser_id() != req.getUser_id()) {
 				String dispatchReq = ThreadLocalUtil.getAppObjectMapper().writeValueAsString(getRequest(user, req));
-				GetuiUtil.push(user.getUser_id().toString(), dispatchReq);
+				String dispatchReqContent = "{\"id\":3,\"content\":" + dispatchReq + "}";
+				SendAttachMsg_req msg = new SendAttachMsg_req();
+				msg.setFrom(sender);
+				msg.setTo(String.valueOf(user.getUser_id()));
+				msg.setAttach(dispatchReqContent);
+				msg.setPushcontent("a new message");
+				msg.setPayload(dispatchReq);
+				NiUtil.sendAttachMsg(msg, sysdate);
 			}
 		}
 	}
 
-	protected void init(){
+	protected void init() {
 		String sqsUrlName = SysParamCodeDbEnum.SQS_QUESTION_URL.getParamCode();
-		int threadCount = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.DISPATCHER_QUESTION_THREAD_COUNT.getParamCode());
+		int threadCount = CommonUtil
+				.getSysConfigInt(SysParamCodeDbEnum.DISPATCHER_QUESTION_THREAD_COUNT.getParamCode());
 		this.setSqsUrlName(sqsUrlName);
 		this.setThreadCount(threadCount);
 	}
-	
+
 	public static void main(String args[]) {
 
 	}

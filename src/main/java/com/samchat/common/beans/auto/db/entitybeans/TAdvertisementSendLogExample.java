@@ -754,6 +754,66 @@ public class TAdvertisementSendLogExample {
             addCriterion("sharding_flag not between", value1, value2, "sharding_flag");
             return (Criteria) this;
         }
+
+        public Criteria andPaginationIsNull() {
+            addCriterion("pagination is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaginationIsNotNull() {
+            addCriterion("pagination is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaginationEqualTo(Integer value) {
+            addCriterion("pagination =", value, "pagination");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaginationNotEqualTo(Integer value) {
+            addCriterion("pagination <>", value, "pagination");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaginationGreaterThan(Integer value) {
+            addCriterion("pagination >", value, "pagination");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaginationGreaterThanOrEqualTo(Integer value) {
+            addCriterion("pagination >=", value, "pagination");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaginationLessThan(Integer value) {
+            addCriterion("pagination <", value, "pagination");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaginationLessThanOrEqualTo(Integer value) {
+            addCriterion("pagination <=", value, "pagination");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaginationIn(List<Integer> values) {
+            addCriterion("pagination in", values, "pagination");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaginationNotIn(List<Integer> values) {
+            addCriterion("pagination not in", values, "pagination");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaginationBetween(Integer value1, Integer value2) {
+            addCriterion("pagination between", value1, value2, "pagination");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaginationNotBetween(Integer value1, Integer value2) {
+            addCriterion("pagination not between", value1, value2, "pagination");
+            return (Criteria) this;
+        }
     }
 
     /**

@@ -7,8 +7,10 @@ import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementContent;
 import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementSendLog;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementDelete_req;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementWrite_req;
+import com.samchat.common.beans.manual.db.QryFollowVO;
 import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
+import com.samchat.common.enums.db.AdsDbEnum;
 
 public interface IAdvertisementSrvs extends IBaseSrvs {
 
@@ -17,16 +19,20 @@ public interface IAdvertisementSrvs extends IBaseSrvs {
 
 	public void saveAdvertisementSendLog(long adsId, long userId, Timestamp senddate, byte state, String clientId,
 			String remark, int shardingFlag);
-	
+
 	public void updateAdvertisementSendLog(long logId, Timestamp senddate, byte state, String clientId, String remark,
 			int shardingFlag, int sendcount);
 
 	public void updateAdvertisementNotinuse(List<AdvertisementDelete_req.Advertisements> ads, long userId)
 			throws Exception;
 
-	public AdvertisementSqs advertisementSend(AdvertisementWrite_req req, TokenMappingRds token, long adsId) throws Exception;
+	public AdvertisementSqs advertisementSend(AdvertisementWrite_req req, TokenMappingRds token, long adsId)
+			throws Exception;
 
 	public List<TAdvertisementSendLog> queryAdvertisementSendLog(long userId, int shardingFlag) throws Exception;
-	
-	public  TAdvertisementContent queryAdvertisementCotentById(long adsId, int shardingFlag) throws Exception;
+
+	public TAdvertisementContent queryAdvertisementCotentById(long adsId, int shardingFlag) throws Exception;
+
+	public void saveAdvertisementSendLogList(long adsId, List<QryFollowVO> qfvlst, Timestamp senddate,
+			AdsDbEnum.SendLogState state, int shardingFlag, int pagination);
 }

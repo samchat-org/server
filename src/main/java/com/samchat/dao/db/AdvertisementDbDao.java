@@ -82,7 +82,7 @@ public class AdvertisementDbDao extends BaseDbDao implements IAdvertisementDbDao
 	}
 
 	public void saveAdvertisementSendLog(long adsId, long userId, Timestamp senddate, byte state, String clientId,
-			String remark, int shardingFlag) {
+			String remark, int shardingFlag, int pagination) {
 
 		TAdvertisementSendLog ads = new TAdvertisementSendLog();
 		ads.setAds_id(adsId);
@@ -93,6 +93,7 @@ public class AdvertisementDbDao extends BaseDbDao implements IAdvertisementDbDao
 		ads.setClient_id(clientId);
 		ads.setRemark(remark);
 		ads.setSharding_flag(shardingFlag);
+		ads.setPagination(pagination);
 		advertisementSendLogMapper.insert(ads);
 	}
 

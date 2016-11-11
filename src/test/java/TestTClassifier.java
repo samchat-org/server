@@ -2,12 +2,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.text.NumberFormat;
 
-import com.aliasi.classify.ConfusionMatrix;
 import com.aliasi.classify.ScoredClassification;
 import com.aliasi.classify.ScoredClassifier;
-import com.aliasi.util.Files;
 
 
 public class TestTClassifier {  

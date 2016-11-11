@@ -28,10 +28,10 @@ public enum SysParamCodeDbEnum {
 	NI_APP_SECRET("ni_app_secret"),
 	
 	// key of twillo sms templete 
-	TWILIO_VERIFICATION_REGISTER_CODE_SMS_TEMPLETE("twillo_verification_register_code_sms_templete"),
-	TWILIO_VERIFICATION_FINDPWD_CODE_SMS_TEMPLETE("twillo_verification_findpwd_code_sms_templete"),
-	TWILIO_VERIFICATION_EDIT_CELL_PHONE_CODE_SMS_TEMPLETE("twillo_verification_edit_cell_phone_code_sms_templete"),
-	TWILIO_SEND_INVITE_SMS_TEMPLETE("twillo_send_invite_sms_templete"),
+//	TWILIO_VERIFICATION_REGISTER_CODE_SMS_TEMPLETE("twillo_verification_register_code_sms_templete"),
+//	TWILIO_VERIFICATION_FINDPWD_CODE_SMS_TEMPLETE("twillo_verification_findpwd_code_sms_templete"),
+//	TWILIO_VERIFICATION_EDIT_CELL_PHONE_CODE_SMS_TEMPLETE("twillo_verification_edit_cell_phone_code_sms_templete"),
+//	TWILIO_SEND_INVITE_SMS_TEMPLETE("twillo_send_invite_sms_templete"),
 	
 	// key of sqs cfg
 	SQS_RECEIVE_WAIT_TIME("aws_sqs_receive_wait_time"),
@@ -63,6 +63,7 @@ public enum SysParamCodeDbEnum {
 	
 	PAGE_SIZE_QUERYPUBLICLIST("page_size_queryPublicList"),
 	PAGE_SIZE_QUERYUSERSFUZZY("page_size_queryUsersFuzzy"),
+	PAGE_SIZE_QUERYFOLLOWLISTFORADSDSP("page_size_queryFollowListForAdsDsp"),
 	
 	QUESTION_SEND_BLOCK_TIME("question_send_block_time"),
 	QUESTION_SEND_LIMIT_TIME("question_send_limit_time"),

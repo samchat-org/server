@@ -1,7 +1,7 @@
 package com.samchat.common.beans.auto.json.appserver.user;
 
-import com.samchat.common.exceptions.AppException;
 import com.samchat.common.enums.app.ResCodeAppEnum;
+import com.samchat.common.exceptions.AppException;
 public class QueryAccurate_req{
 
 	private Header header;

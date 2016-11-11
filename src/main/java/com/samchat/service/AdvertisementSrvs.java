@@ -10,9 +10,11 @@ import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementContent;
 import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementSendLog;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementDelete_req;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementWrite_req;
+import com.samchat.common.beans.manual.db.QryFollowVO;
 import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.db.AdsDbEnum;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.utils.S3Util;
 import com.samchat.common.utils.SqsUtil;
@@ -32,8 +34,14 @@ public class AdvertisementSrvs extends BaseSrvs implements IAdvertisementSrvs {
 
 	public void saveAdvertisementSendLog(long adsId, long userId, Timestamp senddate, byte state, String clientId,
 			String remark, int shardingFlag) {
-		advertisementDbDao.saveAdvertisementSendLog(adsId, userId, senddate, state, clientId, remark, shardingFlag);
+		advertisementDbDao.saveAdvertisementSendLog(adsId, userId, senddate, state, clientId, remark, shardingFlag, 1);
 	}
+	
+	public void saveAdvertisementSendLogList(long adsId, List<QryFollowVO> qfvlst, Timestamp senddate, AdsDbEnum.SendLogState state, int shardingFlag, int pagination) {
+ 		for(QryFollowVO qfv : qfvlst){
+			advertisementDbDao.saveAdvertisementSendLog(adsId, qfv.getUser_id(), senddate, state.val(), "", state.name(), shardingFlag, pagination);
+		}
+ 	}
 	
 	public void updateAdvertisementSendLog(long logId, Timestamp senddate, byte state, String clientId, String remark,
 			int shardingFlag, int sendcount) {

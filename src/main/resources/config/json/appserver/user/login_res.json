@@ -9,6 +9,9 @@
         "email":"",
         "address":"",
         "type":0,
+        "my_settings":{
+            "question_notify":1
+        },
         "avatar":{
             "origin":"http://121.42.207.185/avatar/2016/1/18/origin_1453123489091.png",
             "thumb":"http://121.42.207.185/avatar/2016/1/18/thumb_1453123489091.png"

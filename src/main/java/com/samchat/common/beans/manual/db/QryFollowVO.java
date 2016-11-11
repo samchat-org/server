@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 public class QryFollowVO {
 	
 	private long user_id;
+	private long user_id_pro;
 	private String user_name;
 	private long favourite_tag;
 	private long block_tag;
@@ -14,6 +15,15 @@ public class QryFollowVO {
 	private String service_category;
 	private String service_description;
 	private Timestamp lastupdate;
+	
+	public long getUser_id() {
+		return user_id;
+	}
+
+	public void setUser_id(long user_id) {
+		this.user_id = user_id;
+	}
+
  
 	public Timestamp getLastupdate() {
 		return lastupdate;
@@ -22,15 +32,15 @@ public class QryFollowVO {
 	public void setLastupdate(Timestamp lastupdate) {
 		this.lastupdate = lastupdate;
 	}
-
-	public long getUser_id() {
-		return user_id;
-	}
-
-	public void setUser_id(long user_id) {
-		this.user_id = user_id;
-	}
 	
+	public long getUser_id_pro() {
+		return user_id_pro;
+	}
+
+	public void setUser_id_pro(long user_id_pro) {
+		this.user_id_pro = user_id_pro;
+	}
+
 	public String getUser_name() {
 		return user_name;
 	}

@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.user.CreateSamPros_req;
@@ -30,6 +29,7 @@ import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.cache.CacheNameCacheEnum;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
+import com.samchat.common.enums.db.UserDbEnum;
 import com.samchat.common.exceptions.RedisException;
 import com.samchat.common.utils.CacheUtil;
 import com.samchat.common.utils.CommonUtil;
@@ -130,6 +130,11 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 			uupr.setNowVersion(nowVersion);
 			PropertyUtils.copyProperties(uupr, uup);
 			hsetUserInfoProsJsonObj(userId, uupr);
+			
+			TokenValRds ptvr = new TokenValRds();
+			tvr.setToken(uup.getCur_token());
+			tvr.setNowVersion(nowVersion);
+			hsetUserInfoProsTokenJsonObj(userId, ptvr);
 		}
 		return uup;
 
@@ -185,7 +190,11 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		avatar.setOrigin(user.getAvatar_origin());
 		avatar.setThumb(user.getAvatar_thumb());
 		userRes.setAvatar(avatar);
-
+		
+		Login_res.My_settings ms = new Login_res.My_settings();
+		ms.setQuestion_notify(user.getQuestion_notify());
+		userRes.setMy_settings(ms);
+		
 		Sam_pros_info info = new Login_res.Sam_pros_info();
 		userRes.setSam_pros_info(info);
 		if (user.getUser_type() == Constant.USER_TYPE_SERVICES) {
@@ -225,12 +234,13 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		uu.setState_date(now);
 		uu.setCreate_date(now);
 		uu.setCur_token(realToken);
+		uu.setQuestion_notify(UserDbEnum.QuestionNotify.NOTIFY.val());
 
 		userDbDao.insertUser(uu, now);
 		long userId = uu.getUser_id();
 
 		cacheBaseUserInfoUpdate(uu, sysdate, realToken);
-		niRegister(userId, userName, realToken, now);
+		niRegister(String.valueOf(userId), userName, realToken, now);
 
 		Register_res res = new Register_res();
 		res.setToken(retToken);
@@ -290,9 +300,9 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		userRedisDao.delete(key);
 	}
 
-	public void niRegister(long userId, String userName, String token, Timestamp cur) throws Exception {
+	public void niRegister(String userId, String userName, String token, Timestamp cur) throws Exception {
 		Create_req register = new Create_req();
-		register.setAccid(String.valueOf(userId));
+		register.setAccid(userId);
 		register.setName(userName);
 		register.setToken(token);
 		NiUtil.createAction(register, cur);
@@ -334,6 +344,11 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		Timestamp now = sysdate.getNow();
 		long nowVersion = sysdate.getNowVersion();
 		
+		String deviceId = "public";
+		String retToken = CacheUtil.getToken(users.getCountry_code(), users.getPhone_no(), sysdate.getNowVersion(),
+				deviceId);
+		String realToken = CacheUtil.getRealToken(retToken, deviceId);
+		
 		CreateSamPros_req.Body body = req.getBody();
 		long userId = users.getUser_id();
 		TUserProUsers proUsers = new TUserProUsers();
@@ -344,6 +359,7 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		proUsers.setCountry_code(body.getCountrycode());
 		proUsers.setPhone_no(body.getPhone());
 		proUsers.setEmail(body.getEmail());
+		proUsers.setCur_token(realToken);
 
 		CreateSamPros_req.Location location = body.getLocation();
 		if (location != null) {
@@ -366,6 +382,14 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		userCon.setUser_type(Constant.USER_TYPE_SERVICES);
 		userCon.setState_date(now);
 		userDbDao.updateUser(userCon);
+		
+		String publicUserId = CommonUtil.getPublicSendUserId(users.getUser_id());
+		niRegister(publicUserId, users.getUser_name(), realToken, sysdate.getNow());
+		
+//		TokenValRds tvr = new TokenValRds();
+//		tvr.setToken(realToken);
+//		tvr.setNowVersion(nowVersion);
+//		hsetUserInfoProsTokenJsonObj(userId, tvr);
 
 		UserInfoProRds userProInfo = new UserInfoProRds();
 		userProInfo.setNowVersion(nowVersion);
@@ -440,23 +464,18 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		return userDbDao.queryUserWithoutToken(type, countrycode, cellphone, userName);
 	}
 
-	public TUserUsers updateAvatar(String origin, String thumb, long userId, Timestamp sysdate) throws Exception {
+	public TUserUsers updateAvatar(String origin, String thumb, long userId, SysdateObjBean sysdate) throws Exception {
 		
 		TUserUsers uu = queryUser(userId);
 		uu.setUser_id(userId);
 		uu.setAvatar_origin(origin);
 		uu.setAvatar_thumb(S3Util.getThumbObject(origin));
-		uu.setState_date(sysdate);
-		userDbDao.updateUser(uu);
-
-		UserInfoRds uur = new UserInfoRds();
-		PropertyUtils.copyProperties(uur, uu);
-		hsetUserInfoJsonObj(userId, uur);
-
+		uu.setState_date(sysdate.getNow());
+		updateUserInfo(uu, sysdate);
 		return uu;
 	}
 	
-	public TUserUsers updateAvatar_master(String origin, String thumb, long userId, Timestamp sysdate)  throws Exception{
+	public TUserUsers updateAvatar_master(String origin, String thumb, long userId, SysdateObjBean sysdate)  throws Exception{
 		return updateAvatar(origin, thumb, userId, sysdate);
 	}
 

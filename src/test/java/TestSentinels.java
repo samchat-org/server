@@ -1,5 +1,6 @@
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 
+import com.amazonaws.sns.samples.mobilepush.SNSMobilePush;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;

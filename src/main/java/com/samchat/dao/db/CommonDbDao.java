@@ -8,7 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigs;
 import com.samchat.common.beans.auto.db.entitybeans.TSysConfigsExample;
+import com.samchat.common.beans.auto.db.entitybeans.TSysMessageTemplete;
+import com.samchat.common.beans.auto.db.entitybeans.TSysMessageTempleteExample;
 import com.samchat.common.beans.auto.db.mapper.TSysConfigsMapper;
+import com.samchat.common.beans.auto.db.mapper.TSysMessageTempleteMapper;
 import com.samchat.common.beans.manual.common.SysdateObjBean;
 import com.samchat.common.beans.manual.db.QrySequenceVO;
 import com.samchat.common.enums.Constant;
@@ -21,6 +24,9 @@ public class CommonDbDao extends BaseDbDao implements ICommonDbDao {
 	
 	@Autowired
 	private TSysConfigsMapper  sysConfigsMapper;
+	
+	@Autowired
+	private TSysMessageTempleteMapper  sysMessageTempleteMapper;
 	
 	protected String getNamespace() {
 		return "commonSqlMapper";
@@ -64,5 +70,11 @@ public class CommonDbDao extends BaseDbDao implements ICommonDbDao {
 		sb.setNow(new Timestamp(Constant.SDF_YYYYMMDDHHmmss.parse(dateMicro[0]).getTime()));
 		sb.setNowVersion((sb.getNow().getTime() - baseMills) * 1000 + Long.parseLong(dateMicro[1]));
 		return sb;
+	}
+	
+	public List<TSysMessageTemplete> querySysMsgTplList(){
+		TSysMessageTempleteExample sce = new TSysMessageTempleteExample();
+		sce.createCriteria().andStateEqualTo(Constant.SYS_PARAM_STATE.STATE_VALID_IN);
+		return sysMessageTempleteMapper.selectByExample(sce);
 	}
 }

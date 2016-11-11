@@ -5,6 +5,7 @@ public interface AdsDbEnum {
 	public enum SendLogState {
 		CANCEL((byte) -2),
 		ERROR((byte) -1), 
+		WAIT((byte)0),
 		SEND_SUCCESS((byte) 1), 
 		RECV_SUCCESS((byte) 2);
 		

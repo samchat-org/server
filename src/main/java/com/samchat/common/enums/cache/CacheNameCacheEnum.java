@@ -20,7 +20,8 @@ public enum CacheNameCacheEnum {
 	EDIT_CELL_PHONE("EDIT_CELL_PHONE"),
 	EDIT_CELL_PHONE_CTRL("EDIT_CELL_PHONE_CTRL"),
 	
-	ECH_SYS_CONFIG("SYS_CONFIG");
+	ECH_SYS_CONFIG("SYS_CONFIG"),
+	ECH_SYS_MSG_TPL("SYS_MSG_TPL");
 	
 	private String value;
 	

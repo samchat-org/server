@@ -25,6 +25,7 @@
     <result column="cur_device_id" jdbcType="VARCHAR" property="cur_device_id" />
     <result column="cur_token" jdbcType="VARCHAR" property="cur_token" />
     <result column="cur_client_id" jdbcType="VARCHAR" property="cur_client_id" />
+    <result column="question_notify" jdbcType="TINYINT" property="question_notify" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -99,7 +100,7 @@
     -->
     user_id, user_type, user_name, user_pwd, country_code, phone_no, email, longitude, 
     latitude, place_id, address, avatar_origin, avatar_thumb, state, state_date, create_date, 
-    cur_device_id, cur_token, cur_client_id
+    cur_device_id, cur_token, cur_client_id, question_notify
   </sql>
   <select id="selectByExample" parameterType="com.samchat.common.beans.auto.db.entitybeans.TUserUsersExample" resultMap="BaseResultMap">
     <!--
@@ -160,15 +161,15 @@
       longitude, latitude, place_id, 
       address, avatar_origin, avatar_thumb, 
       state, state_date, create_date, 
-      cur_device_id, cur_token, cur_client_id
-      )
+      cur_device_id, cur_token, cur_client_id, 
+      question_notify)
     values (#{user_type,jdbcType=TINYINT}, #{user_name,jdbcType=VARCHAR}, #{user_pwd,jdbcType=VARCHAR}, 
       #{country_code,jdbcType=VARCHAR}, #{phone_no,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
       #{longitude,jdbcType=VARCHAR}, #{latitude,jdbcType=VARCHAR}, #{place_id,jdbcType=VARCHAR}, 
       #{address,jdbcType=VARCHAR}, #{avatar_origin,jdbcType=VARCHAR}, #{avatar_thumb,jdbcType=VARCHAR}, 
       #{state,jdbcType=TINYINT}, #{state_date,jdbcType=TIMESTAMP}, #{create_date,jdbcType=TIMESTAMP}, 
-      #{cur_device_id,jdbcType=VARCHAR}, #{cur_token,jdbcType=VARCHAR}, #{cur_client_id,jdbcType=VARCHAR}
-      )
+      #{cur_device_id,jdbcType=VARCHAR}, #{cur_token,jdbcType=VARCHAR}, #{cur_client_id,jdbcType=VARCHAR}, 
+      #{question_notify,jdbcType=TINYINT})
   </insert>
   <insert id="insertSelective" parameterType="com.samchat.common.beans.auto.db.entitybeans.TUserUsers">
     <!--
@@ -234,6 +235,9 @@
       <if test="cur_client_id != null">
         cur_client_id,
       </if>
+      <if test="question_notify != null">
+        question_notify,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="user_type != null">
@@ -289,6 +293,9 @@
       </if>
       <if test="cur_client_id != null">
         #{cur_client_id,jdbcType=VARCHAR},
+      </if>
+      <if test="question_notify != null">
+        #{question_notify,jdbcType=TINYINT},
       </if>
     </trim>
   </insert>
@@ -366,6 +373,9 @@
       <if test="record.cur_client_id != null">
         cur_client_id = #{record.cur_client_id,jdbcType=VARCHAR},
       </if>
+      <if test="record.question_notify != null">
+        question_notify = #{record.question_notify,jdbcType=TINYINT},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -395,7 +405,8 @@
       create_date = #{record.create_date,jdbcType=TIMESTAMP},
       cur_device_id = #{record.cur_device_id,jdbcType=VARCHAR},
       cur_token = #{record.cur_token,jdbcType=VARCHAR},
-      cur_client_id = #{record.cur_client_id,jdbcType=VARCHAR}
+      cur_client_id = #{record.cur_client_id,jdbcType=VARCHAR},
+      question_notify = #{record.question_notify,jdbcType=TINYINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -461,6 +472,9 @@
       <if test="cur_client_id != null">
         cur_client_id = #{cur_client_id,jdbcType=VARCHAR},
       </if>
+      <if test="question_notify != null">
+        question_notify = #{question_notify,jdbcType=TINYINT},
+      </if>
     </set>
     where user_id = #{user_id,jdbcType=BIGINT}
   </update>
@@ -487,7 +501,8 @@
       create_date = #{create_date,jdbcType=TIMESTAMP},
       cur_device_id = #{cur_device_id,jdbcType=VARCHAR},
       cur_token = #{cur_token,jdbcType=VARCHAR},
-      cur_client_id = #{cur_client_id,jdbcType=VARCHAR}
+      cur_client_id = #{cur_client_id,jdbcType=VARCHAR},
+      question_notify = #{question_notify,jdbcType=TINYINT}
     where user_id = #{user_id,jdbcType=BIGINT}
   </update>
 </mapper>

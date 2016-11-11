@@ -1,6 +1,5 @@
 package com.samchat.common.utils;
 
-import java.util.Locale;
 
 public class StrUtils {
 	

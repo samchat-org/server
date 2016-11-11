@@ -44,6 +44,7 @@ import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.ResCodeAppEnum;
+import com.samchat.common.enums.db.SysMsgTplDbEnum;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
@@ -87,9 +88,9 @@ public class UserAction extends BaseAction {
 		}
 		log.info("countryCode:" + countrycode + "--" + "cellphone:" + cellphone + "--registerCode:" + registerCode);
 
-		String smstpl = CommonUtil
-				.getSysConfigStr(SysParamCodeDbEnum.TWILIO_VERIFICATION_REGISTER_CODE_SMS_TEMPLETE.getParamCode());
+		String smstpl = CommonUtil.getSysMsgTpl(SysMsgTplDbEnum.ActionCode.REGISTER_CODE_SMS.val());
 		String smsContent = smstpl.replaceAll(Constant.TWILLO_VERIFICATION_CODE, registerCode);
+		log.info("smsContent:" + smsContent);
 
 		String twilloPhoneNo = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.TWILIO_PHONE_NO.getParamCode());
 		TwilioUtil.sendSms(CommonUtil.getE164PhoneNo(countrycode, cellphone), twilloPhoneNo, smsContent);
@@ -348,8 +349,9 @@ public class UserAction extends BaseAction {
 		}
 		log.info("countryCode:" + countryCode + "--" + "cellphone:" + cellPhone + "--verificationCode:" + verificationCode);
 		
- 		String smstpl = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.TWILIO_VERIFICATION_FINDPWD_CODE_SMS_TEMPLETE.getParamCode());
+ 		String smstpl = CommonUtil.getSysMsgTpl(SysMsgTplDbEnum.ActionCode.FINDPWD_CODE_SMS.val());
 		String smsContent = smstpl.replaceAll(Constant.TWILLO_VERIFICATION_CODE, verificationCode);
+		log.info("smsContent:" + smsContent);
 		TwilioUtil.sendSms(countryCode, cellPhone, smsContent);
 		
 		if(code == null){

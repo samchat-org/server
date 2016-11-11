@@ -112,7 +112,7 @@ public class UserDbDao extends BaseDbDao implements IUserDbDao {
 
 	public List<TUserUsers> queryUsers() {
 		TUserUsersExample uue = new TUserUsersExample();
-		uue.createCriteria().andUser_typeEqualTo(Constant.USER_TYPE_SERVICES).andStateEqualTo(Constant.STATE_IN_USE);
+		uue.createCriteria().andUser_typeEqualTo(Constant.USER_TYPE_SERVICES).andStateEqualTo(Constant.STATE_IN_USE).andUser_nameNotLike("test%");
 		return userUsersMapper.selectByExample(uue);
 	}
 

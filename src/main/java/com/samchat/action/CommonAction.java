@@ -10,7 +10,7 @@ import com.samchat.common.beans.auto.json.appserver.common.SendInviteMsg_res;
 import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
-import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
+import com.samchat.common.enums.db.SysMsgTplDbEnum;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.TwilioUtil;
@@ -29,7 +29,7 @@ public class CommonAction extends BaseAction {
 		String countrycode = userInfo.getCountry_code();
 		String cellphone = userInfo.getPhone_no();
 
-		String smstpl = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.TWILIO_SEND_INVITE_SMS_TEMPLETE.getParamCode());
+		String smstpl = CommonUtil.getSysMsgTpl(SysMsgTplDbEnum.ActionCode.SEND_INVITE_SMS.val());
 		String smsContent = smstpl.replaceAll(Constant.TWILLO_INVITE_USER,
 				CommonUtil.getE164PhoneNo(countrycode, cellphone));
 

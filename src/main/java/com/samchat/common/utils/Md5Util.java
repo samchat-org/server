@@ -7,8 +7,6 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.samchat.common.enums.Constant;
-
 public class Md5Util {
 
 	private static Log log = LogFactory.getLog(Md5Util.class);

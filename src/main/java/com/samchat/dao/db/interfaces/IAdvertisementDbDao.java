@@ -11,7 +11,7 @@ public interface IAdvertisementDbDao extends IBaseDbDao {
 			Timestamp recvdate, int shardingFlag);
 
 	public void saveAdvertisementSendLog(long adsId, long userId, Timestamp senddate, byte state, String clientId,
-			String remark, int shardingFlag);
+			String remark, int shardingFlag, int pagination);
 	
 	public void updateAdvertisementSendLog(long logId, Timestamp senddate, byte state, String clientId,
 			String remark, int shardingFlag, int sendcount);

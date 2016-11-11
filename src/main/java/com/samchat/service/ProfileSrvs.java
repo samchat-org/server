@@ -1,32 +1,31 @@
 package com.samchat.service;
 
-import java.sql.Timestamp;
-
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.profile.ProfileUpdate_req;
+import com.samchat.common.beans.auto.json.appserver.profile.UpdateQuestionNotify_req;
 import com.samchat.common.beans.manual.common.SysdateObjBean;
-import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
-import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.utils.CacheUtil;
 import com.samchat.common.utils.CommonUtil;
-import com.samchat.dao.db.interfaces.IUserDbDao;
 import com.samchat.service.interfaces.IProfileSrvs;
 
 @Service
 public class ProfileSrvs extends BaseSrvs implements IProfileSrvs {
 
 	private static Logger log = Logger.getLogger(ProfileSrvs.class);
-
-	@Autowired
-	private IUserDbDao userDbDao;
+	
+	public void updateQuestionNotify_master(UpdateQuestionNotify_req req , long userId, SysdateObjBean sysdate) throws Exception{
+		TUserUsers tuser = userDbDao.queryUser(userId);
+		tuser.setUser_id(userId);
+		tuser.setQuestion_notify((byte)req.getBody().getQuestion_notify());
+		tuser.setState_date(sysdate.getNow());
+		updateUserInfo(tuser, sysdate);
+	}
 
 	public void updateProfile_master(ProfileUpdate_req req, long userId, SysdateObjBean sysdate) throws Exception{
 		ProfileUpdate_req.User user = req.getBody().getUser();
@@ -47,12 +46,7 @@ public class ProfileSrvs extends BaseSrvs implements IProfileSrvs {
 			}
 		}
 		tuser.setState_date(sysdate.getNow());
-		userDbDao.updateUser(tuser);
-		
-		UserInfoRds uur = new UserInfoRds();
-		uur.setNowVersion(sysdate.getNowVersion());
-		PropertyUtils.copyProperties(uur, tuser);
-		hsetUserInfoJsonObj(userId, uur);
+		updateUserInfo(tuser, sysdate);
 		
 		ProfileUpdate_req.Sam_pros_info proInfo = user.getSam_pros_info();
 		if(proInfo != null){
@@ -77,18 +71,11 @@ public class ProfileSrvs extends BaseSrvs implements IProfileSrvs {
 							tuserPros.setLongitude(locationinfoPros.getLongitude());
 						}
 					}
-					
 					tuserPros.setState_date(sysdate.getNow());
-					userDbDao.updateProUser(tuserPros, sysdate.getNow());
-					
-					UserInfoProRds uurp = new UserInfoProRds();
-					uur.setNowVersion(sysdate.getNowVersion());
-					PropertyUtils.copyProperties(uurp, tuserPros);
-					hsetUserInfoProsJsonObj(userId, uurp);
+					updateUserInfoPro(tuserPros, sysdate);
 				}
 			}
 		}
-
 	}
 	
 	public void putEditCellPhoneVerificationCode(String countryCode, String cellPhone, String verificationCode) {
@@ -119,13 +106,7 @@ public class ProfileSrvs extends BaseSrvs implements IProfileSrvs {
 		tuser.setCountry_code(countryCode);
 		tuser.setPhone_no(phoneNo);
 		tuser.setState_date(sysdate.getNow());
-		userDbDao.updateUser(tuser);
-		
-		UserInfoRds uur = new UserInfoRds();
-		uur.setNowVersion(sysdate.getNowVersion());
-		PropertyUtils.copyProperties(uur, tuser);
-		hsetUserInfoJsonObj(userId, uur);
-
+		updateUserInfo(tuser, sysdate);
 	}
 
 	public void niSendMessage() {

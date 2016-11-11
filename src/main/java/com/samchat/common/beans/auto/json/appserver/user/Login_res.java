@@ -16,6 +16,7 @@ public class Login_res{
 		private String email = "";
 		private String address = "";
 		private long type;
+		private My_settings my_settings;
 		private Avatar avatar;
 		private long lastupdate;
 		private Sam_pros_info sam_pros_info;
@@ -76,6 +77,14 @@ public class Login_res{
 			this.type = type;
 		}
 
+		public My_settings getMy_settings() {
+			return my_settings;
+		}
+
+		public void setMy_settings(My_settings my_settings) {
+			this.my_settings = my_settings;
+		}
+
 		public Avatar getAvatar() {
 			return avatar;
 		}
@@ -98,6 +107,18 @@ public class Login_res{
 
 		public void setSam_pros_info(Sam_pros_info sam_pros_info) {
 			this.sam_pros_info = sam_pros_info;
+		}
+	}
+
+	public static class My_settings {
+		private long question_notify;
+
+		public long getQuestion_notify() {
+			return question_notify;
+		}
+
+		public void setQuestion_notify(long question_notify) {
+			this.question_notify = question_notify;
 		}
 	}
 

@@ -2,9 +2,12 @@ package com.samchat.service;
 
 import java.sql.Timestamp;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
+import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.manual.common.SysdateObjBean;
 import com.samchat.common.beans.manual.json.redis.TokenValRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
@@ -95,6 +98,14 @@ public class BaseSrvs implements IBaseSrvs {
 			throw new RedisException("", e);
 		}
 	}
+	
+	public void hsetUserInfoProsTokenJsonObj(long userId, TokenValRds tvr) {
+		try {
+			hsetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.PUBLIC_TOKEN.val(), tvr);
+		} catch (Exception e) {
+			throw new RedisException("", e);
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T hgetUserInfoJsonObjRedis(long userId, String field, Class<T> clazz) throws Exception {
@@ -158,7 +169,6 @@ public class BaseSrvs implements IBaseSrvs {
 		return t;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public UserInfoProRds hgetUserInfoProsJsonObj(long userId){
 		UserInfoProRds t = null;
 		try {
@@ -169,7 +179,6 @@ public class BaseSrvs implements IBaseSrvs {
 		return t;
 	}
 
-	@SuppressWarnings("unchecked")
 	public TokenValRds hgetUserInfoTokenJsonObj(long userId){
 		TokenValRds t = null;
 		try {
@@ -178,6 +187,38 @@ public class BaseSrvs implements IBaseSrvs {
 			throw new RedisException("", e);
 		}
 		return t;
+	}
+	
+	public TokenValRds hgetUserInfoProsTokenJsonObj(long userId){
+		TokenValRds t = null;
+		try {
+			t = hgetUserInfoJsonObjRedis(userId, UserInfoFieldRdsEnum.PUBLIC_TOKEN.val(), TokenValRds.class);
+		} catch (Exception e) {
+			throw new RedisException("", e);
+		}
+		return t;
+	}
+	
+	protected void updateUserInfo(TUserUsers user, SysdateObjBean sysdate) throws Exception{
+
+		userDbDao.updateUser(user);
+		
+		UserInfoRds uur = new UserInfoRds();
+		uur.setNowVersion(sysdate.getNowVersion());
+		PropertyUtils.copyProperties(uur, user);
+		hsetUserInfoJsonObj(user.getUser_id(), uur);
+		
+	}
+	
+	protected void updateUserInfoPro(TUserProUsers userPro, SysdateObjBean sysdate) throws Exception{
+
+		userDbDao.updateProUser(userPro, sysdate.getNow());
+		
+		UserInfoProRds uurp = new UserInfoProRds();
+		uurp.setNowVersion(sysdate.getNowVersion());
+		PropertyUtils.copyProperties(uurp, userPro);
+		hsetUserInfoProsJsonObj(userPro.getUser_id(), uurp);
+		
 	}
 
 	public Timestamp querySysdate() {

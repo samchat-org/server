@@ -9,8 +9,6 @@ public interface Constant {
 	
 	SimpleDateFormat SDF_YYYYMMDDHHmmss = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-	int DEV_MODE = 1;
-
 	String TWILLO_VERIFICATION_CODE = "\\{verification_code\\}";
 
 	String TWILLO_INVITE_USER = "\\{invite_user\\}";
@@ -69,5 +67,7 @@ public interface Constant {
 	}
 
 	int SUCCESS = 0;
+	
+	String NI_USER_PUBLIC_PREFIX = "public_";
 
 }

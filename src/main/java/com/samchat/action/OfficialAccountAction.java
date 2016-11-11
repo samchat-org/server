@@ -27,7 +27,6 @@ import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.FollowAppEnum;
 import com.samchat.common.enums.app.ResCodeAppEnum;
-import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.service.interfaces.ICommonSrvm;
 import com.samchat.service.interfaces.ICommonSrvs;
@@ -207,7 +206,7 @@ public class OfficialAccountAction extends BaseAction {
 			FollowListQuery_res.Sam_pros_info prosInfo = new FollowListQuery_res.Sam_pros_info();
 
 			FollowListQuery_res.Users userPro = new FollowListQuery_res.Users();
-			userPro.setId(fo.getUser_id());
+			userPro.setId(fo.getUser_id_pro());
 			userPro.setUsername(fo.getUser_name());
 			userPro.setBlock_tag(fo.getBlock_tag());
 			userPro.setFavourite_tag(fo.getFavourite_tag());

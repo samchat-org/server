@@ -1,9 +1,7 @@
 package com.samchat.dao.db.interfaces;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.samchat.common.beans.manual.db.QryContactVO;
 

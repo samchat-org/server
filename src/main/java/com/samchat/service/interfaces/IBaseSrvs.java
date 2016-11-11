@@ -6,7 +6,6 @@ import com.samchat.common.beans.manual.common.SysdateObjBean;
 import com.samchat.common.beans.manual.json.redis.TokenValRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
-import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
 
 public interface IBaseSrvs {
  		public void hsetUserInfoJsonObjRedis(long userId, String filed, Object uif) throws Exception ;
@@ -29,4 +28,6 @@ public interface IBaseSrvs {
 	 	public void hsetUserInfoCustomerListDate(long userId, String date);
 	 	public void hsetUserInfoServicerListDate(long userId, String date);
 	 	public void hsetUserInfoFollowListDate(long userId, String date);
+	 	public void hsetUserInfoProsTokenJsonObj(long userId, TokenValRds tvr);
+	 	public TokenValRds hgetUserInfoProsTokenJsonObj(long userId);
 }
