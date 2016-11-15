@@ -96,7 +96,7 @@ public class ContactAction extends BaseAction {
 			userlist = contactSrv.queryContactProUserList(userId);
 		}
 		ContactListQuery_res res = new ContactListQuery_res();
-		res.setCount(userlist.size());
+		res.setCount(new Long(userlist.size()));
 
 		ArrayList<ContactListQuery_res.Users> list = new ArrayList<ContactListQuery_res.Users>();
 		for (QryContactVO vo : userlist) {

@@ -2,31 +2,31 @@ package com.samchat.common.beans.auto.json.appserver.question;
 
 public class Question_res{
 
-	private long ret;
-	private long question_id;
-	private long datetime;
+	private Long ret;
+	private Long question_id;
+	private Long datetime;
 
-	public long getRet() {
+	public Long getRet() {
 		return ret;
 	}
 
-	public void setRet(long ret) {
+	public void setRet(Long ret) {
 		this.ret = ret;
 	}
 
-	public long getQuestion_id() {
+	public Long getQuestion_id() {
 		return question_id;
 	}
 
-	public void setQuestion_id(long question_id) {
+	public void setQuestion_id(Long question_id) {
 		this.question_id = question_id;
 	}
 
-	public long getDatetime() {
+	public Long getDatetime() {
 		return datetime;
 	}
 
-	public void setDatetime(long datetime) {
+	public void setDatetime(Long datetime) {
 		this.datetime = datetime;
 	}
 

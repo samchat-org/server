@@ -3,28 +3,28 @@ package com.samchat.common.beans.auto.json.appserver.user;
 import java.util.ArrayList;
 public class Register_res{
 
-	private long ret;
+	private Long ret;
 	private String token = "";
 	private User user;
 	private ArrayList<Sys_params> sys_params;
 
 	public static class User {
-		private long id;
-		private long lastupdate;
+		private Long id;
+		private Long lastupdate;
 
-		public long getId() {
+		public Long getId() {
 			return id;
 		}
 
-		public void setId(long id) {
+		public void setId(Long id) {
 			this.id = id;
 		}
 
-		public long getLastupdate() {
+		public Long getLastupdate() {
 			return lastupdate;
 		}
 
-		public void setLastupdate(long lastupdate) {
+		public void setLastupdate(Long lastupdate) {
 			this.lastupdate = lastupdate;
 		}
 	}
@@ -50,11 +50,11 @@ public class Register_res{
 		}
 	}
 
-	public long getRet() {
+	public Long getRet() {
 		return ret;
 	}
 
-	public void setRet(long ret) {
+	public void setRet(Long ret) {
 		this.ret = ret;
 	}
 

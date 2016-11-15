@@ -3,6 +3,8 @@ package com.samchat.common.utils.jsonUtils.jsonObjConvertUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +21,7 @@ import com.google.gson.JsonPrimitive;
 import com.samchat.common.utils.StrUtils;
 import com.samchat.common.utils.jsonUtils.jsonObjConvertUtil.entity.ArrayType;
 import com.samchat.common.utils.jsonUtils.jsonObjConvertUtil.entity.Json2JavaElement;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 
 public class JsonObjUtil {
@@ -245,15 +248,40 @@ public class JsonObjUtil {
 			}
 			
 		}else {
-			if("long".equals(getTypeName(j2j))){
+			if("Long".equals(getTypeName(j2j))){
 				String j2jName = j2j.getName();
 				int start = j2jName.indexOf("[");
 				int end = j2jName.indexOf("]");
 				if(end - start > 1){
 					j2j.setName(j2jName.substring(0,start));
 					String[] enumValue = j2jName.substring(start + 1, end).split(",");
+					ArrayList<String> enumArr =new ArrayList<String>();
+					String flag = null;
+ 					for(String value : enumValue){
+ 						try{
+ 							Long.parseLong(value);
+							enumArr.add(value);
+						}catch(Exception e){
+							if(!"t".equals(value) && !"f".equals(value)){
+								throw new RuntimeException("property " + j2jName + " , param error: value--" + value);
+							}
+ 							flag = value;
+						}
+					}
 					validate = new StringBuffer("if (");
-					for(String value : enumValue){
+					if("t".equals(flag)){
+						validate.append(j2j.getName()).append(" == null");
+						if(enumArr.size() > 0){
+							validate.append("||");
+						}
+					}
+					if("f".equals(flag) || flag == null){
+						validate.append(j2j.getName()).append(" != null");
+						if(enumArr.size() > 0){
+							validate.append("&&");
+						}
+					}
+					for(String value : enumArr){
 						validate.append(j2j.getName() + " != " + value + " &&");
 					}
 					validate = new StringBuffer(validate.substring(0, validate.length() - 2)).append("){\r\n");
@@ -507,21 +535,21 @@ public class JsonObjUtil {
 				// 如果包含"."则为小数,先尝试解析成float,如果失败则视为double
 				try {
 					Float.parseFloat(num);
-					clazz = float.class;
+					clazz = Float.class;
 				} catch (NumberFormatException e) {
-					clazz = double.class;
+					clazz = Double.class;
 				}
 			} else {
 				// 如果不包含"."则为整数,先尝试解析成int,如果失败则视为long
 				try {
 					Long.parseLong(num);
-					clazz = long.class;
+					clazz = Long.class;
 				} catch (NumberFormatException e) {
 //					clazz = long.class;
 				}
 			}
 		} else if (jp.isBoolean()) {
-			clazz = boolean.class;
+			clazz = Boolean.class;
 		} else if (jp.isString()) {
 			clazz = String.class;
 		}
@@ -558,9 +586,6 @@ public class JsonObjUtil {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < j2j.getArrayDeep(); i++) {
 			sb.append("ArrayList<");
-			if("long".equals(name)){
-				name = "Long";
-			}
 		}
 		sb.append(name);
 		for (int i = 0; i < j2j.getArrayDeep(); i++) {

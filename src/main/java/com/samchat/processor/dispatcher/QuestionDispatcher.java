@@ -12,8 +12,8 @@ import com.samchat.common.beans.auto.json.appserver.question.DispatchQuestion_re
 import com.samchat.common.beans.auto.json.ni.msg.SendAttachMsg_req;
 import com.samchat.common.beans.manual.json.sqs.QuestionSqs;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
+import com.samchat.common.enums.db.UserDbEnum;
 import com.samchat.common.utils.CommonUtil;
-import com.samchat.common.utils.GetuiUtil;
 import com.samchat.common.utils.ThreadLocalUtil;
 import com.samchat.common.utils.niUtils.NiUtil;
 import com.samchat.processor.dispatcher.base.DispatcherBase;
@@ -64,15 +64,20 @@ public class QuestionDispatcher extends DispatcherBase {
 		List<TUserUsers> users = usersSrv.queryUsers();
 		for (TUserUsers user : users) {
 			if (user.getUser_id() != req.getUser_id()) {
-				String dispatchReq = ThreadLocalUtil.getAppObjectMapper().writeValueAsString(getRequest(user, req));
-				String dispatchReqContent = "{\"id\":3,\"content\":" + dispatchReq + "}";
-				SendAttachMsg_req msg = new SendAttachMsg_req();
-				msg.setFrom(sender);
-				msg.setTo(String.valueOf(user.getUser_id()));
-				msg.setAttach(dispatchReqContent);
-				msg.setPushcontent("a new message");
-				msg.setPayload(dispatchReq);
-				NiUtil.sendAttachMsg(msg, sysdate);
+				try {
+					String dispatchReq = ThreadLocalUtil.getAppObjectMapper().writeValueAsString(getRequest(user, req));
+					String dispatchReqContent = "{\"id\":3,\"content\":" + dispatchReq + "}";
+					SendAttachMsg_req msg = new SendAttachMsg_req();
+					msg.setFrom(sender);
+					msg.setTo(String.valueOf(user.getUser_id()));
+					msg.setAttach(dispatchReqContent);
+					if (user.getQuestion_notify() == UserDbEnum.QuestionNotify.NOTIFY.val()) {
+						msg.setPushcontent("a new message");
+					}
+					NiUtil.sendAttachMsg(msg, sysdate);
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
 			}
 		}
 	}

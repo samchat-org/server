@@ -10,8 +10,7 @@ import com.aliasi.classify.ScoredClassifier;
 public class TestTClassifier {  
   
     //测试语料的存放目录  
-    private static File TDIR = new File("d:\\lingpipe\\test");  
-    private static String[] CATEGORIES = { "金融学","军事"};  
+    private static String[] CATEGORIES = { "jr","js"};  
   
     public static void main(String[] args) throws ClassNotFoundException {  
           
@@ -27,12 +26,12 @@ public class TestTClassifier {
         } catch (IOException ie) {  
             System.out.println("IO Error: Model file " + modelFile + " missing");  
         }  
-        String t = "飞弹";
+        String t = "submersible";
         ScoredClassification classification = compiledClassifier  
                 .classify(t .subSequence(0, t.length()));  
         System.out.println("最适合的分类: "  
                 + classification.bestCategory());  
-  
+        System.out.println(classification.category(1));
         // 遍历分类目录中的文件测试分类准确度  
 //        ConfusionMatrix confMatrix = new ConfusionMatrix(CATEGORIES);  
 //        NumberFormat nf = NumberFormat.getInstance();  

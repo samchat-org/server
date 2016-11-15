@@ -1,7 +1,7 @@
 package com.samchat.common.beans.auto.json.appserver.advertisement;
 
-import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.exceptions.AppException;
+import com.samchat.common.enums.app.ResCodeAppEnum;
 public class AdvertisementWrite_req{
 
 	private Header header;
@@ -29,17 +29,17 @@ public class AdvertisementWrite_req{
 	}
 
 	public static class Body {
-		private long type;
+		private Long type;
 		private String content;
 		private String content_thumb;
 		private String message_id;
 
-		public long getType() {
+		public Long getType() {
 			return type;
 		}
 
-		public void setType(long type) {
-			if (type != 0 &&type != 1 &&type != 2 ){
+		public void setType(Long type) {
+			if (type != null&&type != 0 &&type != 1 &&type != 2 ){
 				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + type);
 			}
 			this.type = type;

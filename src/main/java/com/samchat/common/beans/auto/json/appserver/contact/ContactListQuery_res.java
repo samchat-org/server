@@ -3,8 +3,8 @@ package com.samchat.common.beans.auto.json.appserver.contact;
 import java.util.ArrayList;
 public class ContactListQuery_res{
 
-	private long ret;
-	private long count;
+	private Long ret;
+	private Long count;
 	private ArrayList<Users> users;
 
 	public static class Avatar {
@@ -32,18 +32,18 @@ public class ContactListQuery_res{
 	}
 
 	public static class Users {
-		private long id;
+		private Long id;
 		private String username = "";
-		private long lastupdate;
-		private long type;
+		private Long lastupdate;
+		private Long type;
 		private Avatar avatar;
 		private Sam_pros_info sam_pros_info;
 
-		public long getId() {
+		public Long getId() {
 			return id;
 		}
 
-		public void setId(long id) {
+		public void setId(Long id) {
 			this.id = id;
 		}
 
@@ -55,19 +55,19 @@ public class ContactListQuery_res{
 			this.username = (username == null? "" : username.trim());
 		}
 
-		public long getLastupdate() {
+		public Long getLastupdate() {
 			return lastupdate;
 		}
 
-		public void setLastupdate(long lastupdate) {
+		public void setLastupdate(Long lastupdate) {
 			this.lastupdate = lastupdate;
 		}
 
-		public long getType() {
+		public Long getType() {
 			return type;
 		}
 
-		public void setType(long type) {
+		public void setType(Long type) {
 			this.type = type;
 		}
 
@@ -88,19 +88,19 @@ public class ContactListQuery_res{
 		}
 	}
 
-	public long getRet() {
+	public Long getRet() {
 		return ret;
 	}
 
-	public void setRet(long ret) {
+	public void setRet(Long ret) {
 		this.ret = ret;
 	}
 
-	public long getCount() {
+	public Long getCount() {
 		return count;
 	}
 
-	public void setCount(long count) {
+	public void setCount(Long count) {
 		this.count = count;
 	}
 

@@ -1,7 +1,7 @@
 package com.samchat.common.beans.auto.json.appserver.user;
 
-import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.exceptions.AppException;
+import com.samchat.common.enums.app.ResCodeAppEnum;
 public class QueryAccurate_req{
 
 	private Header header;
@@ -29,14 +29,14 @@ public class QueryAccurate_req{
 	}
 
 	public static class Body {
-		private long opt;
+		private Long opt;
 		private Param param;
 
-		public long getOpt() {
+		public Long getOpt() {
 			return opt;
 		}
 
-		public void setOpt(long opt) {
+		public void setOpt(Long opt) {
 			this.opt = opt;
 		}
 
@@ -50,17 +50,17 @@ public class QueryAccurate_req{
 	}
 
 	public static class Param {
-		private long type;
+		private Long type;
 		private String cellphone;
 		private String unique_id ;
 		private String username;
 
-		public long getType() {
+		public Long getType() {
 			return type;
 		}
 
-		public void setType(long type) {
-			if (type != 0 &&type != 1 &&type != 2 ){
+		public void setType(Long type) {
+			if (type != null&&type != 0 &&type != 1 &&type != 2 ){
 				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + type);
 			}
 			this.type = type;

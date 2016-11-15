@@ -20,7 +20,7 @@ public class Register_req{
 	public static class Body {
 		private String countrycode;
 		private String cellphone;
-		private long verifycode;
+		private Long verifycode;
 		private String username;
 		private String pwd;
 		private String deviceid;
@@ -41,11 +41,11 @@ public class Register_req{
 			this.cellphone = (cellphone == null? null : cellphone.trim());
 		}
 
-		public long getVerifycode() {
+		public Long getVerifycode() {
 			return verifycode;
 		}
 
-		public void setVerifycode(long verifycode) {
+		public void setVerifycode(Long verifycode) {
 			this.verifycode = verifycode;
 		}
 

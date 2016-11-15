@@ -2,31 +2,31 @@ package com.samchat.common.beans.auto.json.ni.msg;
 
 public class SendAttachMsgFieldOption_req{
 
-	private boolean badge;
-	private boolean needPushNick;
-	private boolean route;
+	private Boolean badge;
+	private Boolean needPushNick;
+	private Boolean route;
 
-	public boolean getBadge() {
+	public Boolean getBadge() {
 		return badge;
 	}
 
-	public void setBadge(boolean badge) {
+	public void setBadge(Boolean badge) {
 		this.badge = badge;
 	}
 
-	public boolean getNeedPushNick() {
+	public Boolean getNeedPushNick() {
 		return needPushNick;
 	}
 
-	public void setNeedPushNick(boolean needPushNick) {
+	public void setNeedPushNick(Boolean needPushNick) {
 		this.needPushNick = needPushNick;
 	}
 
-	public boolean getRoute() {
+	public Boolean getRoute() {
 		return route;
 	}
 
-	public void setRoute(boolean route) {
+	public void setRoute(Boolean route) {
 		this.route = route;
 	}
 

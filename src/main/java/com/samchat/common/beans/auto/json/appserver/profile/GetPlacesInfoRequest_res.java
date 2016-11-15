@@ -3,8 +3,8 @@ package com.samchat.common.beans.auto.json.appserver.profile;
 import java.util.ArrayList;
 public class GetPlacesInfoRequest_res{
 
-	private long ret;
-	private long count;
+	private Long ret;
+	private Long count;
 	private ArrayList<Places_info> places_info;
 
 	public static class Places_info {
@@ -28,19 +28,19 @@ public class GetPlacesInfoRequest_res{
 		}
 	}
 
-	public long getRet() {
+	public Long getRet() {
 		return ret;
 	}
 
-	public void setRet(long ret) {
+	public void setRet(Long ret) {
 		this.ret = ret;
 	}
 
-	public long getCount() {
+	public Long getCount() {
 		return count;
 	}
 
-	public void setCount(long count) {
+	public void setCount(Long count) {
 		this.count = count;
 	}
 

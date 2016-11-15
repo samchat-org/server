@@ -2,25 +2,25 @@ package com.samchat.common.beans.auto.json.appserver.user;
 
 public class CreateSamPros_res{
 
-	private long ret;
+	private Long ret;
 	private User user;
 
 	public static class User {
-		private long id;
+		private Long id;
 		private String username = "";
 		private String countrycode = "";
 		private String cellphone = "";
 		private String email = "";
 		private String address = "";
-		private long type;
+		private Long type;
 		private Avatar avatar;
-		private long lastupdate;
+		private Long lastupdate;
 
-		public long getId() {
+		public Long getId() {
 			return id;
 		}
 
-		public void setId(long id) {
+		public void setId(Long id) {
 			this.id = id;
 		}
 
@@ -64,11 +64,11 @@ public class CreateSamPros_res{
 			this.address = (address == null? "" : address.trim());
 		}
 
-		public long getType() {
+		public Long getType() {
 			return type;
 		}
 
-		public void setType(long type) {
+		public void setType(Long type) {
 			this.type = type;
 		}
 
@@ -80,11 +80,11 @@ public class CreateSamPros_res{
 			this.avatar = avatar;
 		}
 
-		public long getLastupdate() {
+		public Long getLastupdate() {
 			return lastupdate;
 		}
 
-		public void setLastupdate(long lastupdate) {
+		public void setLastupdate(Long lastupdate) {
 			this.lastupdate = lastupdate;
 		}
 	}
@@ -110,11 +110,11 @@ public class CreateSamPros_res{
 		}
 	}
 
-	public long getRet() {
+	public Long getRet() {
 		return ret;
 	}
 
-	public void setRet(long ret) {
+	public void setRet(Long ret) {
 		this.ret = ret;
 	}
 

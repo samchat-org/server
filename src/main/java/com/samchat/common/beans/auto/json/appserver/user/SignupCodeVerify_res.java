@@ -2,13 +2,13 @@ package com.samchat.common.beans.auto.json.appserver.user;
 
 public class SignupCodeVerify_res{
 
-	private long ret;
+	private Long ret;
 
-	public long getRet() {
+	public Long getRet() {
 		return ret;
 	}
 
-	public void setRet(long ret) {
+	public void setRet(Long ret) {
 		this.ret = ret;
 	}
 

@@ -27,23 +27,23 @@ public class QueryFuzzy_req{
 	}
 
 	public static class Body {
-		private long count;
-		private long opt;
+		private Long count;
+		private Long opt;
 		private Param param;
 
-		public long getCount() {
+		public Long getCount() {
 			return count;
 		}
 
-		public void setCount(long count) {
+		public void setCount(Long count) {
 			this.count = count;
 		}
 
-		public long getOpt() {
+		public Long getOpt() {
 			return opt;
 		}
 
-		public void setOpt(long opt) {
+		public void setOpt(Long opt) {
 			this.opt = opt;
 		}
 
@@ -58,7 +58,7 @@ public class QueryFuzzy_req{
 
 	public static class Param {
 		private String search_key;
-		private long search_type;
+		private Long search_type;
 
 		public String getSearch_key() {
 			return search_key;
@@ -68,11 +68,11 @@ public class QueryFuzzy_req{
 			this.search_key = (search_key == null? null : search_key.trim());
 		}
 
-		public long getSearch_type() {
+		public Long getSearch_type() {
 			return search_type;
 		}
 
-		public void setSearch_type(long search_type) {
+		public void setSearch_type(Long search_type) {
 			this.search_type = search_type;
 		}
 	}

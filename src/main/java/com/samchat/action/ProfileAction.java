@@ -133,7 +133,7 @@ public class ProfileAction extends BaseAction {
 		GetPlacesInfoRequest_res res = new GetPlacesInfoRequest_res();
 		ArrayList<GetPlacesInfoRequest_res.Places_info> placesInfoList = new ArrayList<GetPlacesInfoRequest_res.Places_info>();
 		res.setPlaces_info(placesInfoList);
-		res.setCount(list.size());
+		res.setCount(new Long(list.size()));
 
 		for (Predictions p : list) {
 			GetPlacesInfoRequest_res.Places_info pi = new GetPlacesInfoRequest_res.Places_info();

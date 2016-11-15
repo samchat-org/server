@@ -18,27 +18,27 @@ public class DispatchQuestion_req{
 	}
 
 	public static class Body {
-		private long datetime;
-		private long question_id;
+		private Long datetime;
+		private Long question_id;
 		private String question;
-		private long opt;
-		private long dest_id;
+		private Long opt;
+		private Long dest_id;
 		private String address;
 		private User user;
 
-		public long getDatetime() {
+		public Long getDatetime() {
 			return datetime;
 		}
 
-		public void setDatetime(long datetime) {
+		public void setDatetime(Long datetime) {
 			this.datetime = datetime;
 		}
 
-		public long getQuestion_id() {
+		public Long getQuestion_id() {
 			return question_id;
 		}
 
-		public void setQuestion_id(long question_id) {
+		public void setQuestion_id(Long question_id) {
 			this.question_id = question_id;
 		}
 
@@ -50,19 +50,19 @@ public class DispatchQuestion_req{
 			this.question = (question == null? null : question.trim());
 		}
 
-		public long getOpt() {
+		public Long getOpt() {
 			return opt;
 		}
 
-		public void setOpt(long opt) {
+		public void setOpt(Long opt) {
 			this.opt = opt;
 		}
 
-		public long getDest_id() {
+		public Long getDest_id() {
 			return dest_id;
 		}
 
-		public void setDest_id(long dest_id) {
+		public void setDest_id(Long dest_id) {
 			this.dest_id = dest_id;
 		}
 
@@ -84,15 +84,15 @@ public class DispatchQuestion_req{
 	}
 
 	public static class User {
-		private long id;
+		private Long id;
 		private String username;
-		private long lastupdate;
+		private Long lastupdate;
 
-		public long getId() {
+		public Long getId() {
 			return id;
 		}
 
-		public void setId(long id) {
+		public void setId(Long id) {
 			this.id = id;
 		}
 
@@ -104,11 +104,11 @@ public class DispatchQuestion_req{
 			this.username = (username == null? null : username.trim());
 		}
 
-		public long getLastupdate() {
+		public Long getLastupdate() {
 			return lastupdate;
 		}
 
-		public void setLastupdate(long lastupdate) {
+		public void setLastupdate(Long lastupdate) {
 			this.lastupdate = lastupdate;
 		}
 	}

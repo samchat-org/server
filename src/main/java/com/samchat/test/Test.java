@@ -19,15 +19,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.amazonaws.services.sqs.model.Message;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.db.entitybeans.TUserUsersExample;
 import com.samchat.common.beans.auto.db.mapper.TUserUsersMapper;
+import com.samchat.common.beans.auto.json.ni.msg.SendBatchMsgFieldOption_req;
+import com.samchat.common.beans.auto.json.ni.msg.SendBatchMsg_req;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.thread.SysConfigRefreshThread;
 import com.samchat.common.utils.HttpclientUrlUtil;
 import com.samchat.common.utils.Md5Util;
 import com.samchat.common.utils.SpringUtil;
+import com.samchat.common.utils.ThreadLocalUtil;
 import com.samchat.common.utils.niUtils.NiPostClient;
+import com.samchat.common.utils.niUtils.NiUtil;
 import com.samchat.dao.redis.interfaces.IUserRedisDao;
 import com.samchat.processor.dispatcher.AdvertisementDispatcher;
 import com.samchat.processor.dispatcher.QuestionDispatcher;
@@ -126,26 +131,71 @@ public class Test {
 	}
 
 	public static void main(String args[]) throws Exception {
-		ApplicationContext ctx = SpringUtil.initContext("config/spring");
+		Byte b = new Byte("1");
+		System.out.print(b == 1);
+//		ApplicationContext ctx = SpringUtil.initContext("config/spring");
+//		
+//		SysConfigRefreshThread refresh = (SysConfigRefreshThread) ctx.getBean("sysConfigRefreshThread");
+//		refresh.run();
+ //		
+//		
+//		QuestionDispatcher ads = (QuestionDispatcher) ctx.getBean("questionDispatcher");
+//		 
+//		Message msg = new Message();
+//		msg.setBody(args[0]);
+//		ads.process(msg);
 		
-		SysConfigRefreshThread refresh = (SysConfigRefreshThread) ctx.getBean("sysConfigRefreshThread");
-		refresh.run();
-		refresh.start();
 		
-		
-		QuestionDispatcher ads = (QuestionDispatcher) ctx.getBean("questionDispatcher");
-		 
-		Message msg = new Message();
-		msg.setBody(args[0]);
-		ads.process(msg);
- //		String url = "https://api.netease.im/nimserver/msg/sendBatchMsg.action";
+//		SendBatchMsg_req batchMessage = new SendBatchMsg_req();
+//		batchMessage.setFromAccid("public_10000002130");
+//		batchMessage.setToAccids("[\"10000002126\",\"10000002127\"]");
+//		String body = "{\"msg\":{\"header\":{\"category\":\"2\"},\"body\":{\"id\":10000002130,\"adv_id\":{adv_id},\"publish_timestamp\":1478841149000,\"type\":0,\"content\":\"Amazon SQS and Amazon CloudWatch are integrated so you can use CloudWatch to easily view and analyze metrics for your Amazon SQS queues. You can view and analyze your queues' metrics from the Amazon SQS console, the CloudWatch console, the command line, or programmatically.CloudWatch metrics for your Amazon SQS queues are automatically collected and pushed to CloudWatch every five minutes. (Detailed monitoring, or one-minute metrics, is currently unavailable for Amazon SQS.) These metrics are gathered on all queues that meet the CloudWatch guidelines for being active. A queue is considered active by CloudWatch for up to six hours from the last activity (for example, any API call) on the queue. \",\"content_thumb\":\"\"}}}";
+////		batchMessage.setBody("{\"msg\":{\"header\":{\"category\":\"2\"},\"body\":{\"id\":10000002130,\"adv_id\":{adv_id},\"publish_timestamp\":1478841149000,\"type\":0,\"content\":\"Amazon SQS and Amazon CloudWatch are integrated so you can use CloudWatch to easily view and analyze metrics for your Amazon SQS queues. You can view and analyze your queues' metrics from the Amazon SQS console, the CloudWatch console, the command line, or programmatically.CloudWatch metrics for your Amazon SQS queues are automatically collected and pushed to CloudWatch every five minutes. (Detailed monitoring, or one-minute metrics, is currently unavailable for Amazon SQS.) These metrics are gathered on all queues that meet the CloudWatch guidelines for being active. A queue is considered active by CloudWatch for up to six hours from the last activity (for example, any API call) on the queue. \",\"content_thumb\":\"\"}}}");
+//		batchMessage.setType("0");
+//		batchMessage.setPushcontent("a new message");
+// 		
+//		int error = 0;
+//		for(int i = 10000680; i < 10001680; i ++){
+//			try {
+//				batchMessage.setBody(body.replaceAll("\\{adv_id\\}", i + ""));
+//				NiUtil.sendBatchMessage(batchMessage, new Timestamp(new Date().getTime()));
+//			} catch (Exception e) {
+//				error ++;
+//			}
+//		}
+//		log.error("error_count:" + error);
+//		
+// 		String url = "https://api.netease.im/nimserver/msg/sendBatchMsg.action";
+// 		
+// 		ObjectMapper om = ThreadLocalUtil.getAppObjectMapper();
+//		SendBatchMsgFieldOption_req s = new SendBatchMsgFieldOption_req();
+//		s.setRoam(false);        
+//		s.setHistory(true);     
+//		s.setSendersync(true);  
+//		s.setPush(true);        
+//		s.setRoute(true);       
+//		s.setBadge(true);       
+//		s.setNeedPushNick(true);
+//
+//		String option =om.writeValueAsString(s);
+// 		
 //		Map<Object, Object> param = new HashMap<Object, Object>(); 
-//		param.put("fromAccid", "10000002116");
-//		param.put("toAccids", "[\"10000000069\",\"10000000070\",\"10000000071\",\"10000000072\",\"10000000073\",\"10000000074\",\"10000000075\",\"10000000076\",\"10000000077\",\"10000000078\",\"10000000079\",\"10000000080\",\"10000000081\",\"10000000082\",\"10000000083\",\"10000000084\",\"10000000085\",\"10000000086\",\"10000000087\",\"10000000088\",\"10000000089\",\"10000000090\",\"10000000091\",\"10000000092\",\"10000000093\",\"10000000094\",\"10000000095\",\"10000000096\",\"10000000097\",\"10000000098\",\"10000000099\",\"10000000100\",\"10000000101\",\"10000000102\",\"10000000103\",\"10000000104\",\"10000000105\",\"10000000106\",\"10000000107\",\"10000000108\",\"10000000109\",\"10000000110\",\"10000000111\",\"10000000112\",\"10000000113\",\"10000000114\",\"10000000115\",\"10000000116\",\"10000000117\",\"10000000118\",\"10000000119\",\"10000000120\",\"10000000121\",\"10000000122\",\"10000000123\",\"10000000124\",\"10000000125\",\"10000000126\",\"10000000127\",\"10000000128\",\"10000000129\",\"10000000130\",\"10000000131\",\"10000000132\",\"10000000133\",\"10000000134\",\"10000000135\",\"10000000136\",\"10000000137\",\"10000000138\",\"10000000139\",\"10000000140\",\"10000000141\",\"10000000142\",\"10000000143\",\"10000000144\",\"10000000145\",\"10000000146\",\"10000000147\",\"10000000148\",\"10000000149\",\"10000000150\",\"10000000151\",\"10000000152\",\"10000000153\",\"10000000154\",\"10000000155\",\"10000000156\",\"10000000157\",\"10000000158\",\"10000000159\",\"10000000160\",\"10000000161\",\"10000000162\",\"10000000163\",\"10000000164\",\"10000000165\",\"10000000166\",\"10000000167\",\"10000000168\"]");
+//		param.put("fromAccid", "public_10000002130");
+//		param.put("toAccids", "[\"10000002126\",\"10000002127\"]");
 //		param.put("type", "0");
 //		param.put("body", "{\"msg\":\"hello123456\"}");
+//		param.put("pushcontent", "a new message");
+//		param.put("option", option);
 //		log.info("start--");
-//		NiPostClient.post(url, param, new Timestamp(new Date().getTime()));
-//		log.info("end--");
+//		for(int i = 0; i < 1000; i++){
+//			try {
+//				NiPostClient.post(url, param, new Timestamp(new Date().getTime()));
+//			} catch (Exception e) {
+//				log.error(e.getMessage(), e);
+//				Thread.sleep(2000);
+//			}
+//		}
+		
+		log.info("end--");
  	}
 }

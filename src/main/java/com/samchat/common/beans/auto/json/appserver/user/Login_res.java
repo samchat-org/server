@@ -3,29 +3,29 @@ package com.samchat.common.beans.auto.json.appserver.user;
 import java.util.ArrayList;
 public class Login_res{
 
-	private long ret;
+	private Long ret;
 	private String token = "";
 	private User user;
 	private ArrayList<Sys_params> sys_params;
 
 	public static class User {
-		private long id;
+		private Long id;
 		private String username = "";
 		private String countrycode = "";
 		private String cellphone = "";
 		private String email = "";
 		private String address = "";
-		private long type;
+		private Long type;
 		private My_settings my_settings;
 		private Avatar avatar;
-		private long lastupdate;
+		private Long lastupdate;
 		private Sam_pros_info sam_pros_info;
 
-		public long getId() {
+		public Long getId() {
 			return id;
 		}
 
-		public void setId(long id) {
+		public void setId(Long id) {
 			this.id = id;
 		}
 
@@ -69,11 +69,11 @@ public class Login_res{
 			this.address = (address == null? "" : address.trim());
 		}
 
-		public long getType() {
+		public Long getType() {
 			return type;
 		}
 
-		public void setType(long type) {
+		public void setType(Long type) {
 			this.type = type;
 		}
 
@@ -93,11 +93,11 @@ public class Login_res{
 			this.avatar = avatar;
 		}
 
-		public long getLastupdate() {
+		public Long getLastupdate() {
 			return lastupdate;
 		}
 
-		public void setLastupdate(long lastupdate) {
+		public void setLastupdate(Long lastupdate) {
 			this.lastupdate = lastupdate;
 		}
 
@@ -111,13 +111,13 @@ public class Login_res{
 	}
 
 	public static class My_settings {
-		private long question_notify;
+		private Long question_notify;
 
-		public long getQuestion_notify() {
+		public Long getQuestion_notify() {
 			return question_notify;
 		}
 
-		public void setQuestion_notify(long question_notify) {
+		public void setQuestion_notify(Long question_notify) {
 			this.question_notify = question_notify;
 		}
 	}
@@ -230,11 +230,11 @@ public class Login_res{
 		}
 	}
 
-	public long getRet() {
+	public Long getRet() {
 		return ret;
 	}
 
-	public void setRet(long ret) {
+	public void setRet(Long ret) {
 		this.ret = ret;
 	}
 

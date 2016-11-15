@@ -27,15 +27,15 @@ public class PublicQuery_req{
 	}
 
 	public static class Body {
-		private long count;
+		private Long count;
 		private String key;
 		private Location location;
 
-		public long getCount() {
+		public Long getCount() {
 			return count;
 		}
 
-		public void setCount(long count) {
+		public void setCount(Long count) {
 			this.count = count;
 		}
 

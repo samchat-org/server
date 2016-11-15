@@ -28,14 +28,14 @@ public class QueryGroup_req{
 	}
 
 	public static class Body {
-		private long opt;
+		private Long opt;
 		private Param param;
 
-		public long getOpt() {
+		public Long getOpt() {
 			return opt;
 		}
 
-		public void setOpt(long opt) {
+		public void setOpt(Long opt) {
 			this.opt = opt;
 		}
 

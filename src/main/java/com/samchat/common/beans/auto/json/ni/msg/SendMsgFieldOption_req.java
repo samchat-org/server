@@ -2,67 +2,67 @@ package com.samchat.common.beans.auto.json.ni.msg;
 
 public class SendMsgFieldOption_req{
 
-	private boolean push;
-	private boolean roam;
-	private boolean history;
-	private boolean sendersync;
-	private boolean route;
-	private boolean badge;
-	private boolean needPushNick;
+	private Boolean push;
+	private Boolean roam;
+	private Boolean history;
+	private Boolean sendersync;
+	private Boolean route;
+	private Boolean badge;
+	private Boolean needPushNick;
 
-	public boolean getPush() {
+	public Boolean getPush() {
 		return push;
 	}
 
-	public void setPush(boolean push) {
+	public void setPush(Boolean push) {
 		this.push = push;
 	}
 
-	public boolean getRoam() {
+	public Boolean getRoam() {
 		return roam;
 	}
 
-	public void setRoam(boolean roam) {
+	public void setRoam(Boolean roam) {
 		this.roam = roam;
 	}
 
-	public boolean getHistory() {
+	public Boolean getHistory() {
 		return history;
 	}
 
-	public void setHistory(boolean history) {
+	public void setHistory(Boolean history) {
 		this.history = history;
 	}
 
-	public boolean getSendersync() {
+	public Boolean getSendersync() {
 		return sendersync;
 	}
 
-	public void setSendersync(boolean sendersync) {
+	public void setSendersync(Boolean sendersync) {
 		this.sendersync = sendersync;
 	}
 
-	public boolean getRoute() {
+	public Boolean getRoute() {
 		return route;
 	}
 
-	public void setRoute(boolean route) {
+	public void setRoute(Boolean route) {
 		this.route = route;
 	}
 
-	public boolean getBadge() {
+	public Boolean getBadge() {
 		return badge;
 	}
 
-	public void setBadge(boolean badge) {
+	public void setBadge(Boolean badge) {
 		this.badge = badge;
 	}
 
-	public boolean getNeedPushNick() {
+	public Boolean getNeedPushNick() {
 		return needPushNick;
 	}
 
-	public void setNeedPushNick(boolean needPushNick) {
+	public void setNeedPushNick(Boolean needPushNick) {
 		this.needPushNick = needPushNick;
 	}
 

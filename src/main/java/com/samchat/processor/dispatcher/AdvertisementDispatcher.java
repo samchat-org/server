@@ -54,7 +54,7 @@ public class AdvertisementDispatcher extends DispatcherBase {
 		body.setContent_thumb(content.getContent_thumb());
 		body.setDest_id(sendlog.getUser_id());
 		body.setPublish_timestamp(content.getCreate_date().getTime());
-		body.setType(content.getAds_type());
+		body.setType(new Long(content.getAds_type()));
 
 		req.setHeader(header);
 		req.setBody(body);
@@ -182,7 +182,6 @@ public class AdvertisementDispatcher extends DispatcherBase {
 				batchMessage.setBody(body);
 				batchMessage.setType("0");
 				batchMessage.setPushcontent("a new message");
-				batchMessage.setPayload(bodyStr);
 				NiUtil.sendBatchMessage(batchMessage, sysdate);
 				state = AdsDbEnum.SendLogState.RECV_SUCCESS;
 			} catch (Exception e) {

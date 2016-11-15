@@ -36,22 +36,12 @@ public class JedisTest {
 	@Autowired
 	IOfficialAccountSrvs officialAccountSrvs;
 
-	public void test(int count) throws Exception {
-//		GooglePlaceUtil.autocomplete("abcd");
- 		List<QryPublicQueryVO> pqs = officialAccountSrvs.queryPublicList("s", count);
-		for(QryPublicQueryVO vo : pqs){
-			log.info("user_id:" + vo.getUser_id());
-		}
-	}
+	public void test(int count) throws Exception { }
 
 	public static void main(String args[]) throws Exception {
-		ApplicationContext ctx = SpringUtil.initContext("config/spring");
-		JedisTest j = (JedisTest)ctx.getBean("jedisTest");
-		SysConfigRefreshThread refresh = (SysConfigRefreshThread) ctx.getBean("sysConfigRefreshThread");
-		refresh.run();
-		refresh.start();
-		j.test(0);
-		j.test(5);
-		j.test(10);
+		PredictRequest predictRequest = new PredictRequest()
+		   .withMLModelId(mlModelId)
+		   .withPredictEndpoint(predictEndpoint)
+		   .withRecord(record);
 	}
 }

@@ -2,6 +2,8 @@ package com.samchat.service.interfaces;
 
 import java.sql.Timestamp;
 
+import com.samchat.common.beans.auto.db.entitybeans.TUserProUsers;
+import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.manual.common.SysdateObjBean;
 import com.samchat.common.beans.manual.json.redis.TokenValRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
@@ -30,4 +32,6 @@ public interface IBaseSrvs {
 	 	public void hsetUserInfoFollowListDate(long userId, String date);
 	 	public void hsetUserInfoProsTokenJsonObj(long userId, TokenValRds tvr);
 	 	public TokenValRds hgetUserInfoProsTokenJsonObj(long userId);
+	 	public TUserUsers updateUserInfo_master(TUserUsers userDb, SysdateObjBean sysdate) throws Exception;
+	 	public void updateUserInfoPro_master(TUserProUsers userProDb, SysdateObjBean sysdate) throws Exception;
 }

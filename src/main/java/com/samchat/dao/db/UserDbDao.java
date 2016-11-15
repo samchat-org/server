@@ -84,9 +84,8 @@ public class UserDbDao extends BaseDbDao implements IUserDbDao {
  		userUsersMapper.updateByPrimaryKeySelective(user);
 	}
 
-	public void updateProUser(TUserProUsers user, Timestamp sysdate) {
-		user.setState_date(sysdate);
-		TUserProUsersExample uue = new TUserProUsersExample();
+	public void updateProUser(TUserProUsers user) {
+ 		TUserProUsersExample uue = new TUserProUsersExample();
 		uue.createCriteria().andUser_idEqualTo(user.getUser_id()).andStateEqualTo(Constant.STATE_IN_USE);
 		userProUsersMapper.updateByExampleSelective(user, uue);
 	}

@@ -2,24 +2,24 @@ package com.samchat.common.beans.auto.json.appserver.advertisement;
 
 public class AdvertisementWrite_res{
 
-	private long ret;
-	private long adv_id;
+	private Long ret;
+	private Long adv_id;
 	private String content_thumb = "";
-	private long publish_timestamp;
+	private Long publish_timestamp;
 
-	public long getRet() {
+	public Long getRet() {
 		return ret;
 	}
 
-	public void setRet(long ret) {
+	public void setRet(Long ret) {
 		this.ret = ret;
 	}
 
-	public long getAdv_id() {
+	public Long getAdv_id() {
 		return adv_id;
 	}
 
-	public void setAdv_id(long adv_id) {
+	public void setAdv_id(Long adv_id) {
 		this.adv_id = adv_id;
 	}
 
@@ -31,11 +31,11 @@ public class AdvertisementWrite_res{
 		this.content_thumb = (content_thumb == null? "" : content_thumb.trim());
 	}
 
-	public long getPublish_timestamp() {
+	public Long getPublish_timestamp() {
 		return publish_timestamp;
 	}
 
-	public void setPublish_timestamp(long publish_timestamp) {
+	public void setPublish_timestamp(Long publish_timestamp) {
 		this.publish_timestamp = publish_timestamp;
 	}
 

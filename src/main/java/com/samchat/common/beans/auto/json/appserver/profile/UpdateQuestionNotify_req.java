@@ -27,13 +27,13 @@ public class UpdateQuestionNotify_req{
 	}
 
 	public static class Body {
-		private long question_notify;
+		private Long question_notify;
 
-		public long getQuestion_notify() {
+		public Long getQuestion_notify() {
 			return question_notify;
 		}
 
-		public void setQuestion_notify(long question_notify) {
+		public void setQuestion_notify(Long question_notify) {
 			this.question_notify = question_notify;
 		}
 	}

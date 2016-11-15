@@ -1,7 +1,7 @@
 package com.samchat.common.beans.auto.json.appserver.contact;
 
-import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.exceptions.AppException;
+import com.samchat.common.enums.app.ResCodeAppEnum;
 public class Contact_req{
 
 	private Header header;
@@ -29,37 +29,37 @@ public class Contact_req{
 	}
 
 	public static class Body {
-		private long opt;
-		private long type;
-		private long id;
+		private Long opt;
+		private Long type;
+		private Long id;
 
-		public long getOpt() {
+		public Long getOpt() {
 			return opt;
 		}
 
-		public void setOpt(long opt) {
-			if (opt != 0 &&opt != 1 ){
+		public void setOpt(Long opt) {
+			if (opt != null&&opt != 0 &&opt != 1 ){
 				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + opt);
 			}
 			this.opt = opt;
 		}
 
-		public long getType() {
+		public Long getType() {
 			return type;
 		}
 
-		public void setType(long type) {
-			if (type != 0 &&type != 1 ){
+		public void setType(Long type) {
+			if (type != null&&type != 0 &&type != 1 ){
 				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + type);
 			}
 			this.type = type;
 		}
 
-		public long getId() {
+		public Long getId() {
 			return id;
 		}
 
-		public void setId(long id) {
+		public void setId(Long id) {
 			this.id = id;
 		}
 	}

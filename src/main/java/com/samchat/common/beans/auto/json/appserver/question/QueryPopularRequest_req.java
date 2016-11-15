@@ -27,13 +27,13 @@ public class QueryPopularRequest_req{
 	}
 
 	public static class Body {
-		private long count;
+		private Long count;
 
-		public long getCount() {
+		public Long getCount() {
 			return count;
 		}
 
-		public void setCount(long count) {
+		public void setCount(Long count) {
 			this.count = count;
 		}
 	}

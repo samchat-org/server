@@ -27,22 +27,22 @@ public class Block_req{
 	}
 
 	public static class Body {
-		private long opt;
-		private long id;
+		private Long opt;
+		private Long id;
 
-		public long getOpt() {
+		public Long getOpt() {
 			return opt;
 		}
 
-		public void setOpt(long opt) {
+		public void setOpt(Long opt) {
 			this.opt = opt;
 		}
 
-		public long getId() {
+		public Long getId() {
 			return id;
 		}
 
-		public void setId(long id) {
+		public void setId(Long id) {
 			this.id = id;
 		}
 	}

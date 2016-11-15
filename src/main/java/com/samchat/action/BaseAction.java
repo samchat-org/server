@@ -118,7 +118,7 @@ public abstract class BaseAction extends ToolAction {
 					objlist.add(vaildRetObj);
 				}
 				retObj = CommonUtil.methodInvoke(this, action, objlist);
-				CommonUtil.methodInvoke(retObj, "setRet", new Object[]{new Long(ResCodeAppEnum.SUCCESS.getCode())}, new Class[]{long.class});
+				CommonUtil.methodInvoke(retObj, "setRet", new Object[]{new Long(ResCodeAppEnum.SUCCESS.getCode())}, new Class[]{Long.class});
 
 			} catch (NoSuchMethodException e) {
 				throw new AppException(ResCodeAppEnum.ACTION_NONSUPPORT.getCode());

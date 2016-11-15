@@ -3,8 +3,8 @@ package com.samchat.common.beans.auto.json.appserver.user;
 import java.util.ArrayList;
 public class QueryGroup_res{
 
-	private long ret;
-	private long count;
+	private Long ret;
+	private Long count;
 	private ArrayList<Users> users;
 
 	public static class Avatar {
@@ -95,22 +95,22 @@ public class QueryGroup_res{
 	}
 
 	public static class Users {
-		private long id;
+		private Long id;
 		private String username = "";
 		private String countrycode = "";
 		private String cellphone = "";
 		private String email = "";
 		private String address = "";
-		private long type;
+		private Long type;
 		private Avatar avatar;
-		private long lastupdate;
+		private Long lastupdate;
 		private Sam_pros_info sam_pros_info;
 
-		public long getId() {
+		public Long getId() {
 			return id;
 		}
 
-		public void setId(long id) {
+		public void setId(Long id) {
 			this.id = id;
 		}
 
@@ -154,11 +154,11 @@ public class QueryGroup_res{
 			this.address = (address == null? "" : address.trim());
 		}
 
-		public long getType() {
+		public Long getType() {
 			return type;
 		}
 
-		public void setType(long type) {
+		public void setType(Long type) {
 			this.type = type;
 		}
 
@@ -170,11 +170,11 @@ public class QueryGroup_res{
 			this.avatar = avatar;
 		}
 
-		public long getLastupdate() {
+		public Long getLastupdate() {
 			return lastupdate;
 		}
 
-		public void setLastupdate(long lastupdate) {
+		public void setLastupdate(Long lastupdate) {
 			this.lastupdate = lastupdate;
 		}
 
@@ -187,19 +187,19 @@ public class QueryGroup_res{
 		}
 	}
 
-	public long getRet() {
+	public Long getRet() {
 		return ret;
 	}
 
-	public void setRet(long ret) {
+	public void setRet(Long ret) {
 		this.ret = ret;
 	}
 
-	public long getCount() {
+	public Long getCount() {
 		return count;
 	}
 
-	public void setCount(long count) {
+	public void setCount(Long count) {
 		this.count = count;
 	}
 

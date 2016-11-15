@@ -195,7 +195,7 @@ public class OfficialAccountAction extends BaseAction {
 
 		FollowListQuery_res res = new FollowListQuery_res();
 		List<QryFollowVO> list = officialAccountSrv.queryFollowList(userId);
-		res.setCount(list.size());
+		res.setCount(new Long(list.size()));
 
 		ArrayList<Users> users = new ArrayList<Users>();
 		res.setUsers(users);
@@ -248,7 +248,7 @@ public class OfficialAccountAction extends BaseAction {
 		;
 		List<QryPublicQueryVO> oalist = officialAccountSrv.queryPublicList(token.getUserId(), key, count);
 		PublicQuery_res res = new PublicQuery_res();
-		res.setCount(oalist.size());
+		res.setCount(new Long(oalist.size()));
 
 		ArrayList<PublicQuery_res.Users> users = new ArrayList<PublicQuery_res.Users>();
 		res.setUsers(users);

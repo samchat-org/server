@@ -179,7 +179,7 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 
 		userRes.setId(userId);
 		userRes.setUsername(user.getUser_name());
-		userRes.setType(user.getUser_type());
+		userRes.setType(new Long(user.getUser_type()));
 		userRes.setCountrycode(user.getCountry_code());
 		userRes.setCellphone(user.getPhone_no());
 		userRes.setAddress(user.getAddress());
@@ -192,7 +192,7 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		userRes.setAvatar(avatar);
 		
 		Login_res.My_settings ms = new Login_res.My_settings();
-		ms.setQuestion_notify(user.getQuestion_notify());
+		ms.setQuestion_notify(new Long(user.getQuestion_notify()));
 		userRes.setMy_settings(ms);
 		
 		Sam_pros_info info = new Login_res.Sam_pros_info();
@@ -466,13 +466,13 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 
 	public TUserUsers updateAvatar(String origin, String thumb, long userId, SysdateObjBean sysdate) throws Exception {
 		
-		TUserUsers uu = queryUser(userId);
+		TUserUsers uu = new TUserUsers();
 		uu.setUser_id(userId);
 		uu.setAvatar_origin(origin);
 		uu.setAvatar_thumb(S3Util.getThumbObject(origin));
 		uu.setState_date(sysdate.getNow());
-		updateUserInfo(uu, sysdate);
-		return uu;
+		updateUserInfo_master(uu, sysdate);
+ 		return uu;
 	}
 	
 	public TUserUsers updateAvatar_master(String origin, String thumb, long userId, SysdateObjBean sysdate)  throws Exception{

@@ -199,25 +199,28 @@ public class BaseSrvs implements IBaseSrvs {
 		return t;
 	}
 	
-	protected void updateUserInfo(TUserUsers user, SysdateObjBean sysdate) throws Exception{
-
-		userDbDao.updateUser(user);
+	public TUserUsers updateUserInfo_master(TUserUsers userDb, SysdateObjBean sysdate) throws Exception{
+		
+		userDbDao.updateUser(userDb);
+		TUserUsers user = userDbDao.queryUser(userDb.getUser_id());
 		
 		UserInfoRds uur = new UserInfoRds();
 		uur.setNowVersion(sysdate.getNowVersion());
 		PropertyUtils.copyProperties(uur, user);
-		hsetUserInfoJsonObj(user.getUser_id(), uur);
+		hsetUserInfoJsonObj(uur.getUser_id(), uur);
 		
+		return user;
 	}
 	
-	protected void updateUserInfoPro(TUserProUsers userPro, SysdateObjBean sysdate) throws Exception{
+	public void updateUserInfoPro_master(TUserProUsers userProDb, SysdateObjBean sysdate) throws Exception{
 
-		userDbDao.updateProUser(userPro, sysdate.getNow());
+		userDbDao.updateProUser(userProDb);
+		TUserProUsers userPro = userDbDao.queryProUser(userProDb.getUser_id());
 		
 		UserInfoProRds uurp = new UserInfoProRds();
 		uurp.setNowVersion(sysdate.getNowVersion());
 		PropertyUtils.copyProperties(uurp, userPro);
-		hsetUserInfoProsJsonObj(userPro.getUser_id(), uurp);
+		hsetUserInfoProsJsonObj(uurp.getUser_id(), uurp);
 		
 	}
 

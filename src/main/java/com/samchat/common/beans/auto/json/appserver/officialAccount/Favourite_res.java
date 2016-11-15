@@ -2,26 +2,26 @@ package com.samchat.common.beans.auto.json.appserver.officialAccount;
 
 public class Favourite_res{
 
-	private long ret;
+	private Long ret;
 	private User user;
 
 	public static class User {
-		private long lastupdate;
+		private Long lastupdate;
 
-		public long getLastupdate() {
+		public Long getLastupdate() {
 			return lastupdate;
 		}
 
-		public void setLastupdate(long lastupdate) {
+		public void setLastupdate(Long lastupdate) {
 			this.lastupdate = lastupdate;
 		}
 	}
 
-	public long getRet() {
+	public Long getRet() {
 		return ret;
 	}
 
-	public void setRet(long ret) {
+	public void setRet(Long ret) {
 		this.ret = ret;
 	}
 

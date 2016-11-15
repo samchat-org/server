@@ -307,7 +307,7 @@ public class UserAction extends BaseAction {
 		userRet.setCellphone(user.getPhone_no());
 		userRet.setEmail(user.getEmail());
 		userRet.setAddress(user.getAddress());
-		userRet.setType(Constant.USER_TYPE_SERVICES);
+		userRet.setType(new Long(Constant.USER_TYPE_SERVICES));
 
 		CreateSamPros_res.Avatar avatar = new CreateSamPros_res.Avatar();
 		avatar.setOrigin(user.getAvatar_origin());
@@ -514,7 +514,7 @@ public class UserAction extends BaseAction {
 		}
 
 		QueryFuzzy_res res = new QueryFuzzy_res();
-		res.setCount(users.size());
+		res.setCount(new Long(users.size()));
 		res.setUsers(users);
 
 		return res;
@@ -546,7 +546,7 @@ public class UserAction extends BaseAction {
 				user.setCellphone(uur.getPhone_no());
 				user.setEmail(uur.getEmail());
 				user.setAddress(uur.getAddress());
-				user.setType(uur.getUser_type());
+				user.setType(new Long(uur.getUser_type()));
 				user.setLastupdate(uur.getState_date().getTime());
 
 				QueryAccurate_res.Avatar avatar = new QueryAccurate_res.Avatar();
@@ -603,7 +603,7 @@ public class UserAction extends BaseAction {
 		}
 
 		QueryAccurate_res res = new QueryAccurate_res();
-		res.setCount(users.size());
+		res.setCount(new Long(users.size()));
 		res.setUsers(users);
 
 		return res;
@@ -652,7 +652,7 @@ public class UserAction extends BaseAction {
 		}
 
 		QueryGroup_res res = new QueryGroup_res();
-		res.setCount(users.size());
+		res.setCount(new Long(users.size()));
 		res.setUsers(users);
 
 		return res;
@@ -671,7 +671,7 @@ public class UserAction extends BaseAction {
 		List<TUserUsers> users = usersSrv.queryUserWithoutToken(type, countrycode, cellphone, userName);
 
 		QueryWithoutToken_res res = new QueryWithoutToken_res();
-		res.setCount(users.size());
+		res.setCount(new Long(users.size()));
 
 		return res;
 	}

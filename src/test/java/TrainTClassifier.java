@@ -15,7 +15,7 @@ public class TrainTClassifier {
     //训练语料文件夹  
     private static File TDIR = new File("d:\\lingpipe\\training");  
     //定义分类  
-    private static String[] CATEGORIES = {"金融学","军事"};  
+    private static String[] CATEGORIES = {"jr","js"};  
   
     public static void main(String[] args) throws ClassNotFoundException,  
             IOException {  

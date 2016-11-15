@@ -22,7 +22,7 @@ public interface IUserDbDao extends IBaseDbDao {
 
 	public void updateUser(TUserUsers user);
 
-	public void updateProUser(TUserProUsers user, Timestamp sysdate);
+	public void updateProUser(TUserProUsers user);
 
 	public TUserProUsers queryProUser(long userId);
 

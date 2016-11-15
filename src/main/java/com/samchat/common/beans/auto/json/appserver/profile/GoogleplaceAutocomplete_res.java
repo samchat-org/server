@@ -7,22 +7,22 @@ public class GoogleplaceAutocomplete_res{
 	private String status = "";
 
 	public static class Matched_substrings {
-		private long length;
-		private long offset;
+		private Long length;
+		private Long offset;
 
-		public long getLength() {
+		public Long getLength() {
 			return length;
 		}
 
-		public void setLength(long length) {
+		public void setLength(Long length) {
 			this.length = length;
 		}
 
-		public long getOffset() {
+		public Long getOffset() {
 			return offset;
 		}
 
-		public void setOffset(long offset) {
+		public void setOffset(Long offset) {
 			this.offset = offset;
 		}
 	}
@@ -67,56 +67,56 @@ public class GoogleplaceAutocomplete_res{
 	}
 
 	public static class Main_text_matched_substrings {
-		private long length;
-		private long offset;
+		private Long length;
+		private Long offset;
 
-		public long getLength() {
+		public Long getLength() {
 			return length;
 		}
 
-		public void setLength(long length) {
+		public void setLength(Long length) {
 			this.length = length;
 		}
 
-		public long getOffset() {
+		public Long getOffset() {
 			return offset;
 		}
 
-		public void setOffset(long offset) {
+		public void setOffset(Long offset) {
 			this.offset = offset;
 		}
 	}
 
 	public static class Secondary_text_matched_substrings {
-		private long length;
-		private long offset;
+		private Long length;
+		private Long offset;
 
-		public long getLength() {
+		public Long getLength() {
 			return length;
 		}
 
-		public void setLength(long length) {
+		public void setLength(Long length) {
 			this.length = length;
 		}
 
-		public long getOffset() {
+		public Long getOffset() {
 			return offset;
 		}
 
-		public void setOffset(long offset) {
+		public void setOffset(Long offset) {
 			this.offset = offset;
 		}
 	}
 
 	public static class Terms {
-		private long offset;
+		private Long offset;
 		private String value = "";
 
-		public long getOffset() {
+		public Long getOffset() {
 			return offset;
 		}
 
-		public void setOffset(long offset) {
+		public void setOffset(Long offset) {
 			this.offset = offset;
 		}
 

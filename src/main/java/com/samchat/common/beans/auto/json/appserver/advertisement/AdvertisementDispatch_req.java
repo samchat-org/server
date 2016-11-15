@@ -1,7 +1,7 @@
 package com.samchat.common.beans.auto.json.appserver.advertisement;
 
-import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.exceptions.AppException;
+import com.samchat.common.enums.app.ResCodeAppEnum;
 public class AdvertisementDispatch_req{
 
 	private Header header;
@@ -20,44 +20,44 @@ public class AdvertisementDispatch_req{
 	}
 
 	public static class Body {
-		private long id;
-		private long adv_id;
-		private long publish_timestamp;
-		private long type;
+		private Long id;
+		private Long adv_id;
+		private Long publish_timestamp;
+		private Long type;
 		private String content;
 		private String content_thumb;
-		private long dest_id;
+		private Long dest_id;
 
-		public long getId() {
+		public Long getId() {
 			return id;
 		}
 
-		public void setId(long id) {
+		public void setId(Long id) {
 			this.id = id;
 		}
 
-		public long getAdv_id() {
+		public Long getAdv_id() {
 			return adv_id;
 		}
 
-		public void setAdv_id(long adv_id) {
+		public void setAdv_id(Long adv_id) {
 			this.adv_id = adv_id;
 		}
 
-		public long getPublish_timestamp() {
+		public Long getPublish_timestamp() {
 			return publish_timestamp;
 		}
 
-		public void setPublish_timestamp(long publish_timestamp) {
+		public void setPublish_timestamp(Long publish_timestamp) {
 			this.publish_timestamp = publish_timestamp;
 		}
 
-		public long getType() {
+		public Long getType() {
 			return type;
 		}
 
-		public void setType(long type) {
-			if (type != 0 &&type != 1 &&type != 2 ){
+		public void setType(Long type) {
+			if (type != null&&type != 0 &&type != 1 &&type != 2 ){
 				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + type);
 			}
 			this.type = type;
@@ -79,11 +79,11 @@ public class AdvertisementDispatch_req{
 			this.content_thumb = (content_thumb == null? null : content_thumb.trim());
 		}
 
-		public long getDest_id() {
+		public Long getDest_id() {
 			return dest_id;
 		}
 
-		public void setDest_id(long dest_id) {
+		public void setDest_id(Long dest_id) {
 			this.dest_id = dest_id;
 		}
 	}

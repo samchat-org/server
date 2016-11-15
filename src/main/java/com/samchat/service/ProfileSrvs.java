@@ -20,18 +20,18 @@ public class ProfileSrvs extends BaseSrvs implements IProfileSrvs {
 	private static Logger log = Logger.getLogger(ProfileSrvs.class);
 	
 	public void updateQuestionNotify_master(UpdateQuestionNotify_req req , long userId, SysdateObjBean sysdate) throws Exception{
-		TUserUsers tuser = userDbDao.queryUser(userId);
+		TUserUsers tuser = new TUserUsers();
 		tuser.setUser_id(userId);
-		tuser.setQuestion_notify((byte)req.getBody().getQuestion_notify());
+		tuser.setQuestion_notify(new Byte(req.getBody().getQuestion_notify().toString()));
 		tuser.setState_date(sysdate.getNow());
-		updateUserInfo(tuser, sysdate);
+		updateUserInfo_master(tuser, sysdate);
 	}
 
 	public void updateProfile_master(ProfileUpdate_req req, long userId, SysdateObjBean sysdate) throws Exception{
 		ProfileUpdate_req.User user = req.getBody().getUser();
 		
 		// will update redis, so query user .
-		TUserUsers tuser = userDbDao.queryUser(userId);
+		TUserUsers tuser = new TUserUsers();
 		tuser.setUser_id(userId);
 		tuser.setEmail(user.getEmail());
 		
@@ -46,34 +46,33 @@ public class ProfileSrvs extends BaseSrvs implements IProfileSrvs {
 			}
 		}
 		tuser.setState_date(sysdate.getNow());
-		updateUserInfo(tuser, sysdate);
+		TUserUsers tuserfull = updateUserInfo_master(tuser, sysdate);
 		
 		ProfileUpdate_req.Sam_pros_info proInfo = user.getSam_pros_info();
 		if(proInfo != null){
-	 		if(tuser.getUser_type() == Constant.USER_TYPE_SERVICES){
-				TUserProUsers tuserPros = userDbDao.queryProUser(userId);
-				if(tuserPros != null){
-					tuserPros.setUser_id(userId);
-					tuserPros.setCompany_name(proInfo.getCompany_name());
-					tuserPros.setService_category(proInfo.getService_category());
-					tuserPros.setService_description(proInfo.getService_description());
-					tuserPros.setCountry_code(proInfo.getCountrycode());
-					tuserPros.setPhone_no(proInfo.getPhone());
-					tuserPros.setEmail(proInfo.getEmail());
-					
-					ProfileUpdate_req.Location locationPros = proInfo.getLocation();
-					if(locationPros != null){
-						tuserPros.setAddress(locationPros.getAddress());
-						tuserPros.setPlace_id(locationPros.getPlace_id());
-						ProfileUpdate_req.Location_info locationinfoPros = locationPros.getLocation_info();
-						if(locationinfoPros != null){
-							tuserPros.setLatitude(locationinfoPros.getLatitude());
-							tuserPros.setLongitude(locationinfoPros.getLongitude());
-						}
+	 		if(tuserfull.getUser_type() == Constant.USER_TYPE_SERVICES){
+				TUserProUsers tuserPros = new TUserProUsers();
+				tuserPros.setUser_id(userId);
+				tuserPros.setCompany_name(proInfo.getCompany_name());
+				tuserPros.setService_category(proInfo.getService_category());
+				tuserPros.setService_description(proInfo.getService_description());
+				tuserPros.setCountry_code(proInfo.getCountrycode());
+				tuserPros.setPhone_no(proInfo.getPhone());
+				tuserPros.setEmail(proInfo.getEmail());
+				
+				ProfileUpdate_req.Location locationPros = proInfo.getLocation();
+				if(locationPros != null){
+					tuserPros.setAddress(locationPros.getAddress());
+					tuserPros.setPlace_id(locationPros.getPlace_id());
+					ProfileUpdate_req.Location_info locationinfoPros = locationPros.getLocation_info();
+					if(locationinfoPros != null){
+						tuserPros.setLatitude(locationinfoPros.getLatitude());
+						tuserPros.setLongitude(locationinfoPros.getLongitude());
 					}
-					tuserPros.setState_date(sysdate.getNow());
-					updateUserInfoPro(tuserPros, sysdate);
 				}
+				tuserPros.setState_date(sysdate.getNow());
+				updateUserInfoPro_master(tuserPros, sysdate);
+			
 			}
 		}
 	}
@@ -101,12 +100,12 @@ public class ProfileSrvs extends BaseSrvs implements IProfileSrvs {
 	}
 	
 	public void updatePhoneNo_master(long userId, String countryCode, String phoneNo, SysdateObjBean sysdate) throws Exception{
-		TUserUsers tuser = userDbDao.queryUser(userId);
+		TUserUsers tuser = new TUserUsers();
 		tuser.setUser_id(userId);
 		tuser.setCountry_code(countryCode);
 		tuser.setPhone_no(phoneNo);
 		tuser.setState_date(sysdate.getNow());
-		updateUserInfo(tuser, sysdate);
+		updateUserInfo_master(tuser, sysdate);
 	}
 
 	public void niSendMessage() {

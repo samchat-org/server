@@ -40,22 +40,22 @@ public class AdvertisementDelete_req{
 	}
 
 	public static class Advertisements {
-		private long adv_id;
-		private long publish_timestamp;
+		private Long adv_id;
+		private Long publish_timestamp;
 
-		public long getAdv_id() {
+		public Long getAdv_id() {
 			return adv_id;
 		}
 
-		public void setAdv_id(long adv_id) {
+		public void setAdv_id(Long adv_id) {
 			this.adv_id = adv_id;
 		}
 
-		public long getPublish_timestamp() {
+		public Long getPublish_timestamp() {
 			return publish_timestamp;
 		}
 
-		public void setPublish_timestamp(long publish_timestamp) {
+		public void setPublish_timestamp(Long publish_timestamp) {
 			this.publish_timestamp = publish_timestamp;
 		}
 	}

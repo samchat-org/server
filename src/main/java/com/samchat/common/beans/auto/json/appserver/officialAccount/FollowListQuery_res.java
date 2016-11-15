@@ -3,8 +3,8 @@ package com.samchat.common.beans.auto.json.appserver.officialAccount;
 import java.util.ArrayList;
 public class FollowListQuery_res{
 
-	private long ret;
-	private long count;
+	private Long ret;
+	private Long count;
 	private ArrayList<Users> users;
 
 	public static class Avatar {
@@ -32,19 +32,19 @@ public class FollowListQuery_res{
 	}
 
 	public static class Users {
-		private long id;
+		private Long id;
 		private String username = "";
-		private long lastupdate;
+		private Long lastupdate;
 		private Avatar avatar;
 		private Sam_pros_info sam_pros_info;
-		private long favourite_tag;
-		private long block_tag;
+		private Long favourite_tag;
+		private Long block_tag;
 
-		public long getId() {
+		public Long getId() {
 			return id;
 		}
 
-		public void setId(long id) {
+		public void setId(Long id) {
 			this.id = id;
 		}
 
@@ -56,11 +56,11 @@ public class FollowListQuery_res{
 			this.username = (username == null? "" : username.trim());
 		}
 
-		public long getLastupdate() {
+		public Long getLastupdate() {
 			return lastupdate;
 		}
 
-		public void setLastupdate(long lastupdate) {
+		public void setLastupdate(Long lastupdate) {
 			this.lastupdate = lastupdate;
 		}
 
@@ -80,36 +80,36 @@ public class FollowListQuery_res{
 			this.sam_pros_info = sam_pros_info;
 		}
 
-		public long getFavourite_tag() {
+		public Long getFavourite_tag() {
 			return favourite_tag;
 		}
 
-		public void setFavourite_tag(long favourite_tag) {
+		public void setFavourite_tag(Long favourite_tag) {
 			this.favourite_tag = favourite_tag;
 		}
 
-		public long getBlock_tag() {
+		public Long getBlock_tag() {
 			return block_tag;
 		}
 
-		public void setBlock_tag(long block_tag) {
+		public void setBlock_tag(Long block_tag) {
 			this.block_tag = block_tag;
 		}
 	}
 
-	public long getRet() {
+	public Long getRet() {
 		return ret;
 	}
 
-	public void setRet(long ret) {
+	public void setRet(Long ret) {
 		this.ret = ret;
 	}
 
-	public long getCount() {
+	public Long getCount() {
 		return count;
 	}
 
-	public void setCount(long count) {
+	public void setCount(Long count) {
 		this.count = count;
 	}
 

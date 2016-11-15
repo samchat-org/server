@@ -2,22 +2,22 @@ package com.samchat.common.beans.auto.json.appserver.user;
 
 public class QueryWithoutToken_res{
 
-	private long ret;
-	private long count;
+	private Long ret;
+	private Long count;
 
-	public long getRet() {
+	public Long getRet() {
 		return ret;
 	}
 
-	public void setRet(long ret) {
+	public void setRet(Long ret) {
 		this.ret = ret;
 	}
 
-	public long getCount() {
+	public Long getCount() {
 		return count;
 	}
 
-	public void setCount(long count) {
+	public void setCount(Long count) {
 		this.count = count;
 	}
 

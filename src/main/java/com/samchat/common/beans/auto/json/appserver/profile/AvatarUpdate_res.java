@@ -2,12 +2,12 @@ package com.samchat.common.beans.auto.json.appserver.profile;
 
 public class AvatarUpdate_res{
 
-	private long ret;
+	private Long ret;
 	private User user;
 
 	public static class User {
 		private String thumb = "";
-		private long lastupdate;
+		private Long lastupdate;
 
 		public String getThumb() {
 			return thumb;
@@ -17,20 +17,20 @@ public class AvatarUpdate_res{
 			this.thumb = (thumb == null? "" : thumb.trim());
 		}
 
-		public long getLastupdate() {
+		public Long getLastupdate() {
 			return lastupdate;
 		}
 
-		public void setLastupdate(long lastupdate) {
+		public void setLastupdate(Long lastupdate) {
 			this.lastupdate = lastupdate;
 		}
 	}
 
-	public long getRet() {
+	public Long getRet() {
 		return ret;
 	}
 
-	public void setRet(long ret) {
+	public void setRet(Long ret) {
 		this.ret = ret;
 	}
 
