@@ -247,6 +247,7 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		long userId = uu.getUser_id();
 
 		cacheBaseUserInfoUpdate(uu, sysdate, realToken);
+		cacheExtUserInfoUpdate(userId);
 		niRegister(String.valueOf(userId), userName, realToken, now);
 
 		Register_res res = new Register_res();

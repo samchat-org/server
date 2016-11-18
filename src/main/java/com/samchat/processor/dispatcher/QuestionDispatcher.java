@@ -71,6 +71,7 @@ public class QuestionDispatcher extends DispatcherBase {
 					msg.setFrom(sender);
 					msg.setTo(String.valueOf(user.getUser_id()));
 					msg.setAttach(dispatchReqContent);
+					log.info("from:" + sender + "--to:" + user.getUser_id());
 					if (user.getQuestion_notify() == UserDbEnum.QuestionNotify.NOTIFY.val()) {
 						msg.setPushcontent("a new message");
 					}

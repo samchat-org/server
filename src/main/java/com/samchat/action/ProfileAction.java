@@ -139,6 +139,9 @@ public class ProfileAction extends BaseAction {
 
 		QueryStateDate_res res = new QueryStateDate_res();
 		QueryStateDate_res.State_date_info sdi = new QueryStateDate_res.State_date_info();
+		sdi.setCustomer_list(0L);
+		sdi.setFollow_list(0L);
+		sdi.setServicer_list(0L);
 		res.setState_date_info(sdi);
 		if (cld != null) {
 			sdi.setCustomer_list(Long.parseLong(cld));
