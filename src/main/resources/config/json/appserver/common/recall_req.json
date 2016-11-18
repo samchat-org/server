@@ -1,0 +1,11 @@
+{
+    "header":{
+        "action":"recall",
+        "token":"token"
+    },
+    "body":{
+        "type":1,
+        "business_id":"123123123",
+        "publish_timestamp":123123
+    }
+}

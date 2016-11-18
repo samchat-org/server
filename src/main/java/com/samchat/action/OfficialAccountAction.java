@@ -51,13 +51,14 @@ public class OfficialAccountAction extends BaseAction {
 
 	public Follow_res follow(Follow_req req, TokenMappingRds token, HashMap<String, Object> paramRet) {
 		
-		TUserUsers userPro = (TUserUsers) paramRet.get("userPro");
-		TOaFollow follow = (TOaFollow) paramRet.get("follow");
+ 		TOaFollow follow = (TOaFollow) paramRet.get("follow");
 
 		long userIdPro = req.getBody().getId();
 		long userId = token.getUserId();
 		Timestamp sysdate = commonSrv.querySysdate();
 		String sysdateStr = String.valueOf(sysdate.getTime());
+		String previous = commonSrv.hgetUserInfoFollowListDate(userId);
+		
 		if (req.getBody().getOpt() ==  FollowAppEnum.Follow.FOLLOW.val()) {
 			if (follow == null) {
 				officialAccountSrv.insertFollow(userId, userIdPro, sysdate);
@@ -68,11 +69,11 @@ public class OfficialAccountAction extends BaseAction {
 			commonSrv.hsetUserInfoFollowListDate(userId, sysdateStr);
  		}
 		Follow_res res = new Follow_res();
-		Follow_res.User user = new Follow_res.User();
-		res.setUser(user);
-		user.setLastupdate(userPro.getState_date().getTime());
-		
-		
+		Follow_res.State_date stateDate = new Follow_res.State_date();
+		res.setState_date(stateDate);
+		stateDate.setPrevious(new Long(previous));
+		stateDate.setLast(new Long(sysdateStr));
+
 		return res;
 	}
 
@@ -103,22 +104,24 @@ public class OfficialAccountAction extends BaseAction {
 
 	public Block_res block(Block_req req, TokenMappingRds token, HashMap<String, Object> paramRet) {
 
-		TUserUsers userPro = (TUserUsers) paramRet.get("userPro");
-		TOaFollow follow = (TOaFollow) paramRet.get("follow");
-		Timestamp sysdate = commonSrv.querySysdate();
-
 		long userIdPro = req.getBody().getId();
 		long userId = token.getUserId();
+		
+		TOaFollow follow = (TOaFollow) paramRet.get("follow");
+		Timestamp sysdate = commonSrv.querySysdate();
+		String sysdateStr = String.valueOf(sysdate.getTime());
+		String previous = commonSrv.hgetUserInfoFollowListDate(userId);
 
 		long opt = req.getBody().getOpt();
 		if (follow.getBlock_tag() != opt) {
 			officialAccountSrv.updateBlock(userId, userIdPro, (byte) opt, sysdate);
-			commonSrv.hsetUserInfoFollowListDate(userId, sysdate.getTime() + "");
+			commonSrv.hsetUserInfoFollowListDate(userId, sysdateStr);
  		}
 		Block_res res = new Block_res();
-		Block_res.User user = new Block_res.User();
-		res.setUser(user);
-		user.setLastupdate(userPro.getState_date().getTime());
+		Block_res.State_date stateDate = new Block_res.State_date();
+		res.setState_date(stateDate);
+		stateDate.setPrevious(new Long(previous));
+		stateDate.setLast(new Long(sysdateStr));
 		
 		return res;
 	}
@@ -147,22 +150,24 @@ public class OfficialAccountAction extends BaseAction {
 
 	public Favourite_res favourite(Favourite_req req, TokenMappingRds token, HashMap<String, Object> paramRet) {
 
-		TUserUsers userPro = (TUserUsers) paramRet.get("userPro");
-		TOaFollow follow = (TOaFollow) paramRet.get("follow");
-		Timestamp sysdate = commonSrv.querySysdate();
-
 		long userIdPro = req.getBody().getId();
 		long userId = token.getUserId();
+		
+ 		TOaFollow follow = (TOaFollow) paramRet.get("follow");
+		Timestamp sysdate = commonSrv.querySysdate();
+		String sysdateStr = String.valueOf(sysdate.getTime());
+		String previous = commonSrv.hgetUserInfoFollowListDate(userId);
 
 		long opt = req.getBody().getOpt();
 		if (follow.getFavourite_tag() != opt) {
 			officialAccountSrv.updateFavourite(userId, userIdPro, (byte) opt, sysdate);
-			commonSrv.hsetUserInfoFollowListDate(userId, sysdate.getTime() + "");
+			commonSrv.hsetUserInfoFollowListDate(userId, sysdateStr);
  		}
 		Favourite_res res = new Favourite_res();
-		Favourite_res.User user = new Favourite_res.User();
-		res.setUser(user);
-		user.setLastupdate(userPro.getState_date().getTime());
+		Favourite_res.State_date stateDate = new Favourite_res.State_date();
+		res.setState_date(stateDate);
+		stateDate.setPrevious(new Long(previous));
+		stateDate.setLast(new Long(sysdateStr));
 		return res;
 	}
 
@@ -219,6 +224,11 @@ public class OfficialAccountAction extends BaseAction {
 
 			users.add(userPro);
 		}
+		String last = commonSrv.hgetUserInfoFollowListDate(userId);
+		FollowListQuery_res.State_date stateDate = new FollowListQuery_res.State_date();
+		stateDate.setLast(new Long(last));
+		res.setState_date(stateDate);
+		
 		return res;
 	}
 
@@ -245,7 +255,6 @@ public class OfficialAccountAction extends BaseAction {
 
 			}
 		}
-		;
 		List<QryPublicQueryVO> oalist = officialAccountSrv.queryPublicList(token.getUserId(), key, count);
 		PublicQuery_res res = new PublicQuery_res();
 		res.setCount(new Long(oalist.size()));
@@ -260,6 +269,7 @@ public class OfficialAccountAction extends BaseAction {
 			}
 			PublicQuery_res.Users user = new PublicQuery_res.Users();
 			user.setId(userId);
+			user.setSamchat_id(pq.getUser_code());
 			user.setUsername(pq.getUser_name());
 			user.setCountrycode(pq.getCountrycode());
 			user.setCellphone(pq.getCellphone());

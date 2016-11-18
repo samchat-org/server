@@ -12,6 +12,7 @@ import com.samchat.common.beans.auto.json.appserver.contact.ContactListQuery_req
 import com.samchat.common.beans.auto.json.appserver.contact.ContactListQuery_res;
 import com.samchat.common.beans.auto.json.appserver.contact.Contact_req;
 import com.samchat.common.beans.auto.json.appserver.contact.Contact_res;
+import com.samchat.common.beans.auto.json.appserver.officialAccount.FollowListQuery_res;
 import com.samchat.common.beans.manual.db.QryContactVO;
 import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.enums.Constant;
@@ -49,6 +50,7 @@ public class ContactAction extends BaseAction {
 		Timestamp sysdate = commonSrvs.querySysdate();
 		String sysdateStr = sysdate.getTime() + "";
 		TUserUsers user = usersSrv.queryUser(userId);
+		String previous = "";
  		if (user == null) {
 			throw new AppException(ResCodeAppEnum.USER_NOT_EXIST.getCode(), "user not exists:" + userId);
 		}
@@ -58,27 +60,36 @@ public class ContactAction extends BaseAction {
 					throw new AppException(ResCodeAppEnum.CUSTORMER_ADD_CUSTORMER.getCode());
 				}
 				log.info("user_id:" + senderId + "--user_id_pro:" + userId);
+				previous = contactSrv.hgetUserInfoServicerListDate(userId);
 				contactSrv.addContactUser_master(senderId, userId, sysdate);
- 				contactSrv.hsetUserInfoServicerListDate(userId, sysdateStr);
+  				contactSrv.hsetUserInfoServicerListDate(userId, sysdateStr);
 			} else if (type == 1) {
 				if (senderInfo.getUser_type() == Constant.USER_TYPE_CUSTOMER) {
 					throw new AppException(ResCodeAppEnum.CUSTORMER_ADD_SERVIER_CONTACT_LIST.getCode());
 				}
+				previous = contactSrv.hgetUserInfoCustomerListDate(userId);
 				contactSrv.addContactProUser_master(senderId, userId, sysdate);
  				contactSrv.hsetUserInfoCustomerListDate(userId, sysdateStr);
 			}
 			
 		} else if (opt == 1) {
 			if (type == 0) {
+				previous = contactSrv.hgetUserInfoServicerListDate(userId);
 				contactSrv.deleteContactUser(senderId, userId);
 				contactSrv.hsetUserInfoServicerListDate(userId, sysdateStr);
  			} else if (type == 1) {
+				previous = contactSrv.hgetUserInfoCustomerListDate(userId);
 				contactSrv.deleteContactProUser(senderId, userId);
 				contactSrv.hsetUserInfoCustomerListDate(userId, sysdateStr);
 			}
-			
-		}
- 		return new Contact_res();
+ 		}
+		Contact_res res = new Contact_res();
+		Contact_res.State_date stateDate = new Contact_res.State_date();
+		res.setState_date(stateDate);
+		stateDate.setPrevious(new Long(previous));
+		stateDate.setLast(new Long(sysdateStr));
+		
+ 		return res;
 	}
 
 	public void contactValidate(Contact_req req, TokenMappingRds token) {
@@ -90,9 +101,12 @@ public class ContactAction extends BaseAction {
 		long userId = token.getUserId();
 		long type = req.getBody().getType();
 		List<QryContactVO> userlist = null;
+		String last = "";
 		if (type == Constant.USER_TYPE_CUSTOMER) {
+			last = commonSrvs.hgetUserInfoServicerListDate(userId);
 			userlist = contactSrv.queryContactUserList(userId);
 		} else {
+			last = commonSrvs.hgetUserInfoCustomerListDate(userId);
 			userlist = contactSrv.queryContactProUserList(userId);
 		}
 		ContactListQuery_res res = new ContactListQuery_res();
@@ -118,6 +132,10 @@ public class ContactAction extends BaseAction {
 
 		}
 		res.setUsers(list);
+		
+		ContactListQuery_res.State_date stateDate = new ContactListQuery_res.State_date();
+		stateDate.setLast(new Long(last));
+		res.setState_date(stateDate);
 
 		return res;
 

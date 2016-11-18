@@ -51,9 +51,9 @@ public class UserDbDao extends BaseDbDao implements IUserDbDao {
 		return null;
 	}
 
-	public TUserUsers queryUserInfoByUserName(String userName) {
+	public TUserUsers queryUserInfoByUsercode(String usercode) {
 		TUserUsersExample uue = new TUserUsersExample();
-		uue.createCriteria().andUser_nameEqualTo(userName).andStateEqualTo(Constant.STATE_IN_USE);
+		uue.createCriteria().andUser_codeIsNotNull().andUser_codeNotEqualTo("").andUser_codeEqualTo(usercode).andStateEqualTo(Constant.STATE_IN_USE);
 		List<TUserUsers> luu = userUsersMapper.selectByExample(uue);
 		if (luu.size() > 0) {
 			return luu.get(0);
@@ -155,6 +155,12 @@ public class UserDbDao extends BaseDbDao implements IUserDbDao {
 		} else if (type == 2) {
 			ca.andUser_nameEqualTo(userName);
 		}
+		return userUsersMapper.selectByExample(uue);
+	}
+	
+	public List<TUserUsers> querySamchatId(String samchatId){
+		TUserUsersExample uue = new TUserUsersExample();
+		TUserUsersExample.Criteria ca = uue.createCriteria().andStateEqualTo(Constant.STATE_IN_USE).andUser_codeEqualTo(samchatId);
 		return userUsersMapper.selectByExample(uue);
 	}
 

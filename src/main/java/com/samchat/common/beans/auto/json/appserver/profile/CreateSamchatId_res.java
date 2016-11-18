@@ -1,6 +1,6 @@
-package com.samchat.common.beans.auto.json.appserver.user;
+package com.samchat.common.beans.auto.json.appserver.profile;
 
-public class CreateSamPros_res{
+public class CreateSamchatId_res{
 
 	private Long ret;
 	private User user;

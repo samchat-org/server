@@ -35,6 +35,7 @@ AND uu.state = 1
 		resultType="com.samchat.common.beans.manual.db.QryPublicQueryVO">	
 SELECT
 	uu.user_id,
+	uu.user_code,
 	uu.user_name,
 	uu.country_code countrycode,
 	uu.phone_no cellphone,

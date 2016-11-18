@@ -201,14 +201,14 @@ public class UserAction extends BaseAction {
 	public void registerValidate(Register_req req) {
 
 		Register_req.Body body = req.getBody();
-
+		
+		if(!CommonUtil.appVersionCheck(body.getDevice_type(), body.getApp_version())){
+			throw new AppException(ResCodeAppEnum.VERSION_NOSUPPORT.getCode());
+		}
 		if (!CommonUtil.phoneNoFormatValidate(body.getCellphone())) {
 			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
 		}
 		TUserUsers userUsers = usersSrv.queryUserInfoByPhone_master(body.getCellphone(), body.getCountrycode());
-		if (userUsers == null) {
-			userUsers = usersSrv.queryUserInfoByUserName_master(body.getUsername());
-		}
 		if (userUsers != null) {
 			throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
 		}
@@ -247,11 +247,16 @@ public class UserAction extends BaseAction {
 		Login_req.Body body = req.getBody();
 		String account = body.getAccount();
 		String countryCode = body.getCountrycode();
-		String pwd = Md5Util.getSign4String(body.getPwd(), "");
-
+		String pwd = body.getPwd();//Md5Util.getSign4String(body.getPwd(), "");
+		String appVersion = body.getApp_version();
+		String deviceType = body.getDevice_type();
+		
+//		if(!CommonUtil.appVersionCheck(deviceType, appVersion)){
+//			throw new AppException(ResCodeAppEnum.VERSION_NOSUPPORT.getCode());
+//		}
 		TUserUsers user = usersSrv.queryUserInfoByPhone_master(account, countryCode);
 		if (user == null) {
-			user = usersSrv.queryUserInfoByUserName_master(account);
+			user = usersSrv.queryUserInfoByUsercode_master(account);
 		}
 		if (user == null) {
 			throw new AppException(ResCodeAppEnum.USER_NOT_EXIST.getCode());
@@ -301,22 +306,8 @@ public class UserAction extends BaseAction {
 
 		CreateSamPros_res res = new CreateSamPros_res();
 		CreateSamPros_res.User userRet = new CreateSamPros_res.User();
-		userRet.setId(user.getUser_id());
-		userRet.setUsername(user.getUser_name());
-		userRet.setCountrycode(user.getCountry_code());
-		userRet.setCellphone(user.getPhone_no());
-		userRet.setEmail(user.getEmail());
-		userRet.setAddress(user.getAddress());
-		userRet.setType(new Long(Constant.USER_TYPE_SERVICES));
-
-		CreateSamPros_res.Avatar avatar = new CreateSamPros_res.Avatar();
-		avatar.setOrigin(user.getAvatar_origin());
-		avatar.setThumb(user.getAvatar_thumb());
-		userRet.setAvatar(avatar);
 		userRet.setLastupdate(sysdate.getNow().getTime());
-		userRet.setAvatar(avatar);
-
-		res.setUser(userRet);
+ 		res.setUser(userRet);
 
 		return res;
 	}
@@ -420,7 +411,7 @@ public class UserAction extends BaseAction {
 	 * @throws Exception
 	 */
 	public FindpwdUpdate_res findpwdUpdate(FindpwdUpdate_req req, TUserUsers user) throws Exception {
-		String password = Md5Util.getSign4String(req.getBody().getPwd(), "");
+		String password = req.getBody().getPwd();//Md5Util.getSign4String(req.getBody().getPwd(), "");
 		Timestamp sysdate = commonSrv.querySysdate();
 		usersSrv.updatePassword(user.getUser_id(), password, sysdate);
 		return new FindpwdUpdate_res();
@@ -456,7 +447,7 @@ public class UserAction extends BaseAction {
 	 * @throws Exception
 	 */
 	public PwdUpdate_res pwdUpdate(PwdUpdate_req req, TokenMappingRds token, TUserUsers user) throws Exception {
-		String newPwd = Md5Util.getSign4String(req.getBody().getNew_pwd(), "");
+		String newPwd = req.getBody().getNew_pwd();//Md5Util.getSign4String(req.getBody().getNew_pwd(), "");
 		Timestamp sysate = commonSrv.querySysdate();
 		usersSrv.updatePassword(user.getUser_id(), newPwd, sysate);
 		return new PwdUpdate_res();
@@ -465,7 +456,7 @@ public class UserAction extends BaseAction {
 	public TUserUsers pwdUpdateValidate(PwdUpdate_req req, TokenMappingRds token) throws Exception{
 
 		TUserUsers user = usersSrv.queryUser(token.getUserId());
-		String oldPsw = Md5Util.getSign4String(req.getBody().getOld_pwd(),"");
+		String oldPsw = req.getBody().getOld_pwd();//Md5Util.getSign4String(req.getBody().getOld_pwd(),"");
 		if (!oldPsw.equals(user.getUser_pwd())) {
 			throw new AppException(ResCodeAppEnum.USER_OLD_PWD.getCode());
 		}
@@ -485,6 +476,7 @@ public class UserAction extends BaseAction {
 
 			QueryFuzzy_res.Users user = new QueryFuzzy_res.Users();
 			user.setId(pq.getUser_id());
+			user.setSamchat_id(pq.getUser_code());
 			user.setUsername(pq.getUser_name());
 			user.setCountrycode(pq.getCountrycode());
 			user.setCellphone(pq.getCellphone());
@@ -541,6 +533,7 @@ public class UserAction extends BaseAction {
 				users = new ArrayList<QueryAccurate_res.Users>();
 				QueryAccurate_res.Users user = new QueryAccurate_res.Users();
 				user.setId(uur.getUser_id());
+				user.setSamchat_id(uur.getUser_code());
 				user.setUsername(uur.getUser_name());
 				user.setCountrycode(uur.getCountry_code());
 				user.setCellphone(uur.getPhone_no());
@@ -575,6 +568,7 @@ public class UserAction extends BaseAction {
 			for (QryUserInfoVO pq : userlist) {
 				QueryAccurate_res.Users user = new QueryAccurate_res.Users();
 				user.setId(pq.getUser_id());
+				user.setSamchat_id(pq.getUser_code());
 				user.setUsername(pq.getUser_name());
 				user.setCountrycode(pq.getCountrycode());
 				user.setCellphone(pq.getCellphone());
@@ -624,6 +618,7 @@ public class UserAction extends BaseAction {
 
 			QueryGroup_res.Users user = new QueryGroup_res.Users();
 			user.setId(pq.getUser_id());
+			user.setSamchat_id(pq.getUser_code());
 			user.setUsername(pq.getUser_name());
 			user.setCountrycode(pq.getCountrycode());
 			user.setCellphone(pq.getCellphone());

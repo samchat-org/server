@@ -96,6 +96,7 @@ public class QueryFuzzy_res{
 
 	public static class Users {
 		private Long id;
+		private String samchat_id = "";
 		private String username = "";
 		private String countrycode = "";
 		private String cellphone = "";
@@ -112,6 +113,14 @@ public class QueryFuzzy_res{
 
 		public void setId(Long id) {
 			this.id = id;
+		}
+
+		public String getSamchat_id() {
+			return samchat_id;
+		}
+
+		public void setSamchat_id(String samchat_id) {
+			this.samchat_id = (samchat_id == null? "" : samchat_id.trim());
 		}
 
 		public String getUsername() {

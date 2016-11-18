@@ -10,6 +10,7 @@ public class Login_res{
 
 	public static class User {
 		private Long id;
+		private String samchat_id = "";
 		private String username = "";
 		private String countrycode = "";
 		private String cellphone = "";
@@ -27,6 +28,14 @@ public class Login_res{
 
 		public void setId(Long id) {
 			this.id = id;
+		}
+
+		public String getSamchat_id() {
+			return samchat_id;
+		}
+
+		public void setSamchat_id(String samchat_id) {
+			this.samchat_id = (samchat_id == null? "" : samchat_id.trim());
 		}
 
 		public String getUsername() {

@@ -6,6 +6,8 @@
         "countrycode":"86",
         "account":"1381196123",
         "pwd":"123456",
-        "deviceid":"14EF65"
+        "deviceid":"14EF65",
+        "device_type":"asdfasdafds",
+        "app_version":"asdadf"
     }
 }

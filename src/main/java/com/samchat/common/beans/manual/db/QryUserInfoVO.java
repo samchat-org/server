@@ -140,7 +140,18 @@ public class QryUserInfoVO {
 		this.address_pro = address_pro;
 	}
 
+	
+	public String getUser_code() {
+		return user_code;
+	}
+
+	public void setUser_code(String user_code) {
+		this.user_code = user_code;
+	}
+
+
 	private long user_id;
+	private String user_code;
 	private String user_name;
 	private String countrycode;
 	private String cellphone;

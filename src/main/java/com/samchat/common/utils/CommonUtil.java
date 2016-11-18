@@ -1,6 +1,7 @@
 package com.samchat.common.utils;
 
 import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -24,6 +25,12 @@ public class CommonUtil {
 			return false;
 		}
 		return Constant.PHONE_PATTERN.matcher(phoneNo).matches();
+	}
+	
+	public static boolean appVersionCheck(String deviceType, String version){
+		String osType =  (Constant.SUPPORT_VERSION_PREFIX + deviceType.split("-")[0]).toLowerCase();
+		int supportVersion = CommonUtil.getSysConfigInt(osType);
+		return Integer.parseInt(version) >= supportVersion;
 	}
 
 	public static Object methodInvoke(Object obj, String methodStr) throws Exception {
@@ -88,5 +95,8 @@ public class CommonUtil {
  		return radom;
 	}
 	
+	public static int getMonthSharding(Timestamp time){
+		return Integer.parseInt(Constant.SDF_YYYYMM.format(time));
+	}
 
 }

@@ -19,4 +19,5 @@ public interface IProfileSrvs extends IBaseSrvs{
 	public String getEditCellPhoneVerificationCodeCtrl(String countryCode, String cellPhone);
 	
 	public void putEditCellPhoneVerificationCodeCtrl(String countryCode, String cellPhone);
+	
 }

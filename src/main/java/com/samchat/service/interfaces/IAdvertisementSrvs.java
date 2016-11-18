@@ -4,11 +4,9 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementContent;
-import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementSendLog;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementDelete_req;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementWrite_req;
 import com.samchat.common.beans.manual.db.QryFollowVO;
-import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.enums.db.AdsDbEnum;
 
@@ -26,13 +24,17 @@ public interface IAdvertisementSrvs extends IBaseSrvs {
 	public void updateAdvertisementNotinuse(List<AdvertisementDelete_req.Advertisements> ads, long userId)
 			throws Exception;
 
-	public AdvertisementSqs advertisementSend(AdvertisementWrite_req req, TokenMappingRds token, long adsId)
+	public AdvertisementSqs saveAndSendAdvertisement_master(AdvertisementWrite_req req, long userIdPro, long adsId)
 			throws Exception;
-
-	public List<TAdvertisementSendLog> queryAdvertisementSendLog(long userId, int shardingFlag) throws Exception;
 
 	public TAdvertisementContent queryAdvertisementCotentById(long adsId, int shardingFlag) throws Exception;
 
-	public void saveAdvertisementSendLogList(long adsId, List<QryFollowVO> qfvlst, Timestamp senddate,
+	public void saveAdvertisementSendLogList_master(long adsId, List<QryFollowVO> qfvlst,
 			AdsDbEnum.SendLogState state, int shardingFlag, int pagination);
+	
+	public boolean updateAdvertisementRecallFlag(long adsId, int shardingFlag);
+	
+	public boolean updateAdvertisementSendingState(long adsId, int shardingFlag);
+	
+	public void updateAdvertisementState(long adsId, byte state, int shardingFlag);
 }

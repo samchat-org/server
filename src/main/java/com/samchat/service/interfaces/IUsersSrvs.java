@@ -16,7 +16,7 @@ import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 
 public interface IUsersSrvs extends IBaseSrvs {
  	public TUserUsers queryUserInfoByPhone(String phoneNo, String countryCode) ;
-	public TUserUsers queryUserInfoByUserName(String userName) ;
+	public TUserUsers queryUserInfoByUsercode(String usercode) ;
 	public TUserUsers queryUserInfoByEmail(String email) ;
 	public Register_res saveRegisterUserInfo_master(Register_req req, SysdateObjBean sysdate) throws Exception ;
 	public void putRegisterCode(String countryCode, String cellPhone, String registerCode) ;
@@ -45,12 +45,14 @@ public interface IUsersSrvs extends IBaseSrvs {
 	public void updateUser(TUserUsers userCon);
 	public void deleteRedisUserInfo(long userId);
 	public TUserUsers queryUserInfoByPhone_master(String phoneNo, String countryCode);
-	public TUserUsers queryUserInfoByUserName_master(String userName);
+	public TUserUsers queryUserInfoByUsercode_master(String usercode);
 	public TUserUsers queryUser_master(long userId);
 	public TUserUsers updateAvatar_master(String origin, String thumb, long userId, SysdateObjBean sysdate)  throws Exception;
 	public void putRegisterCodeCtrl(String countryCode, String cellPhone);
 	public String getRegisterCodeCtrl(String countryCode, String cellPhone);
 	public void putFindpasswordVerificationCodeCtrl(String countryCode, String cellPhone);
 	public String getFindpasswordVerificationCodeCtrl(String countryCode, String cellPhone);
+	public List<TUserUsers> querySamchatId(String samchatId);
+	public TUserUsers saveSamchatId_master(String samchatId, long userId) throws Exception;
 
 }

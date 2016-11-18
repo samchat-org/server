@@ -1,3 +1,7 @@
 {
-    "ret":0
+    "ret":0,
+    "state_date":{
+        "previous":1212312,
+        "last":12312313
+    }
 }

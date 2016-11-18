@@ -1,19 +1,25 @@
 package com.samchat.action;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.samchat.common.beans.auto.json.appserver.common.Recall_req;
+import com.samchat.common.beans.auto.json.appserver.common.Recall_res;
 import com.samchat.common.beans.auto.json.appserver.common.SendInviteMsg_req;
 import com.samchat.common.beans.auto.json.appserver.common.SendInviteMsg_res;
 import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
+import com.samchat.common.enums.app.CommonAppEnum;
+import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.enums.db.SysMsgTplDbEnum;
-import com.samchat.common.enums.db.SysParamCodeDbEnum;
+import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.TwilioUtil;
+import com.samchat.service.interfaces.IAdvertisementSrvs;
 import com.samchat.service.interfaces.IUsersSrvs;
 
 public class CommonAction extends BaseAction {
@@ -22,6 +28,9 @@ public class CommonAction extends BaseAction {
 	
 	@Autowired
 	private IUsersSrvs usersSrv;
+	
+	@Autowired
+	private IAdvertisementSrvs advertisementSrvs;
 
 	public SendInviteMsg_res sendInviteMsg(SendInviteMsg_req req, TokenMappingRds token) throws Exception {
 
@@ -42,4 +51,26 @@ public class CommonAction extends BaseAction {
 
 	public void sendInviteMsgValidate(SendInviteMsg_req req, TokenMappingRds token) {
  	}
+	
+	public Recall_res recall(Recall_req req, TokenMappingRds token){
+		Recall_req.Body body = req.getBody();
+		Long type = body.getType();
+		String bussinessId = body.getBusiness_id();
+		Timestamp publishTime = new Timestamp(body.getPublish_timestamp());
+		int shardingFlag = CommonUtil.getMonthSharding(publishTime);
+ 		
+		if(type == CommonAppEnum.RecallType.ADVERTISEMENT.val()){
+			boolean ret = advertisementSrvs.updateAdvertisementRecallFlag(Long.parseLong(bussinessId), shardingFlag);
+			if(ret){
+				return new Recall_res();
+			}else{
+				throw new AppException(ResCodeAppEnum.RECALL_FAILED.getCode());
+			}
+		}
+		return null;
+ 	}
+	
+	public void recallValidate(Recall_req req, TokenMappingRds token){
+		
+	}
 }

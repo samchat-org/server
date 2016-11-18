@@ -21,8 +21,7 @@ public interface IBaseSrvs {
 		public Timestamp querySysdate() ;
 		public SysdateObjBean querySysdateObj() throws Exception ;
 		public void hsetUserInfoStrRedis(long userId, String filed, String uif) throws Exception;
-		public void hsetUserInfoClientId(long userId, String clientId);
-		public String hgetUserInfoStrRedis(long userId, String field) throws Exception;
+ 		public String hgetUserInfoStrRedis(long userId, String field) throws Exception;
 		public String hgetUserInfoClientId(long userId);
 		public String hgetUserInfoCustomerListDate(long userId);
  	 	public String hgetUserInfoServicerListDate(long userId); 

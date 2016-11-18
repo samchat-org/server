@@ -12,7 +12,7 @@ public interface IUserDbDao extends IBaseDbDao {
 
 	public TUserUsers queryUserInfoByEmail(String email);
 
-	public TUserUsers queryUserInfoByUserName(String userName);
+	public TUserUsers queryUserInfoByUsercode(String userName);
 
 	public TUserUsers queryUserInfoByPhone(String phoneNo, String countryCode);
 
@@ -40,4 +40,5 @@ public interface IUserDbDao extends IBaseDbDao {
 
 	public List<TUserUsers> queryUserWithoutToken(long type, String countrycode, String cellphone, String userName);
 	
+	public List<TUserUsers> querySamchatId(String samchatId);
 }

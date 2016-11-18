@@ -3,17 +3,26 @@ package com.samchat.common.beans.auto.json.appserver.officialAccount;
 public class Follow_res{
 
 	private Long ret;
-	private User user;
+	private State_date state_date;
 
-	public static class User {
-		private Long lastupdate;
+	public static class State_date {
+		private Long previous;
+		private Long last;
 
-		public Long getLastupdate() {
-			return lastupdate;
+		public Long getPrevious() {
+			return previous;
 		}
 
-		public void setLastupdate(Long lastupdate) {
-			this.lastupdate = lastupdate;
+		public void setPrevious(Long previous) {
+			this.previous = previous;
+		}
+
+		public Long getLast() {
+			return last;
+		}
+
+		public void setLast(Long last) {
+			this.last = last;
 		}
 	}
 
@@ -25,12 +34,12 @@ public class Follow_res{
 		this.ret = ret;
 	}
 
-	public User getUser() {
-		return user;
+	public State_date getState_date() {
+		return state_date;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setState_date(State_date state_date) {
+		this.state_date = state_date;
 	}
 
 }

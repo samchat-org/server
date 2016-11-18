@@ -131,6 +131,9 @@ public class Test {
 	}
 
 	public static void main(String args[]) throws Exception {
+		
+		String url = HttpclientUrlUtil.encodeQuery("!@#$%");
+		System.out.print(url);
 		Byte b = new Byte("1");
 		System.out.print(b == 1);
 //		ApplicationContext ctx = SpringUtil.initContext("config/spring");

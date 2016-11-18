@@ -1,7 +1,6 @@
 package com.samchat.dao.db;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -14,8 +13,8 @@ import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementSendLog;
 import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementSendLogExample;
 import com.samchat.common.beans.auto.db.mapper.TAdvertisementContentMapper;
 import com.samchat.common.beans.auto.db.mapper.TAdvertisementSendLogMapper;
-import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.db.AdsDbEnum;
+import com.samchat.common.utils.CommonUtil;
 import com.samchat.dao.db.interfaces.IAdvertisementDbDao;
 
 @Repository
@@ -44,7 +43,7 @@ public class AdvertisementDbDao extends BaseDbDao implements IAdvertisementDbDao
  		ads.setContent_thumb(thumb);
 		ads.setCreate_date(recvdate);
 		ads.setState_date(recvdate);
-		ads.setState(Constant.STATE_IN_USE);
+		ads.setState(AdsDbEnum.ContentState.WAIT.val());
 		ads.setSharding_flag(shardingFlag);
 		advertisementContentMapper.insert(ads);
 	}
@@ -65,20 +64,10 @@ public class AdvertisementDbDao extends BaseDbDao implements IAdvertisementDbDao
 		TAdvertisementContent ads = new TAdvertisementContent();
 		ads.setAds_id(adsId);
 		ads.setUser_id_pro(userId);
-		ads.setState(Constant.STATE_NOT_IN_USE);
+		ads.setState(AdsDbEnum.ContentState.CANCEL.val());
 		ads.setCreate_date(timestamp);
+		ads.setSharding_flag(CommonUtil.getMonthSharding(timestamp));
 		advertisementContentMapper.updateByPrimaryKeySelective(ads);
-	}
-
-	public List<TAdvertisementSendLog> queryAdvertisementSendLog(long userId, int shardingFlag) throws Exception {
-
-		log.info("userId:" + userId + "--shardingFlag:" + shardingFlag);
-		TAdvertisementSendLogExample ase = new TAdvertisementSendLogExample();
-		List<Byte> states = new ArrayList<Byte>();
-		states.add(AdsDbEnum.SendLogState.ERROR.val());
-		states.add(AdsDbEnum.SendLogState.SEND_SUCCESS.val());
-		ase.createCriteria().andStateIn(states).andSharding_flagEqualTo(shardingFlag).andUser_idEqualTo(userId);
-		return advertisementSendLogMapper.selectByExample(ase);
 	}
 
 	public void saveAdvertisementSendLog(long adsId, long userId, Timestamp senddate, byte state, String clientId,
@@ -117,5 +106,28 @@ public class AdvertisementDbDao extends BaseDbDao implements IAdvertisementDbDao
 		ase.createCriteria().andLog_idEqualTo(logId).andSharding_flagEqualTo(shardingFlag);
 		
 		advertisementSendLogMapper.updateByExampleSelective(ass, ase);
+	}
+	
+	public boolean updateAdvertisementState(long adsId, byte destState, List<Byte> expectState, int shardingFlag){
+		TAdvertisementContentExample ace = new TAdvertisementContentExample();
+		log.info("adsId:" + adsId + "--shardingFlag:" + shardingFlag);
+		ace.createCriteria().andAds_idEqualTo(adsId).andStateIn(expectState).andSharding_flagEqualTo(shardingFlag);
+		
+		TAdvertisementContent tac = new TAdvertisementContent();
+		tac.setState(destState);
+		int ret = advertisementContentMapper.updateByExampleSelective(tac, ace);
+		return ret > 0;
+	}
+	
+	public void updateAdvertisementState(long adsId, byte state, int shardingFlag){
+		
+		TAdvertisementContentExample ace = new TAdvertisementContentExample();
+		log.info("adsId:" + adsId + "--shardingFlag:" + shardingFlag);
+		ace.createCriteria().andAds_idEqualTo(adsId).andSharding_flagEqualTo(shardingFlag);
+		
+		TAdvertisementContent ads = new TAdvertisementContent();
+ 		ads.setState(state);
+ 		
+ 		advertisementContentMapper.updateByExampleSelective(ads, ace);
 	}
 }

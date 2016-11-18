@@ -4,6 +4,7 @@
 	<sql id="query_user_column_list">
 SELECT
 	uu.user_id,
+	uu.user_code,
 	uu.user_name,
 	uu.country_code countrycode,
 	uu.phone_no cellphone,

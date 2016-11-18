@@ -1,5 +1,7 @@
 package com.samchat.action;
 
+import java.sql.Timestamp;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,6 +15,7 @@ import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.exceptions.AppException;
+import com.samchat.common.utils.S3Util;
 import com.samchat.service.interfaces.IAdvertisementSrvs;
 import com.samchat.service.interfaces.ICommonSrvm;
 import com.samchat.service.interfaces.ICommonSrvs;
@@ -36,9 +39,11 @@ public class AdvertisementAction extends BaseAction {
 
 	public AdvertisementWrite_res advertisementWrite(AdvertisementWrite_req req, TokenMappingRds token) throws Exception {
 
-		long qstId = commonSrvm.querySeqId(Constant.SEQUENCE.S_ADVERTISEMENT);
-		log.info("qst_id:" + qstId);
-		AdvertisementSqs ads = advertisementSrv.advertisementSend(req, token, qstId);
+		long adsId = commonSrvm.querySeqId(Constant.SEQUENCE.S_ADVERTISEMENT);
+		long userIdPro = token.getUserId();
+		
+		AdvertisementSqs ads = advertisementSrv.saveAndSendAdvertisement_master(req, userIdPro, adsId);
+		
 		AdvertisementWrite_res res = new AdvertisementWrite_res();
 		res.setAdv_id(ads.getAds_id());
 		res.setContent_thumb(ads.getContent_thumb());

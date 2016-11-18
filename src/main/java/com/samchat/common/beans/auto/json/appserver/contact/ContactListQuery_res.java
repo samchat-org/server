@@ -4,8 +4,21 @@ import java.util.ArrayList;
 public class ContactListQuery_res{
 
 	private Long ret;
+	private State_date state_date;
 	private Long count;
 	private ArrayList<Users> users;
+
+	public static class State_date {
+		private Long last;
+
+		public Long getLast() {
+			return last;
+		}
+
+		public void setLast(Long last) {
+			this.last = last;
+		}
+	}
 
 	public static class Avatar {
 		private String thumb = "";
@@ -94,6 +107,14 @@ public class ContactListQuery_res{
 
 	public void setRet(Long ret) {
 		this.ret = ret;
+	}
+
+	public State_date getState_date() {
+		return state_date;
+	}
+
+	public void setState_date(State_date state_date) {
+		this.state_date = state_date;
 	}
 
 	public Long getCount() {

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import com.amazonaws.util.IOUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.enums.Constant;
@@ -45,16 +46,23 @@ public abstract class BaseAction extends ToolAction {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	
+	private String getData(HttpServletRequest req) throws Exception{
+		String data = IOUtils.toString(req.getInputStream());
+  		if(data == null || "".equals(data)){
+			 data = req.getParameter("data");
+			 if (data == null || "".equals(data)) {
+				throw new Exception("data is null");
+			}
+		}
+ 		return data;
+	}
 	protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-		Object retObj = null;
+ 		Object retObj = null;
 		String retJson = null;
 		ObjectMapper om = ThreadLocalUtil.getAppObjectMapper();
 		try {
-			String data = req.getParameter("data");
-			if (data == null) {
-				throw new Exception("data null");
-			}
+			String data = getData(req);
 			log.info("data recv:" + data);
 
 			String parts[] = req.getRequestURI()

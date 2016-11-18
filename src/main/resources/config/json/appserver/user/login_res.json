@@ -3,6 +3,7 @@
     "token":"95189457043652618",
     "user":{
         "id":1,
+        "samchat_id":"1231",
         "username":"Kevin Dong",
         "countrycode":"",
         "cellphone":"",

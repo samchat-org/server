@@ -1,7 +1,9 @@
 package com.samchat.action;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -10,6 +12,8 @@ import com.samchat.common.beans.auto.json.appserver.profile.AppkeyGet_req;
 import com.samchat.common.beans.auto.json.appserver.profile.AppkeyGet_res;
 import com.samchat.common.beans.auto.json.appserver.profile.AvatarUpdate_req;
 import com.samchat.common.beans.auto.json.appserver.profile.AvatarUpdate_res;
+import com.samchat.common.beans.auto.json.appserver.profile.CreateSamchatId_req;
+import com.samchat.common.beans.auto.json.appserver.profile.CreateSamchatId_res;
 import com.samchat.common.beans.auto.json.appserver.profile.EditCellPhoneCodeRequest_req;
 import com.samchat.common.beans.auto.json.appserver.profile.EditCellPhoneCodeRequest_res;
 import com.samchat.common.beans.auto.json.appserver.profile.EditCellPhoneUpdate_req;
@@ -22,13 +26,10 @@ import com.samchat.common.beans.auto.json.appserver.profile.ProfileUpdate_req;
 import com.samchat.common.beans.auto.json.appserver.profile.ProfileUpdate_res;
 import com.samchat.common.beans.auto.json.appserver.profile.QueryStateDate_req;
 import com.samchat.common.beans.auto.json.appserver.profile.QueryStateDate_res;
-import com.samchat.common.beans.auto.json.appserver.profile.SendClientId_req;
-import com.samchat.common.beans.auto.json.appserver.profile.SendClientId_res;
 import com.samchat.common.beans.auto.json.appserver.profile.UpdateQuestionNotify_req;
 import com.samchat.common.beans.auto.json.appserver.profile.UpdateQuestionNotify_res;
 import com.samchat.common.beans.manual.common.SysdateObjBean;
 import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
-import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.enums.db.SysMsgTplDbEnum;
@@ -36,7 +37,6 @@ import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.GooglePlaceUtil;
-import com.samchat.common.utils.SqsUtil;
 import com.samchat.common.utils.TwilioUtil;
 import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IProfileSrvs;
@@ -105,23 +105,6 @@ public class ProfileAction extends BaseAction {
 	}
 
 	public void avatarUpdateValidate(AvatarUpdate_req req, TokenMappingRds token) {
-	}
-
-	public SendClientId_res sendClientId(SendClientId_req req, TokenMappingRds token) throws Exception {
-
-		long userId = token.getUserId();
-		String clientId = req.getBody().getClient_id();
-		usersSrv.hsetUserInfoClientId(userId, clientId);
-		AdvertisementSqs ads = new AdvertisementSqs();
-		ads.setUser_id(userId);
-		ads.setSendType((byte) 1);
-		SqsUtil.pushMessage(ads, SysParamCodeDbEnum.SQS_ADVERTISEMENT_URL.getParamCode());
-
-		return new SendClientId_res();
-	}
-
-	public void sendClientIdValidate(SendClientId_req req, TokenMappingRds token) {
-
 	}
 
 	public GetPlacesInfoRequest_res getPlacesInfoRequest(GetPlacesInfoRequest_req req, TokenMappingRds token) throws Exception {
@@ -290,4 +273,30 @@ public class ProfileAction extends BaseAction {
 	
 	public void updateQuestionNotifyValidate(UpdateQuestionNotify_req req, TokenMappingRds token){	
 	}
+	
+	public  CreateSamchatId_res createSamchatId(CreateSamchatId_req req, TokenMappingRds token ) throws Exception{
+		String samchatId = req.getBody().getSamchat_id();
+		TUserUsers tuser = usersSrv.saveSamchatId_master(samchatId, token.getUserId());
+		CreateSamchatId_res res = new CreateSamchatId_res();
+		CreateSamchatId_res.User user = new CreateSamchatId_res.User();
+		user.setLastupdate(tuser.getState_date().getTime());
+		res.setUser(user);
+		return res;
+	}
+	
+	public  void createSamchatIdValidate(CreateSamchatId_req req, TokenMappingRds token ){
+		
+		TUserUsers user = usersSrv.queryUser(token.getUserId());
+		if(StringUtils.trimToNull(user.getUser_code()) != null){
+			throw new AppException(ResCodeAppEnum.SAMCHAT_ID_HAS.getCode());
+		}
+		String samchatId = req.getBody().getSamchat_id();
+		if(StringUtils.trimToNull(samchatId) == null){
+			throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode());
+		}
+		List<TUserUsers> users = usersSrv.querySamchatId(samchatId);
+		if(users.size() > 0){
+			throw new AppException(ResCodeAppEnum.SAMCHAT_ID_EXIST.getCode());
+		}
+ 	}
 }

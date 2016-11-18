@@ -1,0 +1,9 @@
+{
+    "header":{
+        "action":"create-samchat-id",
+        "token":"token"
+    },
+    "body":{
+        "samchat_id":"123123132"
+    }
+}

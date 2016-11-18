@@ -18,8 +18,10 @@ public interface IAdvertisementDbDao extends IBaseDbDao {
 
 	public void delAdvertisementContent(long adsId, long userId, Timestamp timestamp);
 
-	public List<TAdvertisementSendLog> queryAdvertisementSendLog(long userId, int shardingFlag) throws Exception;
-
 	public TAdvertisementContent queryAdvertisementCotentById(long adsId, int shardingFlag) throws Exception;
+	
+	public boolean updateAdvertisementState(long adsId, byte destState, List<Byte> expectState, int shardingFlag);
+	
+	public void updateAdvertisementState(long adsId, byte state, int shardingFlag);
 
 }

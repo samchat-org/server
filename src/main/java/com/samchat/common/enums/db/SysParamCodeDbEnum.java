@@ -8,6 +8,9 @@ public enum SysParamCodeDbEnum {
 	SYSTEM_ID("system_id"),
 	INTERNET_PROXY("internet_proxy"),
 	
+	APP_QUESTION_RECALL_MINUTE("app_question_recall_minute"),
+	APP_ADVERTISEMENT_RECALL_MINUTE("app_advertisement_recall_minute"),
+	
 	//key of twillo
 	TWILIO_PHONE_NO("twillo_phone_no"),
 	TWILIO_ACCOUNT("twilio_account"),

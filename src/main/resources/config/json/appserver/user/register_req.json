@@ -8,6 +8,8 @@
         "verifycode":332682,
         "username":"Kevin Dong",
         "pwd":"123456",
-        "deviceid":"14EF65"
+        "deviceid":"14EF65",
+        "device_type":"asdfasdafds",
+        "app_version":"asdadf"
     }
 }

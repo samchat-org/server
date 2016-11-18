@@ -51,7 +51,8 @@
  	<bean name="/api_1.0_profile_editCellPhoneCodeRequest.do" class="com.samchat.action.ProfileAction" />
  	<bean name="/api_1.0_profile_editCellPhoneUpdate.do" class="com.samchat.action.ProfileAction" />
  	<bean name="/api_1.0_profile_updateQuestionNotify.do" class="com.samchat.action.ProfileAction" />
- 	
+ 	<bean name="/api_1.0_profile_createSamchatId.do" class="com.samchat.action.ProfileAction" />
+  	
  	<bean name="/api_1.0_advertisement_advertisementWrite.do" class="com.samchat.action.AdvertisementAction" />
  	<bean name="/api_1.0_advertisement_advertisementDelete.do" class="com.samchat.action.AdvertisementAction" />
  	
@@ -62,5 +63,7 @@
  	<bean name="/api_1.0_question_queryPopularRequest.do" class="com.samchat.action.QuestionAction" />
  
  	<bean name="/api_1.0_common_sendInviteMsg.do" class="com.samchat.action.CommonAction" />
- 
+ 	<bean name="/api_1.0_common_recall.do" class="com.samchat.action.CommonAction" />
+ 	
+  
  </beans>

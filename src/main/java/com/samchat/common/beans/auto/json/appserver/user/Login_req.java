@@ -22,6 +22,8 @@ public class Login_req{
 		private String account;
 		private String pwd;
 		private String deviceid;
+		private String device_type;
+		private String app_version;
 
 		public String getCountrycode() {
 			return countrycode;
@@ -53,6 +55,22 @@ public class Login_req{
 
 		public void setDeviceid(String deviceid) {
 			this.deviceid = (deviceid == null? null : deviceid.trim());
+		}
+
+		public String getDevice_type() {
+			return device_type;
+		}
+
+		public void setDevice_type(String device_type) {
+			this.device_type = (device_type == null? null : device_type.trim());
+		}
+
+		public String getApp_version() {
+			return app_version;
+		}
+
+		public void setApp_version(String app_version) {
+			this.app_version = (app_version == null? null : app_version.trim());
 		}
 	}
 

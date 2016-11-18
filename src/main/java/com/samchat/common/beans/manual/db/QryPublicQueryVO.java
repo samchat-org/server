@@ -3,7 +3,9 @@ package com.samchat.common.beans.manual.db;
 import java.sql.Timestamp;
 
 public class QryPublicQueryVO {
+
 	private long user_id;
+	private String user_code;
 	private String user_name;
 	private String countrycode;
 	private String cellphone;
@@ -24,6 +26,14 @@ public class QryPublicQueryVO {
 
 	public long getUser_id() {
 		return user_id;
+	}
+	
+	public String getUser_code() {
+		return user_code;
+	}
+
+	public void setUser_code(String user_code) {
+		this.user_code = user_code;
 	}
 
 	public void setUser_id(long user_id) {

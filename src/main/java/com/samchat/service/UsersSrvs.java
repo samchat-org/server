@@ -67,12 +67,12 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		return queryUserInfoByPhone(phoneNo, countryCode);
 	}
 
-	public TUserUsers queryUserInfoByUserName(String userName) {
-		return userDbDao.queryUserInfoByUserName(userName);
+	public TUserUsers queryUserInfoByUsercode(String usercode) {
+		return userDbDao.queryUserInfoByUsercode(usercode);
 	}
 	
-	public TUserUsers queryUserInfoByUserName_master(String userName) {
-		return queryUserInfoByUserName(userName);
+	public TUserUsers queryUserInfoByUsercode_master(String usercode) {
+		return queryUserInfoByUsercode(usercode);
 	}
 
 	public TUserUsers queryUserInfoByEmail(String email) {
@@ -165,6 +165,8 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		TUserUsers userCon = new TUserUsers();
 		userCon.setUser_id(userId);
 		userCon.setCur_token(realToken);
+		userCon.setCur_device_type(body.getDevice_type());
+		userCon.setCur_version(body.getApp_version());
 		userDbDao.updateUser(userCon);
 
 		TUserProUsers proUser = cacheBaseUserInfoUpdate(user, sysdate, realToken);
@@ -178,6 +180,7 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		res.setUser(userRes);
 
 		userRes.setId(userId);
+		userRes.setSamchat_id(user.getUser_code());
 		userRes.setUsername(user.getUser_name());
 		userRes.setType(new Long(user.getUser_type()));
 		userRes.setCountrycode(user.getCountry_code());
@@ -219,8 +222,10 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		String cellPhone = body.getCellphone();
 		String countryCode = body.getCountrycode();
 		String userName = body.getUsername();
-		String pwd = Md5Util.getSign4String(body.getPwd(), "");
+		String pwd = body.getPwd();//Md5Util.getSign4String(body.getPwd(), "");
 		String deviceId = body.getDeviceid();
+		String deviceType = body.getDevice_type();
+		String appVersion = body.getApp_version();
 		String retToken = CacheUtil.getToken(countryCode, cellPhone, nowVersion, deviceId);
 		String realToken = CacheUtil.getRealToken(retToken, deviceId);
 
@@ -234,6 +239,8 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		uu.setState_date(now);
 		uu.setCreate_date(now);
 		uu.setCur_token(realToken);
+		uu.setCur_device_type(deviceType);
+		uu.setCur_version(appVersion);
 		uu.setQuestion_notify(UserDbEnum.QuestionNotify.NOTIFY.val());
 
 		userDbDao.insertUser(uu, now);
@@ -489,5 +496,27 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 	public void deleteRedisUserInfo(long userId){
 		String key = CacheUtil.getUserInfoIdCacheKey(userId);
 		userRedisDao.delete(key);
+	}
+	
+	public List<TUserUsers> querySamchatId(String samchatId){
+		return userDbDao.querySamchatId(samchatId);
+	}
+	
+	public TUserUsers saveSamchatId_master(String samchatId, long userId) throws Exception{
+		SysdateObjBean sysdate = querySysdateObj();
+		
+		TUserUsers tuserCon = new TUserUsers();
+		tuserCon.setUser_id(userId);
+		tuserCon.setUser_code(samchatId);
+		tuserCon.setState_date(sysdate.getNow());
+		userDbDao.updateUser(tuserCon);
+		
+		TUserUsers tuser = userDbDao.queryUser(userId);
+		UserInfoRds uur = new UserInfoRds();
+		uur.setNowVersion(sysdate.getNowVersion());
+		PropertyUtils.copyProperties(uur, tuser);
+		hsetUserInfoJsonObj(userId, uur);
+		
+		return tuser;
 	}
 }

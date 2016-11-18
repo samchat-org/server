@@ -32,4 +32,5 @@ public class CommonSrvs extends BaseSrvs implements ICommonSrvs {
 	public List<TSysMessageTemplete> querySysMsgTplList(){
 		return this.commonDbDao.querySysMsgTplList();
 	}
+	
 }

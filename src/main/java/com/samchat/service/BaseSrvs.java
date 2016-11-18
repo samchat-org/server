@@ -43,14 +43,6 @@ public class BaseSrvs implements IBaseSrvs {
 		userRedisDao.hset(key, filed, uif);
 	}
 	
-	public void hsetUserInfoClientId(long userId, String clientId) {
-		try {
-			hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.CLIENT_ID.val(), clientId);
-		} catch (Exception e) {
-			throw new RedisException("", e);
-		}
-	}
-	
 	public void hsetUserInfoCustomerListDate(long userId, String date) {
 		try {
 			hsetUserInfoStrRedis(userId, UserInfoFieldRdsEnum.CUSTOMER_LIST_DATE.val(), date);

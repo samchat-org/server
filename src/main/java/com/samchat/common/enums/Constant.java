@@ -69,5 +69,7 @@ public interface Constant {
 	int SUCCESS = 0;
 	
 	String NI_USER_PUBLIC_PREFIX = "public_";
+	
+	String SUPPORT_VERSION_PREFIX = "support_version_";
 
 }
