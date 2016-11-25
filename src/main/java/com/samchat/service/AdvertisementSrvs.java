@@ -18,6 +18,7 @@ import com.samchat.common.enums.db.AdsDbEnum;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.utils.CommonUtil;
 import com.samchat.common.utils.S3Util;
+import com.samchat.common.utils.ShardingUtil;
 import com.samchat.common.utils.SqsUtil;
 import com.samchat.dao.db.interfaces.IAdvertisementDbDao;
 import com.samchat.service.interfaces.IAdvertisementSrvs;
@@ -28,9 +29,9 @@ public class AdvertisementSrvs extends BaseSrvs implements IAdvertisementSrvs {
 	@Autowired
 	private IAdvertisementDbDao advertisementDbDao;
 
-	public void saveAdvertisementContent(long adsId, long userIdPro, byte type, String content, String thumb,
+	public TAdvertisementContent saveAdvertisementContent(long userIdPro, byte type, String content, String thumb,
 			Timestamp recvdate, int shardingFlag) {
-		advertisementDbDao.saveAdvertisementContent(adsId, userIdPro, type, content, thumb, recvdate,  shardingFlag);
+		return advertisementDbDao.saveAdvertisementContent(userIdPro, type, content, thumb, recvdate,  shardingFlag);
 	}
 
 	public void saveAdvertisementSendLog(long adsId, long userId, Timestamp senddate, byte state, String clientId,
@@ -50,15 +51,15 @@ public class AdvertisementSrvs extends BaseSrvs implements IAdvertisementSrvs {
 		advertisementDbDao.updateAdvertisementSendLog(logId, senddate, state, clientId, remark, shardingFlag, sendcount);
 	}
 
-	public void updateAdvertisementNotinuse(List<AdvertisementDelete_req.Advertisements> ads, long userId)
+	public void updateAdvertisementNotinuse_master(List<AdvertisementDelete_req.Advertisements> ads, long userId, Timestamp sysdate)
 			throws Exception {
-		for (AdvertisementDelete_req.Advertisements ad : ads) {
+ 		for (AdvertisementDelete_req.Advertisements ad : ads) {
 			advertisementDbDao
-					.delAdvertisementContent(ad.getAdv_id(), userId, new Timestamp(ad.getPublish_timestamp()));
+					.delAdvertisementContent(ad.getAdv_id(), userId, sysdate);
 		}
 	}
 
-	public AdvertisementSqs saveAndSendAdvertisement_master(AdvertisementWrite_req req, long userIdPro, long adsId) throws Exception {
+	public AdvertisementSqs saveAndSendAdvertisement_master(AdvertisementWrite_req req, long userIdPro) throws Exception {
 
 		AdvertisementWrite_req.Body body = req.getBody();		
  		String content = body.getContent();
@@ -67,15 +68,14 @@ public class AdvertisementSrvs extends BaseSrvs implements IAdvertisementSrvs {
 		if (adsType == Constant.ADS_TYPE.PIC) {
 			contentThumb = S3Util.getThumbPath(body.getContent());
 		}
-		
 		Timestamp sysdate = querySysdate();
-		int shardingFlag = CommonUtil.getMonthSharding(sysdate);
+		int shardingFlag = ShardingUtil.getMonthSharding(sysdate);
  		
-		saveAdvertisementContent(adsId, userIdPro, (byte) adsType, content,
+		TAdvertisementContent adsct = saveAdvertisementContent(userIdPro, (byte) adsType, content,
 				contentThumb, sysdate, shardingFlag);
 
 		AdvertisementSqs ads = new AdvertisementSqs();
-		ads.setAds_id(adsId);
+		ads.setAds_id(ShardingUtil.getMonthShardingId(shardingFlag, adsct.getAds_id()));
 		ads.setType(adsType);
 		ads.setUser_id_pro(userIdPro);
 		ads.setContent(content);

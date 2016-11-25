@@ -1,8 +1,6 @@
 package com.samchat.processor.dispatcher;
 
 import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -10,22 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amazonaws.services.sqs.model.Message;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementContent;
-import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementSendLog;
-import com.samchat.common.beans.auto.db.entitybeans.TOaFollow;
 import com.samchat.common.beans.auto.json.appserver.advertisement.AdvertisementDispatch_req;
 import com.samchat.common.beans.auto.json.ni.msg.SendBatchMsgFieldBody_req;
 import com.samchat.common.beans.auto.json.ni.msg.SendBatchMsg_req;
 import com.samchat.common.beans.manual.db.QryFollowVO;
 import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.enums.Constant;
-import com.samchat.common.enums.cache.UserInfoFieldRdsEnum;
 import com.samchat.common.enums.db.AdsDbEnum;
-import com.samchat.common.enums.db.FollowDbEnum;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.utils.CommonUtil;
-import com.samchat.common.utils.GetuiUtil;
 import com.samchat.common.utils.S3Util;
+import com.samchat.common.utils.ShardingUtil;
 import com.samchat.common.utils.ThreadLocalUtil;
 import com.samchat.common.utils.niUtils.NiUtil;
 import com.samchat.processor.dispatcher.base.DispatcherBase;
@@ -73,7 +66,7 @@ public class AdvertisementDispatcher extends DispatcherBase {
 
  		long adsId = req.getAds_id();
  		long time = req.getTime();
- 		int shardingFlag = CommonUtil.getMonthSharding(new Timestamp(time));
+ 		int shardingFlag = ShardingUtil.getMonthSharding(new Timestamp(time));
  		
 		long userIdPro = req.getUser_id_pro();
 		String userIdProPublic = Constant.NI_USER_PUBLIC_PREFIX + userIdPro;

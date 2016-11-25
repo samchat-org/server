@@ -36,8 +36,8 @@ public class NiPostClient {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(actionUrl);
 		
-		String appKey = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.NI_APP_KEY.getParamCode());
- 		String appSecret = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.NI_APP_SECRET.getParamCode());
+		String appKey = "e1a577a0658770e251de3aa530270077";//CommonUtil.getSysConfigStr(SysParamCodeDbEnum.NI_APP_KEY.getParamCode());
+ 		String appSecret = "fd92123ff259";//CommonUtil.getSysConfigStr(SysParamCodeDbEnum.NI_APP_SECRET.getParamCode());
 		String nonce = CommonUtil.getRandom();
 		String curTime = String.valueOf(cur.getTime() / 1000L);
 		String checkSum = NiCheckSumBuilder.getCheckSum(appSecret, nonce, curTime);// 计算CheckSum的java代码
@@ -82,5 +82,11 @@ public class NiPostClient {
 			}
 		}
 		return body;
+	}
+	
+	public static void main(String[] args) {
+		long cur = System.currentTimeMillis();
+		System.out.println(cur + "");
+		System.out.print(NiCheckSumBuilder.getCheckSum("0c3663ab6587cc4fa293684dcc05ac9e", "1234", cur + ""));
 	}
 }

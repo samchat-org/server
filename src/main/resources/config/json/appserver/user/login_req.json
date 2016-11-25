@@ -3,9 +3,11 @@
         "action":"login"
     },
     "body":{
+        "type[t,0,1,2]":0,
         "countrycode":"86",
         "account":"1381196123",
         "pwd":"123456",
+        "verifycode":"1212",
         "deviceid":"14EF65",
         "device_type":"asdfasdafds",
         "app_version":"asdadf"

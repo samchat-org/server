@@ -34,7 +34,7 @@
 		<property name="checkoutTimeout" value="${jdbc.checkoutTimeout}"></property>
 		<property name="testConnectionOnCheckout" value="${jdbc.testConnectionOnCheckout}"></property>
 	</bean>
-	
+
 	<bean id="ds_slave_0" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
 		<property name="driverClass" value="${jdbc.driverClass}"></property>
@@ -54,30 +54,40 @@
 		<property name="checkoutTimeout" value="${jdbc.checkoutTimeout}"></property>
 		<property name="testConnectionOnCheckout" value="${jdbc.testConnectionOnCheckout}"></property>
 	</bean>
-	
-	<rdb:master-slave-data-source id="ds_all_0" master-data-source-ref="ds_master_0" slave-data-sources-ref="ds_slave_0" />
 
-	<rdb:strategy id="questionSDSY" sharding-columns="create_date"
-		algorithm-expression="t_question_questions_${create_date.toString('yyyyMM')}" />
+	<rdb:master-slave-data-source id="ds_all_0"
+		master-data-source-ref="ds_master_0" slave-data-sources-ref="ds_slave_0" />
+
+	<rdb:strategy id="questionSDSY" sharding-columns="sharding_flag"
+		algorithm-expression="t_question_questions_${sharding_flag.toString()}" />
+	<rdb:strategy id="questionSendLogSDSY"
+		sharding-columns="sharding_flag"
+		algorithm-expression="t_question_send_log_${sharding_flag.toString()}" />
+
+
 	<rdb:strategy id="advertisementContentSDSY"
 		sharding-columns="sharding_flag" algorithm-expression="t_advertisement_content_${sharding_flag.toString()}" />
 	<rdb:strategy id="advertisementSendLogSDSY"
 		sharding-columns="sharding_flag"
 		algorithm-expression="t_advertisement_send_log_${sharding_flag.toString()}" />
-	
+
 	<rdb:data-source id="ds_sharding">
 		<rdb:sharding-rule data-sources="ds_all_0">
 			<rdb:table-rules>
 				<rdb:table-rule logic-table="t_question_questions"
-					actual-tables="t_question_questions_${201601..201612}"
+					actual-tables="t_question_questions_${201601..202012}"
 					table-strategy="questionSDSY" />
+					
+				<rdb:table-rule logic-table="t_question_send_log"
+					actual-tables="t_question_send_log_${201601..202012}"
+					table-strategy="questionSendLogSDSY" />
 
 				<rdb:table-rule logic-table="t_advertisement_content"
-					actual-tables="t_advertisement_content_${201601..201612}"
+					actual-tables="t_advertisement_content_${201601..202012}"
 					table-strategy="advertisementContentSDSY" />
 
 				<rdb:table-rule logic-table="t_advertisement_send_log"
-					actual-tables="t_advertisement_send_log_${201601..201612}"
+					actual-tables="t_advertisement_send_log_${201601..202012}"
 					table-strategy="advertisementSendLogSDSY" />
 
 			</rdb:table-rules>
@@ -94,7 +104,6 @@
 		<property name="targetDataSources">
 			<map key-type="java.lang.String">
 				<entry key="ds_sharding" value-ref="ds_sharding" />
-				<entry key="ds_master_0" value-ref="ds_master_0" />
 			</map>
 		</property>
 		<property name="defaultTargetDataSource" ref="ds_sharding" />

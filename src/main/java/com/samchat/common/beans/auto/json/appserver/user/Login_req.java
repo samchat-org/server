@@ -1,5 +1,7 @@
 package com.samchat.common.beans.auto.json.appserver.user;
 
+import com.samchat.common.exceptions.AppException;
+import com.samchat.common.enums.app.ResCodeAppEnum;
 public class Login_req{
 
 	private Header header;
@@ -18,12 +20,28 @@ public class Login_req{
 	}
 
 	public static class Body {
+		private Long type;
 		private String countrycode;
 		private String account;
 		private String pwd;
+		private String verifycode;
 		private String deviceid;
 		private String device_type;
 		private String app_version;
+
+		public Long getType() {
+			if (type == null|| (type != 0 &&type != 1 &&type != 2 )){
+				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + type);
+			}
+			return type;
+		}
+
+		public void setType(Long type) {
+			if (type == null|| (type != 0 &&type != 1 &&type != 2 )){
+				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + type);
+			}
+			this.type = type;
+		}
 
 		public String getCountrycode() {
 			return countrycode;
@@ -47,6 +65,14 @@ public class Login_req{
 
 		public void setPwd(String pwd) {
 			this.pwd = (pwd == null? null : pwd.trim());
+		}
+
+		public String getVerifycode() {
+			return verifycode;
+		}
+
+		public void setVerifycode(String verifycode) {
+			this.verifycode = (verifycode == null? null : verifycode.trim());
 		}
 
 		public String getDeviceid() {

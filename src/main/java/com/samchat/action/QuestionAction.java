@@ -14,8 +14,7 @@ import com.samchat.common.beans.auto.json.appserver.question.Question_res;
 import com.samchat.common.beans.manual.db.QryPopularRequests;
 import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.beans.manual.json.sqs.QuestionSqs;
-import com.samchat.common.enums.Constant;
-import com.samchat.service.interfaces.ICommonSrvm;
+import com.samchat.common.utils.ShardingUtil;
 import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IQuestionSrvs;
 
@@ -26,17 +25,13 @@ public class QuestionAction extends BaseAction {
 	@Autowired
 	private ICommonSrvs commonSrv;
 
-	@Autowired
-	private ICommonSrvm commonSrvm;
-
 	public Question_res question(Question_req req, TokenMappingRds token) throws Exception {
 
 		Timestamp sysdate = commonSrv.querySysdate();
-		long qstId = commonSrvm.querySeqId(Constant.SEQUENCE.S_QUESTION);
-
-		QuestionSqs qs = questionSrv.sendQuestion(req, token, qstId, sysdate);
+		QuestionSqs qs = questionSrv.saveAndsendQuestion_master(req, token , sysdate);
 		Question_res res = new Question_res();
-		res.setQuestion_id(qs.getQuestion_id());
+		
+		res.setQuestion_id(ShardingUtil.getMonthShardingId(qs.getShardingFlag(), qs.getQuestion_id()));
 		res.setDatetime(qs.getTime());
 		return res;
 	}

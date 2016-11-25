@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,6 +18,8 @@ import com.samchat.common.beans.auto.json.appserver.user.FindpwdCodeVerify_req;
 import com.samchat.common.beans.auto.json.appserver.user.FindpwdCodeVerify_res;
 import com.samchat.common.beans.auto.json.appserver.user.FindpwdUpdate_req;
 import com.samchat.common.beans.auto.json.appserver.user.FindpwdUpdate_res;
+import com.samchat.common.beans.auto.json.appserver.user.LoginCodeRequest_req;
+import com.samchat.common.beans.auto.json.appserver.user.LoginCodeRequest_res;
 import com.samchat.common.beans.auto.json.appserver.user.Login_req;
 import com.samchat.common.beans.auto.json.appserver.user.Login_res;
 import com.samchat.common.beans.auto.json.appserver.user.Logout_req;
@@ -44,13 +47,12 @@ import com.samchat.common.beans.manual.json.redis.UserInfoProRds;
 import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.ResCodeAppEnum;
+import com.samchat.common.enums.app.UserAppEnum;
 import com.samchat.common.enums.db.SysMsgTplDbEnum;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
-import com.samchat.common.utils.Md5Util;
 import com.samchat.common.utils.TwilioUtil;
-import com.samchat.service.interfaces.ICommonSrvm;
 import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IUsersSrvs;
 
@@ -63,9 +65,6 @@ public class UserAction extends BaseAction {
 
 	@Autowired
 	private ICommonSrvs commonSrv;
-
-	@Autowired
-	private ICommonSrvm commonSrvm;
 
 
 	/**
@@ -213,6 +212,67 @@ public class UserAction extends BaseAction {
 			throw new AppException(ResCodeAppEnum.PHONEorUSERNAME_EXIST.getCode());
 		}
 	}
+	
+	/**
+	 * 登录验证码申请
+	 * 
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	public LoginCodeRequest_res loginCodeRequest(LoginCodeRequest_req req) throws Exception {
+
+		LoginCodeRequest_req.Body body = req.getBody();
+		String countrycode = body.getCountrycode();
+		String cellphone = body.getCellphone();
+		
+		String code = usersSrv.getLoginCode(countrycode, cellphone);
+		String loginCode = code;
+		if(loginCode == null){
+			loginCode = CommonUtil.getRadom(4);
+		}
+		log.info("countryCode:" + countrycode + "--" + "cellphone:" + cellphone + "--loginCode:" + loginCode);
+
+		String smstpl = CommonUtil.getSysMsgTpl(SysMsgTplDbEnum.ActionCode.LOGIN_CODE_SMS.val());
+		String smsContent = smstpl.replaceAll(Constant.TWILLO_VERIFICATION_CODE, loginCode);
+		log.info("smsContent:" + smsContent);
+
+		String twilloPhoneNo = CommonUtil.getSysConfigStr(SysParamCodeDbEnum.TWILIO_PHONE_NO.getParamCode());
+		TwilioUtil.sendSms(CommonUtil.getE164PhoneNo(countrycode, cellphone), twilloPhoneNo, smsContent);
+		
+		if(code == null){
+			usersSrv.putLoginCode(countrycode, cellphone, loginCode);
+		}
+		usersSrv.putLoginCodeCtrl(countrycode, cellphone);
+		
+		return new LoginCodeRequest_res();
+	}
+
+	/**
+	 * 注册验证码申请 信息校验
+	 * 
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	public void loginCodeRequestValidate(LoginCodeRequest_req req) throws Exception {
+		LoginCodeRequest_req.Body body = req.getBody();
+
+		String countryCode = body.getCountrycode();
+		String cellphone = body.getCellphone();
+
+		if (!CommonUtil.phoneNoFormatValidate(body.getCellphone())) {
+			throw new AppException(ResCodeAppEnum.PHONE_FORMAT_ILLEGAL.getCode());
+		}
+		if (usersSrv.getLoginCodeCtrl(countryCode, cellphone) != null) {
+			throw new AppException(ResCodeAppEnum.VERIFICATION_CODE_FREQUENT.getCode());
+		}
+		TUserUsers userUsers = usersSrv.queryUserInfoByPhone_master(cellphone, countryCode);
+		if (userUsers == null) {
+			throw new AppException(ResCodeAppEnum.USER_NOT_EXIST.getCode());
+		}
+
+	}
 
 	/**
 	 * 登录
@@ -245,24 +305,39 @@ public class UserAction extends BaseAction {
 	 */
 	public TUserUsers loginValidate(Login_req req) throws Exception {
 		Login_req.Body body = req.getBody();
+		long type = body.getType();
 		String account = body.getAccount();
 		String countryCode = body.getCountrycode();
 		String pwd = body.getPwd();//Md5Util.getSign4String(body.getPwd(), "");
+		String verifycode = body.getVerifycode();
 		String appVersion = body.getApp_version();
 		String deviceType = body.getDevice_type();
 		
-//		if(!CommonUtil.appVersionCheck(deviceType, appVersion)){
-//			throw new AppException(ResCodeAppEnum.VERSION_NOSUPPORT.getCode());
-//		}
-		TUserUsers user = usersSrv.queryUserInfoByPhone_master(account, countryCode);
-		if (user == null) {
-			user = usersSrv.queryUserInfoByUsercode_master(account);
+		if(!CommonUtil.appVersionCheck(deviceType, appVersion)){
+			throw new AppException(ResCodeAppEnum.VERSION_NOSUPPORT.getCode());
 		}
-		if (user == null) {
-			throw new AppException(ResCodeAppEnum.USER_NOT_EXIST.getCode());
-		}
-		if (!user.getUser_pwd().equals(pwd)) {
-			throw new AppException(ResCodeAppEnum.USER_PWD.getCode());
+		TUserUsers user = null;
+		if(UserAppEnum.LoginType.SMS_VERIFYCODE.val() == type){
+			String code = usersSrv.getLoginCode(countryCode, account);
+			if(code == null){
+				throw new AppException(ResCodeAppEnum.VERIFICATION_CODE_EXPIRED.getCode());
+			}
+			if(!code.equals(verifycode)){
+				throw new AppException(ResCodeAppEnum.VERIFICATION_CODE.getCode());
+			}
+			user = usersSrv.queryUserInfoByPhone_master(account, countryCode);
+		}else{
+			if(UserAppEnum.LoginType.SAMCHAT_ID.val() == type){
+				user = usersSrv.queryUserInfoByUsercode_master(account);
+			}else if(UserAppEnum.LoginType.CELLPHONE.val() == type){
+				user = usersSrv.queryUserInfoByPhone_master(account, countryCode);
+			}
+			if (user == null) {
+				throw new AppException(ResCodeAppEnum.USER_NOT_EXIST.getCode());
+			}
+			if (pwd == null || !pwd.equals(user.getUser_pwd())) {
+				throw new AppException(ResCodeAppEnum.USER_PWD.getCode());
+			}
 		}
 		return user;
 	}
@@ -278,8 +353,16 @@ public class UserAction extends BaseAction {
 	public Logout_res logout(Logout_req req, TokenMappingRds token) throws Exception {
 
 		usersSrv.deleteRedisToken(req.getHeader().getToken());
-
-		return new Logout_res();
+		
+		TUserUsers user = usersSrv.queryUser(token.getUserId());
+		String userPwd = user.getUser_pwd();
+		Logout_res res = new Logout_res();
+		if(userPwd == null || "".equals(userPwd)){
+			res.setPwd_flag(new Long(UserAppEnum.PwdFlag.PWD_NULL.val()));
+		}else{
+			res.setPwd_flag(new Long(UserAppEnum.PwdFlag.PWD_NOT_NULL.val()));
+		}
+		return res;
 	}
 
 	/**

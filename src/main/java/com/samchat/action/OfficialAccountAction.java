@@ -28,7 +28,6 @@ import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.FollowAppEnum;
 import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.exceptions.AppException;
-import com.samchat.service.interfaces.ICommonSrvm;
 import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IOfficialAccountSrvs;
 import com.samchat.service.interfaces.IUsersSrvs;
@@ -42,9 +41,6 @@ public class OfficialAccountAction extends BaseAction {
 
 	@Autowired
 	private IOfficialAccountSrvs officialAccountSrv;
-
-	@Autowired
-	private ICommonSrvm commonSrvm;
 	
 	@Autowired
 	private ICommonSrvs commonSrv;

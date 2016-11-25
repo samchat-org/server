@@ -26,12 +26,6 @@ public class DataSourceAspectAdvice implements Ordered {
 		log.info("switchShardingSourceMaster");
  		HintManager.getInstance().setMasterRouteOnly();
 	}
-
-	@Before("execution(* com.samchat.service.*Srvm.*(..))")
-	public void switchMasterSource() throws Throwable {
-		DbContextHolder.setDbType(Constant.DATA_SOURCE.DS_MASTER_0);
-	}
-
 	@Override
 	public int getOrder() {
  		return 1;

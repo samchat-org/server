@@ -272,19 +272,25 @@ public class JsonObjUtil {
 					if("t".equals(flag)){
 						validate.append(j2j.getName()).append(" == null");
 						if(enumArr.size() > 0){
-							validate.append("||");
+							validate.append("|| (");
 						}
 					}
 					if("f".equals(flag) || flag == null){
 						validate.append(j2j.getName()).append(" != null");
 						if(enumArr.size() > 0){
-							validate.append("&&");
+							validate.append("&& (");
 						}
 					}
 					for(String value : enumArr){
 						validate.append(j2j.getName() + " != " + value + " &&");
 					}
-					validate = new StringBuffer(validate.substring(0, validate.length() - 2)).append("){\r\n");
+
+					validate = new StringBuffer(validate.substring(0, validate.length() - 2));
+					if(enumArr.size() > 0){
+						validate.append(")");
+					}
+					validate.append("){\r\n");//
+			
 					validate.append("\t\t\t\t throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), \"value:\" + " + j2j.getName() +");\r\n\t\t\t}");
 					
 				}
@@ -304,6 +310,9 @@ public class JsonObjUtil {
 						"public " + getTypeName(j2j) + " get"
 								+ StrUtils.firstToUpperCase(j2j.getName())
 								+ "() {"));
+		if(validate != null){
+			sbGetterAndSetter.append(StrUtils.formatSingleLine(2 + extraTabNum, validate.toString()));
+		}
 		sbGetterAndSetter.append(StrUtils.formatSingleLine(2 + extraTabNum,
 				"return " + j2j.getName() + ";"));
 		sbGetterAndSetter.append(StrUtils.formatSingleLine(1 + extraTabNum,

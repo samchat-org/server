@@ -21,6 +21,8 @@ import com.samchat.common.beans.auto.json.ni.msg.SendBatchMsg_res;
 import com.samchat.common.beans.auto.json.ni.msg.SendMsgFieldOption_req;
 import com.samchat.common.beans.auto.json.ni.msg.SendMsg_req;
 import com.samchat.common.beans.auto.json.ni.msg.SendMsg_res;
+import com.samchat.common.beans.auto.json.ni.team.CreateTeam_req;
+import com.samchat.common.beans.auto.json.ni.team.CreateTeam_res;
 import com.samchat.common.utils.ThreadLocalUtil;
 
 public class NiUtil {
@@ -36,8 +38,20 @@ public class NiUtil {
 	private static final String SEND_BATCH_MESSAGE = "https://api.netease.im/nimserver/msg/sendBatchMsg.action";
 	
 	private static final String SEND_ATTACH_MESSAGE = "https://api.netease.im/nimserver/msg/sendAttachMsg.action";
+	
+	private static final String TEAM_CREATE = "https://api.netease.im/nimserver/team/create.action";
 
 	private static final long CODE_SUCCESS = 200;
+	
+	public static void createTeam(CreateTeam_req createTeam, Timestamp cur) throws Exception {
+		String body = NiPostClient.post(TEAM_CREATE, new BeanMap(createTeam), cur);
+		ObjectMapper om = new ObjectMapper();
+		CreateTeam_res res = om.readValue(body, CreateTeam_res.class);
+		
+		if (CODE_SUCCESS != res.getCode()) {
+			throw new Exception("createTeam, ni res code:" + res.getCode());
+		}
+	}
 
 	public static void createAction(Create_req register, Timestamp cur) throws Exception {
 		log.error("register param : " + register);
@@ -118,30 +132,15 @@ public class NiUtil {
 
 	
 	public static void main(String args[]) throws Exception{
-		
-		SendMsg_req req = new SendMsg_req();
-		req.setFrom("20000000018");
-		req.setOpe("0");
-		req.setTo("10000000013");
-		req.setType("0");
-		req.setBody("{\"msg\":\"hello\"}");
-		
-		SendMsgFieldOption_req fr = new SendMsgFieldOption_req();
-		fr.setRoam(false);
-		fr.setHistory(false);
-		fr.setSendersync(false);
-		fr.setPush(true);
-		fr.setRoute(false);
-		fr.setBadge(true);
-		fr.setNeedPushNick(true);
-		
-		ObjectMapper om = new ObjectMapper();
-		req.setOption(om.writeValueAsString(fr));
-		req.setPushcontent("ios推送内容，不超过150字符，option选项中允许推送（push=true），此字段可以指定推送内容");
-		req.setPayload(" ios 推送对应的payload,必须是JSON,不能超过2k字符");
-		req.setExt(" 开发者扩展字段，长度限制1024字符");
-		
-		sendMessage(req, new Timestamp(new Date().getTime()));
-		
+		CreateTeam_req createTeam = new CreateTeam_req();
+		createTeam.setTname("test1");
+		createTeam.setOwner("10000002148");
+		createTeam.setMembers("[\"10000002148\"]");
+		createTeam.setMsg("test");
+		createTeam.setMagree("0");
+		createTeam.setJoinmode("0");
+		createTeam.setBeinvitemode("1");
+		createTeam.setInvitemode("1");
+		createTeam(createTeam, new Timestamp(System.currentTimeMillis()));
 	}
 }

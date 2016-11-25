@@ -154,6 +154,14 @@ public class CacheUtil {
 	public static String getRegiserCodeCtrlCacheKey(String countryCode, String cellPhone) {
 		return getSystemId() + CacheNameCacheEnum.RDS_REGISTER_CODE_CTRL.val() + ":" + countryCode + "_" + cellPhone;
 	}
+	
+	public static String getLoginCodeCacheKey(String countryCode, String cellPhone) {
+		return getSystemId() + CacheNameCacheEnum.RDS_LOGIN_CODE.val() + ":" + countryCode + "_" + cellPhone;
+	}
+	
+	public static String getLoginCodeCtrlCacheKey(String countryCode, String cellPhone) {
+		return getSystemId() + CacheNameCacheEnum.RDS_LOGIN_CODE_CTRL.val() + ":" + countryCode + "_" + cellPhone;
+	}
 
 
 	public static String getFindpasswordCacheKey(String countryCode, String cellPhone) {

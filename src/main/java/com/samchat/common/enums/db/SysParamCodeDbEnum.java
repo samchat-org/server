@@ -55,6 +55,9 @@ public enum SysParamCodeDbEnum {
 	// key of dispatcher question cfg
 	DISPATCHER_QUESTION_THREAD_COUNT("dispatcher_question_thread_count"),
 	
+	USER_LOGIN_CODE_TIME_TO_IDLE("user_login_code_time_to_idle"),
+	USER_LOGIN_CODE_CTRL_TIME_TO_IDLE("user_login_code_ctrl_time_to_idle"),
+	
 	USER_REGISTER_CODE_TIME_TO_IDLE("register_code_time_to_idle"),
 	USER_REGISTER_CODE_CTRL_TIME_TO_IDLE("register_code_ctrl_time_to_idle"),
 	
@@ -63,6 +66,7 @@ public enum SysParamCodeDbEnum {
 	
 	EDIT_CELL_PHONE_CODE_TIME_TO_IDLE("edit_cell_phone_code_time_to_idle"),
 	EDIT_CELL_PHONE_CODE_CTRL_TIME_TO_IDLE("edit_cell_phone_code_ctrl_time_to_idle"),
+	
 	
 	PAGE_SIZE_QUERYPUBLICLIST("page_size_queryPublicList"),
 	PAGE_SIZE_QUERYUSERSFUZZY("page_size_queryUsersFuzzy"),

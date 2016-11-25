@@ -7,7 +7,7 @@ import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementContent;
 import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementSendLog;
 
 public interface IAdvertisementDbDao extends IBaseDbDao {
-	public void saveAdvertisementContent(long adsId, long userIdPro, byte type, String content, String thumb,
+	public TAdvertisementContent saveAdvertisementContent(long userIdPro, byte type, String content, String thumb,
 			Timestamp recvdate, int shardingFlag);
 
 	public void saveAdvertisementSendLog(long adsId, long userId, Timestamp senddate, byte state, String clientId,

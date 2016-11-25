@@ -18,9 +18,11 @@ import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.enums.db.SysMsgTplDbEnum;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CommonUtil;
+import com.samchat.common.utils.ShardingUtil;
 import com.samchat.common.utils.TwilioUtil;
 import com.samchat.service.interfaces.IAdvertisementSrvs;
 import com.samchat.service.interfaces.IUsersSrvs;
+
 
 public class CommonAction extends BaseAction {
 
@@ -57,7 +59,7 @@ public class CommonAction extends BaseAction {
 		Long type = body.getType();
 		String bussinessId = body.getBusiness_id();
 		Timestamp publishTime = new Timestamp(body.getPublish_timestamp());
-		int shardingFlag = CommonUtil.getMonthSharding(publishTime);
+		int shardingFlag = ShardingUtil.getMonthSharding(publishTime);
  		
 		if(type == CommonAppEnum.RecallType.ADVERTISEMENT.val()){
 			boolean ret = advertisementSrvs.updateAdvertisementRecallFlag(Long.parseLong(bussinessId), shardingFlag);

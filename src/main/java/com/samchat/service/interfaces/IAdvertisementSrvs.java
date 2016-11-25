@@ -12,7 +12,7 @@ import com.samchat.common.enums.db.AdsDbEnum;
 
 public interface IAdvertisementSrvs extends IBaseSrvs {
 
-	public void saveAdvertisementContent(long adsId, long userIdPro, byte type, String content, String thumb,
+	public TAdvertisementContent saveAdvertisementContent(long userIdPro, byte type, String content, String thumb,
 			Timestamp recvdate, int shardingFlag);
 
 	public void saveAdvertisementSendLog(long adsId, long userId, Timestamp senddate, byte state, String clientId,
@@ -21,10 +21,10 @@ public interface IAdvertisementSrvs extends IBaseSrvs {
 	public void updateAdvertisementSendLog(long logId, Timestamp senddate, byte state, String clientId, String remark,
 			int shardingFlag, int sendcount);
 
-	public void updateAdvertisementNotinuse(List<AdvertisementDelete_req.Advertisements> ads, long userId)
+	public void updateAdvertisementNotinuse_master(List<AdvertisementDelete_req.Advertisements> ads, long userId, Timestamp sysdate)
 			throws Exception;
 
-	public AdvertisementSqs saveAndSendAdvertisement_master(AdvertisementWrite_req req, long userIdPro, long adsId)
+	public AdvertisementSqs saveAndSendAdvertisement_master(AdvertisementWrite_req req, long userIdPro)
 			throws Exception;
 
 	public TAdvertisementContent queryAdvertisementCotentById(long adsId, int shardingFlag) throws Exception;

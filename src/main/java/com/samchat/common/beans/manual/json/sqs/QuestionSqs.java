@@ -13,7 +13,16 @@ public class QuestionSqs {
 	private String longitude = "";
 	private String latitude = "";
 	private long time;
+	private int shardingFlag;
 	
+	public int getShardingFlag() {
+		return shardingFlag;
+	}
+
+	public void setShardingFlag(int shardingFlag) {
+		this.shardingFlag = shardingFlag;
+	}
+
 	public long getUser_id() {
 		return user_id;
 	}

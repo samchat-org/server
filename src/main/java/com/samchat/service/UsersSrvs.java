@@ -276,6 +276,28 @@ public class UsersSrvs extends BaseSrvs implements IUsersSrvs {
 		return userRedisDao.get(keystr);
 	}
 	
+	public String getLoginCodeCtrl(String countryCode, String cellPhone) {
+		String keystr = CacheUtil.getLoginCodeCtrlCacheKey(countryCode, cellPhone);
+		return userRedisDao.get(keystr);
+	}
+	
+	public void putLoginCodeCtrl(String countryCode, String cellPhone) {
+		int timeToIdle = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.USER_LOGIN_CODE_CTRL_TIME_TO_IDLE.getParamCode());
+		String keystr = CacheUtil.getLoginCodeCtrlCacheKey(countryCode, cellPhone);
+		userRedisDao.set(keystr, "0", timeToIdle);
+	}
+	
+	public void putLoginCode(String countryCode, String cellPhone, String loginCode) {
+		int timeToIdle = CommonUtil.getSysConfigInt(SysParamCodeDbEnum.USER_LOGIN_CODE_TIME_TO_IDLE.getParamCode());
+		String keystr = CacheUtil.getLoginCodeCacheKey(countryCode, cellPhone);
+		userRedisDao.set(keystr, loginCode, timeToIdle);
+	}
+	
+	public String getLoginCode(String countryCode, String cellPhone) {
+		String keystr = CacheUtil.getLoginCodeCacheKey(countryCode, cellPhone);
+		return userRedisDao.get(keystr);
+	}
+	
 	public String getRegisterCodeCtrl(String countryCode, String cellPhone) {
 		String keystr = CacheUtil.getRegiserCodeCtrlCacheKey(countryCode, cellPhone);
 		return userRedisDao.get(keystr);

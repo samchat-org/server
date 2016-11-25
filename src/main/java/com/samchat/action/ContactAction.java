@@ -12,13 +12,11 @@ import com.samchat.common.beans.auto.json.appserver.contact.ContactListQuery_req
 import com.samchat.common.beans.auto.json.appserver.contact.ContactListQuery_res;
 import com.samchat.common.beans.auto.json.appserver.contact.Contact_req;
 import com.samchat.common.beans.auto.json.appserver.contact.Contact_res;
-import com.samchat.common.beans.auto.json.appserver.officialAccount.FollowListQuery_res;
 import com.samchat.common.beans.manual.db.QryContactVO;
 import com.samchat.common.beans.manual.json.redis.TokenMappingRds;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.exceptions.AppException;
-import com.samchat.service.interfaces.ICommonSrvm;
 import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IContactSrvs;
 import com.samchat.service.interfaces.IUsersSrvs;
@@ -32,9 +30,6 @@ public class ContactAction extends BaseAction {
 
 	@Autowired
 	private IContactSrvs contactSrv;
-
-	@Autowired
-	private ICommonSrvm commonSrvm;
 
 	@Autowired
 	private ICommonSrvs commonSrvs;
@@ -60,27 +55,27 @@ public class ContactAction extends BaseAction {
 					throw new AppException(ResCodeAppEnum.CUSTORMER_ADD_CUSTORMER.getCode());
 				}
 				log.info("user_id:" + senderId + "--user_id_pro:" + userId);
-				previous = contactSrv.hgetUserInfoServicerListDate(userId);
+				previous = contactSrv.hgetUserInfoServicerListDate(senderId);
 				contactSrv.addContactUser_master(senderId, userId, sysdate);
-  				contactSrv.hsetUserInfoServicerListDate(userId, sysdateStr);
+  				contactSrv.hsetUserInfoServicerListDate(senderId, sysdateStr);
 			} else if (type == 1) {
 				if (senderInfo.getUser_type() == Constant.USER_TYPE_CUSTOMER) {
 					throw new AppException(ResCodeAppEnum.CUSTORMER_ADD_SERVIER_CONTACT_LIST.getCode());
 				}
-				previous = contactSrv.hgetUserInfoCustomerListDate(userId);
+				previous = contactSrv.hgetUserInfoCustomerListDate(senderId);
 				contactSrv.addContactProUser_master(senderId, userId, sysdate);
- 				contactSrv.hsetUserInfoCustomerListDate(userId, sysdateStr);
+ 				contactSrv.hsetUserInfoCustomerListDate(senderId, sysdateStr);
 			}
 			
 		} else if (opt == 1) {
 			if (type == 0) {
-				previous = contactSrv.hgetUserInfoServicerListDate(userId);
+				previous = contactSrv.hgetUserInfoServicerListDate(senderId);
 				contactSrv.deleteContactUser(senderId, userId);
-				contactSrv.hsetUserInfoServicerListDate(userId, sysdateStr);
+				contactSrv.hsetUserInfoServicerListDate(senderId, sysdateStr);
  			} else if (type == 1) {
-				previous = contactSrv.hgetUserInfoCustomerListDate(userId);
+				previous = contactSrv.hgetUserInfoCustomerListDate(senderId);
 				contactSrv.deleteContactProUser(senderId, userId);
-				contactSrv.hsetUserInfoCustomerListDate(userId, sysdateStr);
+				contactSrv.hsetUserInfoCustomerListDate(senderId, sysdateStr);
 			}
  		}
 		Contact_res res = new Contact_res();

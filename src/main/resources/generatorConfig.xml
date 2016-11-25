@@ -70,6 +70,8 @@
 		<table tableName="t_advertisement_content"
 			domainObjectName="TAdvertisementContent">
 			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="ads_id" sqlStatement="SELECT LAST_INSERT_ID() from dual"
+				identity="true" />
 		</table>
 		
 		<table tableName="t_advertisement_send_log"
@@ -82,13 +84,17 @@
 			<generatedKey column="contact_id" sqlStatement="SELECT LAST_INSERT_ID() from dual"
 				identity="true" />
 		</table>
-
 		<table tableName="t_contact_pro_user" domainObjectName="TContactProUser">
 			<property name="useActualColumnNames" value="true" />
 			<generatedKey column="contact_id" sqlStatement="SELECT LAST_INSERT_ID() from dual"
 				identity="true" />
 		</table>
 		<table tableName="t_question_questions" domainObjectName="TQuestionQuestions">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="question_id" sqlStatement="SELECT LAST_INSERT_ID() from dual"
+				identity="true" />
+		</table>
+		<table tableName="t_question_send_log" domainObjectName="TQuestionSendLog">
 			<property name="useActualColumnNames" value="true" />
 		</table>
 		<table tableName="t_sys_dict_info" domainObjectName="TSysDictInfo">

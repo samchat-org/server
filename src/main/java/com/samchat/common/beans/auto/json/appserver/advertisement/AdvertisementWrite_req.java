@@ -35,11 +35,14 @@ public class AdvertisementWrite_req{
 		private String message_id;
 
 		public Long getType() {
+			if (type != null&& (type != 0 &&type != 1 &&type != 2 )){
+				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + type);
+			}
 			return type;
 		}
 
 		public void setType(Long type) {
-			if (type != null&&type != 0 &&type != 1 &&type != 2 ){
+			if (type != null&& (type != 0 &&type != 1 &&type != 2 )){
 				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + type);
 			}
 			this.type = type;

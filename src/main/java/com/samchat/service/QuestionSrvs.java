@@ -1,6 +1,7 @@
 package com.samchat.service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -16,10 +17,12 @@ import com.samchat.common.beans.manual.json.redis.UserInfoRds;
 import com.samchat.common.beans.manual.json.sqs.QuestionSqs;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.ResCodeAppEnum;
+import com.samchat.common.enums.db.QstDbEnum;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.exceptions.AppException;
 import com.samchat.common.utils.CacheUtil;
 import com.samchat.common.utils.CommonUtil;
+import com.samchat.common.utils.ShardingUtil;
 import com.samchat.common.utils.SqsUtil;
 import com.samchat.dao.db.interfaces.IQuestionDbDao;
 import com.samchat.dao.db.interfaces.IUserDbDao;
@@ -42,8 +45,9 @@ public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 
 	public TQuestionQuestions saveQuestion(QuestionSqs req) {
 		TQuestionQuestions qq = new TQuestionQuestions();
-		qq.setQuestion_id(req.getQuestion_id());
-		qq.setCreate_date(new Timestamp(req.getTime()));
+ 		qq.setCreate_date(new Timestamp(req.getTime()));
+ 		qq.setState_date(qq.getCreate_date());
+ 		qq.setState(QstDbEnum.ContentState.WAIT.val());
 		qq.setOpt_type(Constant.QST_OPT_SEND);
 		qq.setContent(req.getQuestion());
 		qq.setAddress(req.getAddress());
@@ -51,18 +55,21 @@ public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 		qq.setLatitude(req.getLatitude());
 		qq.setLongitude(req.getLongitude());
 		qq.setUser_id(req.getUser_id());
+		qq.setSharding_flag(req.getShardingFlag());
 		return questionDbDao.saveQuestion(qq);
 	}
 
-	public QuestionSqs sendQuestion(Question_req req, TokenMappingRds token, long qstId, Timestamp sysdate) throws Exception {
+	public QuestionSqs saveAndsendQuestion_master(Question_req req, TokenMappingRds token, Timestamp sysdate) throws Exception {
 
 		QuestionSqs sqs = new QuestionSqs();
 		Question_req.Body body = req.getBody();
  		UserInfoRds user = hgetUserInfoJsonObj(token.getUserId());
   		questionSendControl(sysdate.getTime(), user.getCountry_code(), user.getPhone_no());
-
-		sqs.setQuestion_id(qstId);
-		sqs.setUser_id(token.getUserId());
+  		
+  		int shardingFlag = ShardingUtil.getMonthSharding(sysdate);
+  		sqs.setShardingFlag(shardingFlag);
+  		
+ 		sqs.setUser_id(token.getUserId());
  		sqs.setTime(sysdate.getTime());
 		sqs.setOpt(Constant.QST_OPT_SEND);
 		sqs.setQuestion(body.getQuestion());
@@ -76,6 +83,10 @@ public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 				sqs.setLongitude(info.getLongitude());
 			}
 		}
+		TQuestionQuestions question = saveQuestion(sqs);
+		
+		sqs.setQuestion_id(question.getQuestion_id());
+		
 		SqsUtil.pushMessage(sqs, SysParamCodeDbEnum.SQS_QUESTION_URL.getParamCode());
 
 		return sqs;
@@ -110,6 +121,20 @@ public class QuestionSrvs extends BaseSrvs implements IQuestionSrvs {
 			ctl.setBlock(Constant.QUESTION_SEND_BLOCK);
 		}
 		userRedisDao.setJsonObj(key, ctl);
+	}
+	
+	public boolean updateQuestionSendingState(long qstId, int shardingFlag){
+		List<Byte> expectState = new ArrayList<Byte>();
+		expectState.add(QstDbEnum.ContentState.WAIT.val());
+		return questionDbDao.updateQuestionState(qstId, QstDbEnum.ContentState.SENDING.val(), expectState, shardingFlag);
+	}
+	
+	public void updateQuestionState(long qstId, byte state, int shardingFlag){
+		questionDbDao.updateQuestionState(qstId, state, shardingFlag);
+	}
+	
+	public void saveQuestionSendLog(long qstId, long userIdPro, byte state, Timestamp time, int shardingFlag, String remark){
+		questionDbDao.saveQuestionSendLog(qstId, userIdPro, state, time, shardingFlag, remark);
 	}
 	
 	public List<QryPopularRequests> queryPopularRequests(int count){

@@ -94,9 +94,5 @@ public class CommonUtil {
 		radom = "1234";
  		return radom;
 	}
-	
-	public static int getMonthSharding(Timestamp time){
-		return Integer.parseInt(Constant.SDF_YYYYMM.format(time));
-	}
 
 }

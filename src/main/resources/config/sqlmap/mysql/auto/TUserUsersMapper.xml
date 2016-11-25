@@ -25,9 +25,9 @@
     <result column="create_date" jdbcType="TIMESTAMP" property="create_date" />
     <result column="cur_device_id" jdbcType="VARCHAR" property="cur_device_id" />
     <result column="cur_token" jdbcType="VARCHAR" property="cur_token" />
+    <result column="question_notify" jdbcType="TINYINT" property="question_notify" />
     <result column="cur_version" jdbcType="VARCHAR" property="cur_version" />
     <result column="cur_device_type" jdbcType="VARCHAR" property="cur_device_type" />
-    <result column="question_notify" jdbcType="TINYINT" property="question_notify" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -102,7 +102,7 @@
     -->
     user_id, user_type, user_name, user_code, user_pwd, country_code, phone_no, email, 
     longitude, latitude, place_id, address, avatar_origin, avatar_thumb, state, state_date, 
-    create_date, cur_device_id, cur_token, cur_version, cur_device_type, question_notify
+    create_date, cur_device_id, cur_token, question_notify, cur_version, cur_device_type
   </sql>
   <select id="selectByExample" parameterType="com.samchat.common.beans.auto.db.entitybeans.TUserUsersExample" resultMap="BaseResultMap">
     <!--
@@ -164,7 +164,7 @@
       place_id, address, avatar_origin, 
       avatar_thumb, state, state_date, 
       create_date, cur_device_id, cur_token, 
-      cur_version, cur_device_type, question_notify
+      question_notify, cur_version, cur_device_type
       )
     values (#{user_type,jdbcType=TINYINT}, #{user_name,jdbcType=VARCHAR}, #{user_code,jdbcType=VARCHAR}, 
       #{user_pwd,jdbcType=VARCHAR}, #{country_code,jdbcType=VARCHAR}, #{phone_no,jdbcType=VARCHAR}, 
@@ -172,7 +172,7 @@
       #{place_id,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{avatar_origin,jdbcType=VARCHAR}, 
       #{avatar_thumb,jdbcType=VARCHAR}, #{state,jdbcType=TINYINT}, #{state_date,jdbcType=TIMESTAMP}, 
       #{create_date,jdbcType=TIMESTAMP}, #{cur_device_id,jdbcType=VARCHAR}, #{cur_token,jdbcType=VARCHAR}, 
-      #{cur_version,jdbcType=VARCHAR}, #{cur_device_type,jdbcType=VARCHAR}, #{question_notify,jdbcType=TINYINT}
+      #{question_notify,jdbcType=TINYINT}, #{cur_version,jdbcType=VARCHAR}, #{cur_device_type,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.samchat.common.beans.auto.db.entitybeans.TUserUsers">
@@ -239,14 +239,14 @@
       <if test="cur_token != null">
         cur_token,
       </if>
+      <if test="question_notify != null">
+        question_notify,
+      </if>
       <if test="cur_version != null">
         cur_version,
       </if>
       <if test="cur_device_type != null">
         cur_device_type,
-      </if>
-      <if test="question_notify != null">
-        question_notify,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -304,14 +304,14 @@
       <if test="cur_token != null">
         #{cur_token,jdbcType=VARCHAR},
       </if>
+      <if test="question_notify != null">
+        #{question_notify,jdbcType=TINYINT},
+      </if>
       <if test="cur_version != null">
         #{cur_version,jdbcType=VARCHAR},
       </if>
       <if test="cur_device_type != null">
         #{cur_device_type,jdbcType=VARCHAR},
-      </if>
-      <if test="question_notify != null">
-        #{question_notify,jdbcType=TINYINT},
       </if>
     </trim>
   </insert>
@@ -389,14 +389,14 @@
       <if test="record.cur_token != null">
         cur_token = #{record.cur_token,jdbcType=VARCHAR},
       </if>
+      <if test="record.question_notify != null">
+        question_notify = #{record.question_notify,jdbcType=TINYINT},
+      </if>
       <if test="record.cur_version != null">
         cur_version = #{record.cur_version,jdbcType=VARCHAR},
       </if>
       <if test="record.cur_device_type != null">
         cur_device_type = #{record.cur_device_type,jdbcType=VARCHAR},
-      </if>
-      <if test="record.question_notify != null">
-        question_notify = #{record.question_notify,jdbcType=TINYINT},
       </if>
     </set>
     <if test="_parameter != null">
@@ -428,9 +428,9 @@
       create_date = #{record.create_date,jdbcType=TIMESTAMP},
       cur_device_id = #{record.cur_device_id,jdbcType=VARCHAR},
       cur_token = #{record.cur_token,jdbcType=VARCHAR},
+      question_notify = #{record.question_notify,jdbcType=TINYINT},
       cur_version = #{record.cur_version,jdbcType=VARCHAR},
-      cur_device_type = #{record.cur_device_type,jdbcType=VARCHAR},
-      question_notify = #{record.question_notify,jdbcType=TINYINT}
+      cur_device_type = #{record.cur_device_type,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -496,14 +496,14 @@
       <if test="cur_token != null">
         cur_token = #{cur_token,jdbcType=VARCHAR},
       </if>
+      <if test="question_notify != null">
+        question_notify = #{question_notify,jdbcType=TINYINT},
+      </if>
       <if test="cur_version != null">
         cur_version = #{cur_version,jdbcType=VARCHAR},
       </if>
       <if test="cur_device_type != null">
         cur_device_type = #{cur_device_type,jdbcType=VARCHAR},
-      </if>
-      <if test="question_notify != null">
-        question_notify = #{question_notify,jdbcType=TINYINT},
       </if>
     </set>
     where user_id = #{user_id,jdbcType=BIGINT}
@@ -532,9 +532,9 @@
       create_date = #{create_date,jdbcType=TIMESTAMP},
       cur_device_id = #{cur_device_id,jdbcType=VARCHAR},
       cur_token = #{cur_token,jdbcType=VARCHAR},
+      question_notify = #{question_notify,jdbcType=TINYINT},
       cur_version = #{cur_version,jdbcType=VARCHAR},
-      cur_device_type = #{cur_device_type,jdbcType=VARCHAR},
-      question_notify = #{question_notify,jdbcType=TINYINT}
+      cur_device_type = #{cur_device_type,jdbcType=VARCHAR}
     where user_id = #{user_id,jdbcType=BIGINT}
   </update>
 </mapper>

@@ -1475,6 +1475,66 @@ public class TUserUsersExample {
             return (Criteria) this;
         }
 
+        public Criteria andQuestion_notifyIsNull() {
+            addCriterion("question_notify is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andQuestion_notifyIsNotNull() {
+            addCriterion("question_notify is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andQuestion_notifyEqualTo(Byte value) {
+            addCriterion("question_notify =", value, "question_notify");
+            return (Criteria) this;
+        }
+
+        public Criteria andQuestion_notifyNotEqualTo(Byte value) {
+            addCriterion("question_notify <>", value, "question_notify");
+            return (Criteria) this;
+        }
+
+        public Criteria andQuestion_notifyGreaterThan(Byte value) {
+            addCriterion("question_notify >", value, "question_notify");
+            return (Criteria) this;
+        }
+
+        public Criteria andQuestion_notifyGreaterThanOrEqualTo(Byte value) {
+            addCriterion("question_notify >=", value, "question_notify");
+            return (Criteria) this;
+        }
+
+        public Criteria andQuestion_notifyLessThan(Byte value) {
+            addCriterion("question_notify <", value, "question_notify");
+            return (Criteria) this;
+        }
+
+        public Criteria andQuestion_notifyLessThanOrEqualTo(Byte value) {
+            addCriterion("question_notify <=", value, "question_notify");
+            return (Criteria) this;
+        }
+
+        public Criteria andQuestion_notifyIn(List<Byte> values) {
+            addCriterion("question_notify in", values, "question_notify");
+            return (Criteria) this;
+        }
+
+        public Criteria andQuestion_notifyNotIn(List<Byte> values) {
+            addCriterion("question_notify not in", values, "question_notify");
+            return (Criteria) this;
+        }
+
+        public Criteria andQuestion_notifyBetween(Byte value1, Byte value2) {
+            addCriterion("question_notify between", value1, value2, "question_notify");
+            return (Criteria) this;
+        }
+
+        public Criteria andQuestion_notifyNotBetween(Byte value1, Byte value2) {
+            addCriterion("question_notify not between", value1, value2, "question_notify");
+            return (Criteria) this;
+        }
+
         public Criteria andCur_versionIsNull() {
             addCriterion("cur_version is null");
             return (Criteria) this;
@@ -1612,66 +1672,6 @@ public class TUserUsersExample {
 
         public Criteria andCur_device_typeNotBetween(String value1, String value2) {
             addCriterion("cur_device_type not between", value1, value2, "cur_device_type");
-            return (Criteria) this;
-        }
-
-        public Criteria andQuestion_notifyIsNull() {
-            addCriterion("question_notify is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andQuestion_notifyIsNotNull() {
-            addCriterion("question_notify is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andQuestion_notifyEqualTo(Byte value) {
-            addCriterion("question_notify =", value, "question_notify");
-            return (Criteria) this;
-        }
-
-        public Criteria andQuestion_notifyNotEqualTo(Byte value) {
-            addCriterion("question_notify <>", value, "question_notify");
-            return (Criteria) this;
-        }
-
-        public Criteria andQuestion_notifyGreaterThan(Byte value) {
-            addCriterion("question_notify >", value, "question_notify");
-            return (Criteria) this;
-        }
-
-        public Criteria andQuestion_notifyGreaterThanOrEqualTo(Byte value) {
-            addCriterion("question_notify >=", value, "question_notify");
-            return (Criteria) this;
-        }
-
-        public Criteria andQuestion_notifyLessThan(Byte value) {
-            addCriterion("question_notify <", value, "question_notify");
-            return (Criteria) this;
-        }
-
-        public Criteria andQuestion_notifyLessThanOrEqualTo(Byte value) {
-            addCriterion("question_notify <=", value, "question_notify");
-            return (Criteria) this;
-        }
-
-        public Criteria andQuestion_notifyIn(List<Byte> values) {
-            addCriterion("question_notify in", values, "question_notify");
-            return (Criteria) this;
-        }
-
-        public Criteria andQuestion_notifyNotIn(List<Byte> values) {
-            addCriterion("question_notify not in", values, "question_notify");
-            return (Criteria) this;
-        }
-
-        public Criteria andQuestion_notifyBetween(Byte value1, Byte value2) {
-            addCriterion("question_notify between", value1, value2, "question_notify");
-            return (Criteria) this;
-        }
-
-        public Criteria andQuestion_notifyNotBetween(Byte value1, Byte value2) {
-            addCriterion("question_notify not between", value1, value2, "question_notify");
             return (Criteria) this;
         }
     }

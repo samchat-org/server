@@ -13,8 +13,9 @@ import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementSendLog;
 import com.samchat.common.beans.auto.db.entitybeans.TAdvertisementSendLogExample;
 import com.samchat.common.beans.auto.db.mapper.TAdvertisementContentMapper;
 import com.samchat.common.beans.auto.db.mapper.TAdvertisementSendLogMapper;
+import com.samchat.common.beans.manual.common.MonthShardingBean;
 import com.samchat.common.enums.db.AdsDbEnum;
-import com.samchat.common.utils.CommonUtil;
+import com.samchat.common.utils.ShardingUtil;
 import com.samchat.dao.db.interfaces.IAdvertisementDbDao;
 
 @Repository
@@ -32,12 +33,11 @@ public class AdvertisementDbDao extends BaseDbDao implements IAdvertisementDbDao
 		return "adsSqlMapper";
 	}
 
-	public void saveAdvertisementContent(long adsId, long userIdPro, byte type, String content, String thumb,
+	public TAdvertisementContent saveAdvertisementContent(long userIdPro, byte type, String content, String thumb,
 			Timestamp recvdate, int shardingFlag) {
 
 		TAdvertisementContent ads = new TAdvertisementContent();
-		ads.setAds_id(adsId);
-		ads.setUser_id_pro(userIdPro);
+ 		ads.setUser_id_pro(userIdPro);
 		ads.setAds_type(type);
 		ads.setContent(content);
  		ads.setContent_thumb(thumb);
@@ -46,6 +46,8 @@ public class AdvertisementDbDao extends BaseDbDao implements IAdvertisementDbDao
 		ads.setState(AdsDbEnum.ContentState.WAIT.val());
 		ads.setSharding_flag(shardingFlag);
 		advertisementContentMapper.insert(ads);
+		
+		return ads;
 	}
 
 	public TAdvertisementContent queryAdvertisementCotentById(long adsId, int shardingFlag) throws Exception {
@@ -60,13 +62,14 @@ public class AdvertisementDbDao extends BaseDbDao implements IAdvertisementDbDao
 		return null;
 	}
 
-	public void delAdvertisementContent(long adsId, long userId, Timestamp timestamp) {
+	public void delAdvertisementContent(long adsId, long userId, Timestamp sysdate) {
+		MonthShardingBean sharding = ShardingUtil.getMonthSharding(adsId);
 		TAdvertisementContent ads = new TAdvertisementContent();
-		ads.setAds_id(adsId);
+		ads.setAds_id(sharding.getId());
 		ads.setUser_id_pro(userId);
 		ads.setState(AdsDbEnum.ContentState.CANCEL.val());
-		ads.setCreate_date(timestamp);
-		ads.setSharding_flag(CommonUtil.getMonthSharding(timestamp));
+		ads.setState_date(sysdate);
+ 		ads.setSharding_flag(sharding.getShardingFlag());
 		advertisementContentMapper.updateByPrimaryKeySelective(ads);
 	}
 

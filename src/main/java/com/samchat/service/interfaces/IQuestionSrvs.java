@@ -13,7 +13,13 @@ public interface IQuestionSrvs extends IBaseSrvs{
 
 	public TQuestionQuestions saveQuestion(QuestionSqs req);
 
-	public QuestionSqs sendQuestion(Question_req req, TokenMappingRds token, long qstId, Timestamp sysdate) throws Exception;
+	public QuestionSqs saveAndsendQuestion_master(Question_req req, TokenMappingRds token, Timestamp sysdate) throws Exception;
 
 	public List<QryPopularRequests> queryPopularRequests(int count);
+	
+	public boolean updateQuestionSendingState(long qstId, int shardingFlag);
+	
+	public void updateQuestionState(long qstId, byte state, int shardingFlag);
+	
+	public void saveQuestionSendLog(long qstId, long userIdPro, byte state, Timestamp time, int shardingFlag, String remark);
 }

@@ -1,9 +1,8 @@
 package com.samchat.common.beans.auto.json.appserver.user;
 
-public class Logout_res{
+public class LoginCodeRequest_res{
 
 	private Long ret;
-	private Long pwd_flag;
 
 	public Long getRet() {
 		return ret;
@@ -11,14 +10,6 @@ public class Logout_res{
 
 	public void setRet(Long ret) {
 		this.ret = ret;
-	}
-
-	public Long getPwd_flag() {
-		return pwd_flag;
-	}
-
-	public void setPwd_flag(Long pwd_flag) {
-		this.pwd_flag = pwd_flag;
 	}
 
 }

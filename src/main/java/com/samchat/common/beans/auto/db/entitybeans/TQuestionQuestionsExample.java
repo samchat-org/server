@@ -725,6 +725,126 @@ public class TQuestionQuestionsExample {
             return (Criteria) this;
         }
 
+        public Criteria andStateIsNull() {
+            addCriterion("state is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStateIsNotNull() {
+            addCriterion("state is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStateEqualTo(Byte value) {
+            addCriterion("state =", value, "state");
+            return (Criteria) this;
+        }
+
+        public Criteria andStateNotEqualTo(Byte value) {
+            addCriterion("state <>", value, "state");
+            return (Criteria) this;
+        }
+
+        public Criteria andStateGreaterThan(Byte value) {
+            addCriterion("state >", value, "state");
+            return (Criteria) this;
+        }
+
+        public Criteria andStateGreaterThanOrEqualTo(Byte value) {
+            addCriterion("state >=", value, "state");
+            return (Criteria) this;
+        }
+
+        public Criteria andStateLessThan(Byte value) {
+            addCriterion("state <", value, "state");
+            return (Criteria) this;
+        }
+
+        public Criteria andStateLessThanOrEqualTo(Byte value) {
+            addCriterion("state <=", value, "state");
+            return (Criteria) this;
+        }
+
+        public Criteria andStateIn(List<Byte> values) {
+            addCriterion("state in", values, "state");
+            return (Criteria) this;
+        }
+
+        public Criteria andStateNotIn(List<Byte> values) {
+            addCriterion("state not in", values, "state");
+            return (Criteria) this;
+        }
+
+        public Criteria andStateBetween(Byte value1, Byte value2) {
+            addCriterion("state between", value1, value2, "state");
+            return (Criteria) this;
+        }
+
+        public Criteria andStateNotBetween(Byte value1, Byte value2) {
+            addCriterion("state not between", value1, value2, "state");
+            return (Criteria) this;
+        }
+
+        public Criteria andState_dateIsNull() {
+            addCriterion("state_date is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andState_dateIsNotNull() {
+            addCriterion("state_date is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andState_dateEqualTo(Date value) {
+            addCriterion("state_date =", value, "state_date");
+            return (Criteria) this;
+        }
+
+        public Criteria andState_dateNotEqualTo(Date value) {
+            addCriterion("state_date <>", value, "state_date");
+            return (Criteria) this;
+        }
+
+        public Criteria andState_dateGreaterThan(Date value) {
+            addCriterion("state_date >", value, "state_date");
+            return (Criteria) this;
+        }
+
+        public Criteria andState_dateGreaterThanOrEqualTo(Date value) {
+            addCriterion("state_date >=", value, "state_date");
+            return (Criteria) this;
+        }
+
+        public Criteria andState_dateLessThan(Date value) {
+            addCriterion("state_date <", value, "state_date");
+            return (Criteria) this;
+        }
+
+        public Criteria andState_dateLessThanOrEqualTo(Date value) {
+            addCriterion("state_date <=", value, "state_date");
+            return (Criteria) this;
+        }
+
+        public Criteria andState_dateIn(List<Date> values) {
+            addCriterion("state_date in", values, "state_date");
+            return (Criteria) this;
+        }
+
+        public Criteria andState_dateNotIn(List<Date> values) {
+            addCriterion("state_date not in", values, "state_date");
+            return (Criteria) this;
+        }
+
+        public Criteria andState_dateBetween(Date value1, Date value2) {
+            addCriterion("state_date between", value1, value2, "state_date");
+            return (Criteria) this;
+        }
+
+        public Criteria andState_dateNotBetween(Date value1, Date value2) {
+            addCriterion("state_date not between", value1, value2, "state_date");
+            return (Criteria) this;
+        }
+
         public Criteria andCreate_dateIsNull() {
             addCriterion("create_date is null");
             return (Criteria) this;
@@ -782,6 +902,66 @@ public class TQuestionQuestionsExample {
 
         public Criteria andCreate_dateNotBetween(Date value1, Date value2) {
             addCriterion("create_date not between", value1, value2, "create_date");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagIsNull() {
+            addCriterion("sharding_flag is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagIsNotNull() {
+            addCriterion("sharding_flag is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagEqualTo(Integer value) {
+            addCriterion("sharding_flag =", value, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagNotEqualTo(Integer value) {
+            addCriterion("sharding_flag <>", value, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagGreaterThan(Integer value) {
+            addCriterion("sharding_flag >", value, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagGreaterThanOrEqualTo(Integer value) {
+            addCriterion("sharding_flag >=", value, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagLessThan(Integer value) {
+            addCriterion("sharding_flag <", value, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagLessThanOrEqualTo(Integer value) {
+            addCriterion("sharding_flag <=", value, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagIn(List<Integer> values) {
+            addCriterion("sharding_flag in", values, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagNotIn(List<Integer> values) {
+            addCriterion("sharding_flag not in", values, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagBetween(Integer value1, Integer value2) {
+            addCriterion("sharding_flag between", value1, value2, "sharding_flag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSharding_flagNotBetween(Integer value1, Integer value2) {
+            addCriterion("sharding_flag not between", value1, value2, "sharding_flag");
             return (Criteria) this;
         }
     }

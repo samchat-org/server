@@ -15,9 +15,7 @@ import com.samchat.common.beans.manual.json.sqs.AdvertisementSqs;
 import com.samchat.common.enums.Constant;
 import com.samchat.common.enums.app.ResCodeAppEnum;
 import com.samchat.common.exceptions.AppException;
-import com.samchat.common.utils.S3Util;
 import com.samchat.service.interfaces.IAdvertisementSrvs;
-import com.samchat.service.interfaces.ICommonSrvm;
 import com.samchat.service.interfaces.ICommonSrvs;
 import com.samchat.service.interfaces.IUsersSrvs;
 
@@ -33,16 +31,11 @@ public class AdvertisementAction extends BaseAction {
 
 	@Autowired
 	private ICommonSrvs commonSrv;
-	
-	@Autowired
-	private ICommonSrvm commonSrvm;
 
 	public AdvertisementWrite_res advertisementWrite(AdvertisementWrite_req req, TokenMappingRds token) throws Exception {
 
-		long adsId = commonSrvm.querySeqId(Constant.SEQUENCE.S_ADVERTISEMENT);
-		long userIdPro = token.getUserId();
-		
-		AdvertisementSqs ads = advertisementSrv.saveAndSendAdvertisement_master(req, userIdPro, adsId);
+ 		long userIdPro = token.getUserId();
+		AdvertisementSqs ads = advertisementSrv.saveAndSendAdvertisement_master(req, userIdPro);
 		
 		AdvertisementWrite_res res = new AdvertisementWrite_res();
 		res.setAdv_id(ads.getAds_id());
@@ -59,7 +52,8 @@ public class AdvertisementAction extends BaseAction {
 	}
 
 	public AdvertisementDelete_res advertisementDelete(AdvertisementDelete_req req, TokenMappingRds token) throws Exception {
-		advertisementSrv.updateAdvertisementNotinuse(req.getBody().getAdvertisements(), token.getUserId());
+		Timestamp sysdate = commonSrv.querySysdate();
+		advertisementSrv.updateAdvertisementNotinuse_master(req.getBody().getAdvertisements(), token.getUserId(), sysdate);
 		return new AdvertisementDelete_res();
 	}
 

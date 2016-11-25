@@ -11,6 +11,8 @@ import com.samchat.common.beans.auto.db.entitybeans.TUserUsers;
 import com.samchat.common.beans.auto.json.appserver.question.DispatchQuestion_req;
 import com.samchat.common.beans.auto.json.ni.msg.SendAttachMsg_req;
 import com.samchat.common.beans.manual.json.sqs.QuestionSqs;
+import com.samchat.common.enums.db.AdsDbEnum;
+import com.samchat.common.enums.db.QstDbEnum;
 import com.samchat.common.enums.db.SysParamCodeDbEnum;
 import com.samchat.common.enums.db.UserDbEnum;
 import com.samchat.common.utils.CommonUtil;
@@ -59,27 +61,49 @@ public class QuestionDispatcher extends DispatcherBase {
 		Timestamp sysdate = commonSrv.querySysdate();
 		String body = message.getBody();
 		QuestionSqs req = ThreadLocalUtil.getAppObjectMapper().readValue(body, QuestionSqs.class);
-		questionSrv.saveQuestion(req);
 		String sender = req.getUser_id() + "";
-		List<TUserUsers> users = usersSrv.queryUsers();
-		for (TUserUsers user : users) {
-			if (user.getUser_id() != req.getUser_id()) {
-				try {
-					String dispatchReq = ThreadLocalUtil.getAppObjectMapper().writeValueAsString(getRequest(user, req));
-					String dispatchReqContent = "{\"id\":3,\"content\":" + dispatchReq + "}";
-					SendAttachMsg_req msg = new SendAttachMsg_req();
-					msg.setFrom(sender);
-					msg.setTo(String.valueOf(user.getUser_id()));
-					msg.setAttach(dispatchReqContent);
-					log.info("from:" + sender + "--to:" + user.getUser_id());
-					if (user.getQuestion_notify() == UserDbEnum.QuestionNotify.NOTIFY.val()) {
-						msg.setPushcontent("a new message");
+		long qstId = req.getQuestion_id();
+		int shardingFlag = req.getShardingFlag();
+		
+		boolean ret = questionSrv.updateQuestionSendingState(qstId, shardingFlag);
+		if(!ret){
+			log.info("updateQuestionSendingState- failed: ads_id, shardingFlag" + qstId + "--" + shardingFlag);
+			return;
+		}
+		QstDbEnum.ContentState cstate = QstDbEnum.ContentState.SEND_SUCCESS;
+		try {
+			List<TUserUsers> users = usersSrv.queryUsers();
+			for (TUserUsers user : users) {
+				long userIdPro = user.getUser_id();
+				if (userIdPro != req.getUser_id()) {
+					QstDbEnum.SendLogState state = null;
+					try {
+						String dispatchReq = ThreadLocalUtil.getAppObjectMapper().writeValueAsString(getRequest(user, req));
+						String dispatchReqContent = "{\"id\":3,\"content\":" + dispatchReq + "}";
+						SendAttachMsg_req msg = new SendAttachMsg_req();
+						msg.setFrom(sender);
+						msg.setTo(String.valueOf(userIdPro));
+						msg.setAttach(dispatchReqContent);
+						log.info("from:" + sender + "--to:" + user.getUser_id());
+						if (user.getQuestion_notify() == UserDbEnum.QuestionNotify.NOTIFY.val()) {
+							msg.setPushcontent("a new message");
+						}
+						NiUtil.sendAttachMsg(msg, sysdate);
+						state = QstDbEnum.SendLogState.SEND_SUCCESS;
+					} catch (Exception e) {
+						log.error(e.getMessage(), e);
+						state = QstDbEnum.SendLogState.ERROR;
+						cstate = QstDbEnum.ContentState.ERROR;
+					}finally{
+						questionSrv.saveQuestionSendLog(qstId, userIdPro, state.val(), sysdate, shardingFlag, state.name());
 					}
-					NiUtil.sendAttachMsg(msg, sysdate);
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
 				}
 			}
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			cstate = QstDbEnum.ContentState.ERROR;
+		}finally{
+			questionSrv.updateQuestionState(qstId, cstate.val(), shardingFlag);
 		}
 	}
 

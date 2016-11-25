@@ -32,11 +32,14 @@ public class ContactListQuery_req{
 		private Long type;
 
 		public Long getType() {
+			if (type != null&& (type != 0 &&type != 1 )){
+				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + type);
+			}
 			return type;
 		}
 
 		public void setType(Long type) {
-			if (type != null&&type != 0 &&type != 1 ){
+			if (type != null&& (type != 0 &&type != 1 )){
 				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + type);
 			}
 			this.type = type;

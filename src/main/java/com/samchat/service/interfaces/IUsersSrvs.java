@@ -54,5 +54,8 @@ public interface IUsersSrvs extends IBaseSrvs {
 	public String getFindpasswordVerificationCodeCtrl(String countryCode, String cellPhone);
 	public List<TUserUsers> querySamchatId(String samchatId);
 	public TUserUsers saveSamchatId_master(String samchatId, long userId) throws Exception;
-
+	public String getLoginCode(String countryCode, String cellPhone);
+	public void putLoginCode(String countryCode, String cellPhone, String loginCode);
+	public void putLoginCodeCtrl(String countryCode, String cellPhone);
+	public String getLoginCodeCtrl(String countryCode, String cellPhone) ;
 }

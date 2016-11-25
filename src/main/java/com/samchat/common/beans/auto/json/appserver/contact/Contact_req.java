@@ -34,22 +34,28 @@ public class Contact_req{
 		private Long id;
 
 		public Long getOpt() {
+			if (opt != null&& (opt != 0 &&opt != 1 )){
+				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + opt);
+			}
 			return opt;
 		}
 
 		public void setOpt(Long opt) {
-			if (opt != null&&opt != 0 &&opt != 1 ){
+			if (opt != null&& (opt != 0 &&opt != 1 )){
 				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + opt);
 			}
 			this.opt = opt;
 		}
 
 		public Long getType() {
+			if (type != null&& (type != 0 &&type != 1 )){
+				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + type);
+			}
 			return type;
 		}
 
 		public void setType(Long type) {
-			if (type != null&&type != 0 &&type != 1 ){
+			if (type != null&& (type != 0 &&type != 1 )){
 				 throw new AppException(ResCodeAppEnum.PARAM_NONSUPPORT.getCode(), "value:" + type);
 			}
 			this.type = type;
